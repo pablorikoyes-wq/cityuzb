@@ -202,34 +202,38 @@ async function init() {
       initData = tg.initData || '';
     }
 
-    // Загружаем пользователя
-    const res = await fetch(`${API_URL}/api/user`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        init_data: initData,
-        referred_by: getReferralId()
-      })
-    });
-    const data = await res.json();
+    // ============================================================
+    // ВРЕМЕННО: тестовые данные (БЕЗ API)
+    // ============================================================
+    user = {
+      user_id: tg?.initDataUnsafe?.user?.id || 123456789,
+      first_name: tg?.initDataUnsafe?.user?.first_name || 'Игрок',
+      username: tg?.initDataUnsafe?.user?.username || '',
+      balance: 100000,
+      xp: 250,
+      level: 1,
+      total_games: 0,
+      total_floors: 0,
+      total_earned: 0,
+      best_height: 0,
+      best_accuracy: 0,
+      best_combo: 0,
+    };
 
-    if (data.error) {
-      document.getElementById('loading').innerText = '❌ Ошибка: ' + data.error;
-      return;
-    }
-
-    user = data.user;
-    channels = data.channels || [];
+    channels = [
+      {url: "https://t.me/+y21STJee1WphZjNi", "name": "ISH HAMMAGA"},
+      {url: "https://telegram.me/+9hB_bnX7QGI5ZTIy", "name": "💎Strategiya Markazi💎"},
+      {url: "https://t.me/+OetsLzD4YZ00NDdi", "name": "PhotoStock To'lovlari"}
+    ];
 
     // Отрисовываем интерфейс
     render();
 
   } catch (e) {
     console.error(e);
-    document.getElementById('loading').innerText = '❌ Ошибка сети. Проверьте интернет.';
+    document.getElementById('loading').innerText = '❌ Ошибка: ' + e.message;
   }
 }
-
 function getReferralId() {
   const params = new URLSearchParams(window.location.search);
   return params.get('ref') ? parseInt(params.get('ref')) : null;
