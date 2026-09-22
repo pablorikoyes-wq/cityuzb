@@ -35,48 +35,69 @@
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
 body{background:var(--color-bg);overflow:hidden;user-select:none}
-.app{width:100%;max-width:500px;height:100vh;margin:0 auto;background:var(--color-bg);position:relative;display:flex;flex-direction:column;overflow:hidden}
+.app{width:100%;max-width:500px;height:100vh;margin:0 auto;background:
+  radial-gradient(circle at 1px 1px,rgba(74,144,226,.08) 1px,transparent 0) 0 0/22px 22px,
+  linear-gradient(180deg,#eef3fa,var(--color-bg) 220px);
+  position:relative;display:flex;flex-direction:column;overflow:hidden}
 .screen{display:none;flex-direction:column;height:100%;overflow-y:auto;padding-bottom:80px;opacity:0;transform:translateY(8px);transition:opacity .3s var(--ease-out),transform .3s var(--ease-out)}
 .screen.active{display:flex}
 .screen.active.in{opacity:1;transform:translateY(0)}
 
-/* HEADER */
-.header{padding:14px 16px;display:flex;align-items:center;gap:10px;background:var(--color-bg)}
-.brand-row{padding:10px 16px 0;display:flex;align-items:center;gap:6px}
-.brand-row .brand-mark{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:var(--shadow-glow-blue)}
-.brand-row .brand-word{font-size:12px;font-weight:800;color:var(--color-primary-dark);letter-spacing:.3px}
-.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(150deg,var(--color-primary-light),var(--color-primary) 55%,var(--color-primary-dark));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;box-shadow:var(--shadow-glow-blue),inset 0 1px 1px rgba(255,255,255,.4)}
-.user-info{flex:1}
-.user-info .name{font-weight:700;font-size:15px;color:var(--color-text)}
-.user-info .role{font-size:11px;color:var(--color-text-soft)}
-.balance-badge{background:#fff;border-radius:var(--radius-full);padding:6px 12px;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,.6)}
-.balance-badge .coin{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;filter:drop-shadow(0 1px 1px rgba(245,179,1,.4))}
-.balance-badge .amount{font-weight:800;font-size:13px;color:var(--color-text)}
+/* ОКНА (карточки-секции) */
+.window{margin:8px 16px;border-radius:var(--radius-lg);position:relative;overflow:hidden}
 
-/* BANNER */
-.banner{margin:8px 16px;background:linear-gradient(135deg,var(--color-primary-light),var(--color-primary) 45%,var(--color-primary-dark));border-radius:var(--radius-lg);padding:16px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow-glow-blue)}
-.banner::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,.14);border-radius:50%}
-.banner::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 40%);pointer-events:none}
-.banner h2{font-size:16px;font-weight:800;margin-bottom:4px;position:relative}
-.banner p{font-size:12px;opacity:.9;position:relative}
+/* ПЛАШКА №1 — самая верхняя тонкая полоска (бренд + баланс) */
+.top-strip{margin:6px 16px 0;padding:6px 10px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--radius-sm);box-shadow:var(--shadow-sm)}
+.brand-row{display:flex;align-items:center;gap:5px}
+.brand-row .brand-mark{width:18px;height:18px;border-radius:6px;background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));display:flex;align-items:center;justify-content:center;font-size:10px;box-shadow:var(--shadow-glow-blue)}
+.brand-row .brand-word{font-size:11px;font-weight:800;color:var(--color-primary-dark);letter-spacing:.3px}
+.balance-badge{background:var(--color-bg-soft);border-radius:var(--radius-full);padding:4px 9px;display:flex;align-items:center;gap:5px}
+.balance-badge .coin{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;filter:drop-shadow(0 1px 1px rgba(245,179,1,.4))}
+.balance-badge .amount{font-weight:800;font-size:11px;color:var(--color-text)}
+
+/* ОКНО 2 — заголовок-приветствие */
+/* СТРАНИЦА-ПОДЛОЖКА (та же ширина, что и окно городов — края идут вровень) */
+.hero-page{margin:8px 16px 0;background:linear-gradient(135deg,var(--color-primary-soft),var(--color-primary-dark));padding:16px 16px 44px;color:#fff;position:relative;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.hero-page h2{font-size:16px;font-weight:800;margin-bottom:4px}
+.hero-page p{font-size:12px;opacity:.9}
+
+/* ОКНО 3 — список городов, "страница поверх страницы": наезжает на подложку сверху, края вровень с ней */
+.window-cities{background:#fff;padding:14px 14px 16px;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.7)}
+.window-cities .section-title{padding:0 0 10px}
+.sheet-page{margin-top:-26px;position:relative;z-index:2}
+
+/* ИКОНОЧНЫЕ СЛОТЫ (сюда позже вставляются собственные картинки) */
+.icon-slot{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.16);border:1.5px dashed rgba(255,255,255,.45);border-radius:var(--radius-md);color:#fff}
 
 /* CITIES */
 .section-title{padding:16px 16px 8px;font-size:15px;font-weight:800;color:var(--color-text)}
-.cities-grid{padding:0 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.cities-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .city-card{background:#fff;border-radius:var(--radius-md);padding:8px;text-align:center;cursor:pointer;transition:transform .18s var(--ease-out),box-shadow .18s var(--ease-out);box-shadow:var(--shadow-sm);position:relative;border:1px solid rgba(255,255,255,.8)}
 .city-card:active{transform:scale(.95);box-shadow:var(--shadow-sm)}
 .city-card:not(.locked):hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .city-card.locked{opacity:.6}
-.city-num{position:absolute;top:4px;left:4px;background:var(--color-primary);color:#fff;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(74,144,226,.5)}
-.city-img{width:100%;height:50px;border-radius:10px;background:linear-gradient(150deg,#a9e0f5,#87ceeb 60%,#6bc4ea);margin-bottom:4px;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;box-shadow:inset 0 -6px 10px rgba(0,60,90,.12)}
-.city-name{font-size:11px;font-weight:700;color:var(--color-text);margin-bottom:2px}
-.city-diff{font-size:9px;padding:2px 6px;border-radius:8px;display:inline-block;font-weight:600}
-.diff-easy{background:#d4f5d4;color:#2d7a2d}
-.diff-medium{background:#fff4cc;color:#8a6d00}
-.diff-hard{background:#ffd9cc;color:#a33d1a}
-.diff-extreme{background:#ffcccc;color:#a30000}
+.city-title{font-size:11px;font-weight:800;color:var(--color-text);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
+.icon-slot-city{width:100%;height:48px;border-radius:10px;margin-bottom:5px;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden}
+.city-img{background:linear-gradient(150deg,#a9e0f5,#87ceeb 60%,#6bc4ea);box-shadow:inset 0 -6px 10px rgba(0,60,90,.12)}
+.city-diff{height:24px;border-radius:var(--radius-sm);display:block;margin-top:2px}
+.diff-easy{background:#4caf50}
+.diff-medium{background:#f5b301}
+.diff-hard{background:#ff8a3d}
+.diff-extreme{background:#f44336}
 .lock-icon{position:absolute;top:4px;right:4px;font-size:14px}
 .city-card.locked::after{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px}
+
+/* ВИТРИНА: 10-й город (Tashkent City) — крупная карточка в самом низу списка */
+.city-showcase-card{margin:10px 16px 8px;position:relative;border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;background:linear-gradient(160deg,#243b5c,#1a2b42 65%);box-shadow:var(--shadow-lg);transition:transform .18s var(--ease-out)}
+.city-showcase-card:active{transform:scale(.98)}
+.city-showcase-card .showcase-img{width:100%;height:96px;display:flex;align-items:center;justify-content:center;font-size:38px;background:linear-gradient(150deg,#5b7fae,#2f4d78 60%,#1a2b42);box-shadow:inset 0 -20px 20px -10px rgba(0,0,0,.35)}
+.city-showcase-card .showcase-body{padding:12px 14px 14px}
+.city-showcase-card .showcase-top-row{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.city-showcase-card .showcase-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--color-gold);color:#1a2b42;font-size:10px;font-weight:800;flex:none}
+.city-showcase-card .showcase-name{font-size:16px;font-weight:800;color:#fff}
+.city-showcase-card .showcase-sub{font-size:11px;color:rgba(255,255,255,.7);font-weight:600;margin-bottom:6px}
+.city-showcase-card .showcase-lock{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:rgba(20,30,45,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;font-size:16px}
+.city-showcase-card.locked .showcase-img{filter:grayscale(.35);opacity:.85}
 
 /* PROGRESS */
 .xp-bar{margin:8px 16px;background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px}
@@ -86,18 +107,19 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .xp-bar .value{font-size:11px;font-weight:700;color:var(--color-text)}
 
 /* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);display:flex;justify-content:space-around;padding:8px 0 14px;max-width:500px;margin:0 auto;box-shadow:0 -4px 20px rgba(26,43,66,.08);z-index:100;border-top:1px solid rgba(255,255,255,.6)}
-.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 14px;cursor:pointer;color:var(--color-text-faint);font-size:10px;font-weight:600;border:none;background:none;transition:color .2s,transform .2s}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);display:flex;justify-content:center;gap:6px;padding:8px 0 14px;max-width:500px;margin:0 auto;box-shadow:0 -4px 20px rgba(26,43,66,.08);z-index:100;border-top:1px solid rgba(255,255,255,.6)}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;cursor:pointer;color:var(--color-text-faint);font-size:10px;font-weight:600;border:none;background:none;transition:color .2s,transform .2s}
 .nav-btn.active{color:var(--color-primary);transform:translateY(-1px)}
-.nav-btn .icon{font-size:20px;transition:transform .2s}
+.nav-btn .icon{display:flex;align-items:center;justify-content:center;transition:transform .2s}
 .nav-btn.active .icon{transform:scale(1.12)}
 
 /* GAME SCREEN */
 .game-header{padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.back-btn{background:none;border:none;color:var(--color-primary);font-size:22px;cursor:pointer;font-weight:700;padding:4px 8px}
+.back-btn{background:#fff;border:none;color:var(--color-primary);cursor:pointer;font-weight:700;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
+.back-btn:active{transform:scale(.92)}
 .game-title{font-size:16px;font-weight:800;color:var(--color-text)}
 .stats-row{padding:8px 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.stat-box{background:#fff;border-radius:12px;padding:8px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.stat-box{background:#fff;border-radius:var(--radius-md);padding:8px;text-align:center;box-shadow:var(--shadow-sm);border:1px solid rgba(255,255,255,.7)}
 .stat-box .label{font-size:10px;color:var(--color-text-soft);font-weight:600;margin-bottom:2px}
 .stat-box .value{font-size:15px;font-weight:800;color:var(--color-text)}
 .stat-box .value.gold{color:var(--color-gold)}
@@ -118,7 +140,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .result-miss{color:#f44336}
 
 /* PROFILE */
-.profile-header{padding:20px 16px;display:flex;align-items:center;gap:14px;background:#fff;margin:8px 16px;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.profile-header{padding:20px 16px;display:flex;align-items:center;gap:14px;background:#fff;margin:8px 16px;border-radius:var(--radius-lg);box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,.7)}
 .profile-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:26px}
 .profile-info .name{font-size:17px;font-weight:800;color:var(--color-text);margin-bottom:2px}
 .profile-info .id{font-size:12px;color:var(--color-text-soft);margin-bottom:4px}
@@ -129,7 +151,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .balance-card .amount{font-size:22px;font-weight:900;margin-top:2px;position:relative}
 .balance-card .label{font-size:11px;opacity:.85;position:relative}
 
-.menu-list{margin:8px 16px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.menu-list{margin:8px 16px;background:#fff;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,.7)}
 .menu-item{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--color-divider);cursor:pointer;font-size:14px;font-weight:600;color:var(--color-text)}
 .menu-item:last-child{border-bottom:none}
 .menu-item:active{background:var(--color-bg-soft)}
@@ -138,21 +160,23 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .menu-item .badge{background:var(--color-success);color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:auto}
 
 /* STATS SCREEN */
-.stats-main{margin:8px 16px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.stats-main{margin:8px 16px;background:#fff;border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,.7)}
 .stats-main .label{font-size:12px;color:var(--color-text-soft);margin-bottom:4px;font-weight:600}
 .stats-main .value{font-size:26px;font-weight:900;color:var(--color-text)}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 16px}
-.stats-grid .stat-item{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);text-align:center}
+.stats-grid .stat-item{background:#fff;border-radius:var(--radius-md);padding:14px;box-shadow:var(--shadow-sm);text-align:center;border:1px solid rgba(255,255,255,.7);transition:transform .15s var(--ease-out)}
+.stats-grid .stat-item:active{transform:scale(.97)}
 .stats-grid .stat-item .emoji{font-size:26px;margin-bottom:6px}
 .stats-grid .stat-item .num{font-size:20px;font-weight:900;color:var(--color-text)}
 .stats-grid .stat-item .label{font-size:11px;color:var(--color-text-soft);margin-top:2px;font-weight:600}
-.best-results{margin:8px 16px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04);display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.best-results{margin:8px 16px;background:#fff;border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow-md);display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;border:1px solid rgba(255,255,255,.7)}
 .best-results .best-item .emoji{font-size:22px;margin-bottom:4px}
 .best-results .best-item .num{font-size:14px;font-weight:800;color:var(--color-text)}
 .best-results .best-item .label{font-size:10px;color:var(--color-text-soft);margin-top:2px}
 
 /* SOVRINLAR */
-.achievement{margin:8px 16px;background:#fff;border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.achievement{margin:8px 16px;background:#fff;border-radius:var(--radius-lg);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm);border:1px solid rgba(255,255,255,.7);transition:transform .15s var(--ease-out)}
+.achievement:not(.locked):active{transform:scale(.98)}
 .achievement.locked{opacity:.5}
 .achievement .ach-icon{width:48px;height:48px;border-radius:50%;background:linear-gradient(150deg,#ffe469,#ffd700 45%,var(--color-gold));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:var(--shadow-glow-gold),inset 0 1px 1px rgba(255,255,255,.5)}
 .achievement.locked .ach-icon{background:var(--color-bg)}
@@ -228,6 +252,17 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 const API_URL = 'http://107-189-21-103.sslip.io:8081';
 const BONUS_AMOUNT = 500; // монет за подписку на все каналы
 
+// ============================================================
+// SVG-ИКОНКИ (вместо части эмодзи — для чёткого/единого стиля)
+// ============================================================
+const ICONS = {
+  home: '<span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1v-9"/></svg></span>',
+  stats: '<span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg></span>',
+  trophy: '<span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 5H5a2 2 0 0 0 0 4h1.5M16 5h3a2 2 0 0 1 0 4h-1.5"/><path d="M12 13v3m-3 4h6m-3-4v4"/></svg></span>',
+  user: '<span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.6 4-5.5 7-5.5s5.8 1.9 7 5.5"/></svg></span>',
+  back: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>',
+};
+
 let tg = window.Telegram?.WebApp;
 let user = null;
 let channels = [];
@@ -289,35 +324,33 @@ function render() {
   document.getElementById('app').innerHTML = `
     <!-- ГЛАВНЫЙ ЭКРАН -->
     <div class="screen active" id="screen-main">
-      <div class="brand-row">
-        <div class="brand-mark">🏗️</div>
-        <div class="brand-word">CityUz</div>
-      </div>
-      <div class="header">
-        <div class="avatar">${(user.first_name || 'И')[0].toUpperCase()}</div>
-        <div class="user-info">
-          <div class="name">${user.first_name || 'Игрок'}</div>
-          <div class="role">Qurilish Ustasi</div>
+
+      <!-- ПЛАШКА №1 (самая верхняя, отдельная полоска) -->
+      <div class="top-strip">
+        <div class="brand-row">
+          <div class="brand-mark">🏗️</div>
+          <div class="brand-word">CityUz</div>
         </div>
         <div class="balance-badge">
           <div class="coin">🪙</div>
-          <div class="amount" id="main-balance">${formatNum(user.balance)}</div>
+          <div class="amount">${formatNum(user.balance)}</div>
         </div>
       </div>
 
-      <div class="banner">
+      <!-- СТРАНИЦА-ПОДЛОЖКА: заголовок-приветствие (лежит снизу, накрывается окном городов) -->
+      <div class="hero-page">
         <h2>Kichik shaharlardan buyuk O'zbekistongacha!</h2>
         <p>Quring, rivojlantiring, g'alaba qozoning!</p>
       </div>
 
-      <div class="xp-bar">
-        <div class="label">${user.level}-daraja</div>
-        <div class="bar"><div class="fill" style="width:${(user.xp % 1000) / 10}%"></div></div>
-        <div class="value">${user.xp % 1000}/1000 XP</div>
+      <!-- СТРАНИЦА ПОВЕРХ: список городов (слоты иконок №1–9), накрывает подложку -->
+      <div class="window window-cities sheet-page">
+        <div class="section-title">Shaharlar (10 ta)</div>
+        <div class="cities-grid" id="cities-grid"></div>
       </div>
 
-      <div class="section-title">Shaharlar (10 ta)</div>
-      <div class="cities-grid" id="cities-grid"></div>
+      <!-- ВИТРИНА (самый низ, слот иконки №10) -->
+      <div id="city-showcase"></div>
     </div>
 
     <!-- СТАТИСТИКА -->
@@ -387,7 +420,7 @@ function render() {
     <!-- ИГРА -->
     <div class="screen" id="screen-game">
       <div class="game-header">
-        <button class="back-btn" onclick="exitGame()">←</button>
+        <button class="back-btn" onclick="exitGame()">${ICONS.back}</button>
         <div class="game-title" id="game-city">Shahar</div>
         <div></div>
       </div>
@@ -413,7 +446,7 @@ function render() {
     <!-- БОНУС ЗА ПОДПИСКУ (было "вывод") -->
     <div class="screen" id="screen-sponsors">
       <div class="game-header">
-        <button class="back-btn" onclick="showScreen('profile')">←</button>
+        <button class="back-btn" onclick="showScreen('profile')">${ICONS.back}</button>
         <div class="game-title">Bonus olish</div>
         <div></div>
       </div>
@@ -426,10 +459,10 @@ function render() {
 
     <!-- BOTTOM NAV -->
     <div class="bottom-nav" id="bottom-nav">
-      <button class="nav-btn active" onclick="showScreen('main')"><span class="icon">🏠</span>Bosh sahifa</button>
-      <button class="nav-btn" onclick="showScreen('stats')"><span class="icon">📊</span>Statistika</button>
-      <button class="nav-btn" onclick="showScreen('ach')"><span class="icon">🏆</span>Sovrinlar</button>
-      <button class="nav-btn" onclick="showScreen('profile')"><span class="icon">👤</span>Profil</button>
+      <button class="nav-btn active" onclick="showScreen('main')">${ICONS.home}Bosh sahifa</button>
+      <button class="nav-btn" onclick="showScreen('stats')">${ICONS.stats}Statistika</button>
+      <button class="nav-btn" onclick="showScreen('ach')">${ICONS.trophy}Sovrinlar</button>
+      <button class="nav-btn" onclick="showScreen('profile')">${ICONS.user}Profil</button>
     </div>
   `;
 
@@ -496,21 +529,43 @@ const CITIES = [
 
 function renderCities() {
   const grid = document.getElementById('cities-grid');
+  const showcase = document.getElementById('city-showcase');
   if (!grid) return;
 
   const unlocked = Math.min(user.level, 10);
 
-  grid.innerHTML = CITIES.map((city, i) => {
+  // SLOTS: города №1–9 — обычная сетка
+  grid.innerHTML = CITIES.slice(0, 9).map((city, i) => {
     const isLocked = i >= unlocked;
     return `
       <div class="city-card ${isLocked ? 'locked' : ''}" onclick="${isLocked ? `toast('${i+1}-daraja kerak')` : `startGame(${i})`}">
-        <div class="city-num">${i+1}</div>
-        <div class="city-img">${city.emoji}</div>
-        <div class="city-name">${city.name}</div>
-        <div class="city-diff diff-${city.diff}">${city.diffText}</div>
+        <div class="city-title">${i+1}. ${city.name}</div>
+        <div class="icon-slot-city city-img" data-slot="city-${i+1}">${city.emoji}</div>
+        <div class="city-diff diff-${city.diff}"></div>
       </div>
     `;
   }).join('');
+
+  // SLOT №10 — витрина «Tashkent City» (последний, самый крупный проект)
+  if (showcase) {
+    const i = 9;
+    const city = CITIES[i];
+    const isLocked = i >= unlocked;
+    showcase.innerHTML = `
+      <div class="city-showcase-card ${isLocked ? 'locked' : ''}" onclick="${isLocked ? `toast('${i+1}-daraja kerak')` : `startGame(${i})`}">
+        <div class="showcase-img" data-slot="city-10">${city.emoji}</div>
+        ${isLocked ? `<div class="showcase-lock">🔒</div>` : ''}
+        <div class="showcase-body">
+          <div class="showcase-top-row">
+            <div class="showcase-badge">${i+1}</div>
+            <div class="showcase-name">${city.name}</div>
+          </div>
+          <div class="showcase-sub">${isLocked ? `Eng katta loyiha! · ${i+1}-darajaga yeting` : 'Eng katta loyiha! · Ochish uchun bosing'}</div>
+          <div class="city-diff diff-${city.diff}"></div>
+        </div>
+      </div>
+    `;
+  }
 }
 
 // ============================================================
@@ -565,6 +620,51 @@ let comboCount = 0;
 let maxCombo = 0;
 let perfectCount = 0;
 let totalAttempts = 0;
+let particles = [];
+let frame = 0;
+
+// Тематическая палитра блоков (голубой/золотой — в духе CityUz)
+const BLOCK_PALETTE = [
+  {top:'#7fc8f5', mid:'#5aa8e8', edge:'#3d7cc9'},
+  {top:'#ffd873', mid:'#f5b301', edge:'#c98d00'},
+  {top:'#8fe0c2', mid:'#4fbd93', edge:'#2f8f6c'},
+];
+
+function spawnBurst(x, y, colorHex, count) {
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5;
+    const speed = 2 + Math.random() * 3;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2,
+      life: 1,
+      color: colorHex,
+      size: 2 + Math.random() * 2.5,
+    });
+  }
+}
+
+function updateParticles() {
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.15;
+    p.life -= 0.025;
+  });
+  particles = particles.filter(p => p.life > 0);
+}
+
+function drawParticles() {
+  particles.forEach(p => {
+    ctx.globalAlpha = Math.max(p.life, 0);
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
 
 function startGame(cityIndex) {
   currentCity = CITIES[cityIndex];
@@ -576,6 +676,8 @@ function startGame(cityIndex) {
   maxCombo = 0;
   perfectCount = 0;
   totalAttempts = 0;
+  particles = [];
+  frame = 0;
   gameActive = true;
 
   const diffMap = {easy: 1, medium: 1.5, hard: 2, extreme: 2.5};
@@ -607,71 +709,190 @@ function startGame(cityIndex) {
 
 function gameLoop() {
   if (!gameActive) return;
+  frame++;
 
   crane.x += crane.dir * crane.speed;
   if (crane.x > canvas.width - 80 || crane.x < 20) {
     crane.dir *= -1;
   }
 
+  updateParticles();
   draw();
   animId = requestAnimationFrame(gameLoop);
 }
 
 function draw() {
   if (!ctx) return;
+  const w = canvas.width, h = canvas.height;
 
-  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-  grad.addColorStop(0, '#87ceeb');
-  grad.addColorStop(1, '#b0e0f5');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // --- НЕБО ---
+  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, '#a9def0');
+  sky.addColorStop(0.6, '#cdeaf7');
+  sky.addColorStop(1, '#e8f6fb');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, w, h);
 
-  ctx.fillStyle = 'rgba(255,255,255,.6)';
-  ctx.beginPath();
-  ctx.arc(60, 40, 25, 0, Math.PI*2);
-  ctx.arc(90, 40, 30, 0, Math.PI*2);
-  ctx.arc(120, 40, 25, 0, Math.PI*2);
-  ctx.fill();
+  // мягкое солнце
+  const sunGrad = ctx.createRadialGradient(w - 46, 34, 2, w - 46, 34, 42);
+  sunGrad.addColorStop(0, 'rgba(255,244,200,.95)');
+  sunGrad.addColorStop(1, 'rgba(255,244,200,0)');
+  ctx.fillStyle = sunGrad;
+  ctx.beginPath(); ctx.arc(w - 46, 34, 42, 0, Math.PI*2); ctx.fill();
 
-  ctx.beginPath();
-  ctx.arc(canvas.width - 100, 60, 20, 0, Math.PI*2);
-  ctx.arc(canvas.width - 70, 60, 25, 0, Math.PI*2);
-  ctx.fill();
+  // облака (мягкие, с лёгкой тенью снизу)
+  drawCloud(50 + Math.sin(frame/160)*6, 36, 1);
+  drawCloud(w - 130 + Math.cos(frame/190)*6, 58, 0.8);
 
-  ctx.fillStyle = '#8bc34a';
-  ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+  // --- ГОРИЗОНТ / ЗЕМЛЯ ---
+  const groundY = h - 40;
+  ctx.fillStyle = 'rgba(0,40,20,.10)';
+  ctx.fillRect(0, groundY - 3, w, 3);
+  const groundGrad = ctx.createLinearGradient(0, groundY, 0, h);
+  groundGrad.addColorStop(0, '#9ed976');
+  groundGrad.addColorStop(1, '#7cc158');
+  ctx.fillStyle = groundGrad;
+  ctx.fillRect(0, groundY, w, 40);
+  ctx.strokeStyle = 'rgba(255,255,255,.35)';
+  ctx.lineWidth = 2;
+  for (let gx = -((frame*0.3)%18); gx < w; gx += 18) {
+    ctx.beginPath(); ctx.moveTo(gx, groundY + 6); ctx.lineTo(gx + 9, groundY + 6); ctx.stroke();
+  }
 
+  // --- БАШНЯ ---
   tower.forEach((b, i) => {
-    ctx.fillStyle = i % 2 === 0 ? '#e8a87c' : '#d68c5a';
-    ctx.fillRect(b.x, b.y, b.width, b.height);
-    ctx.strokeStyle = '#a35d2e';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(b.x, b.y, b.width, b.height);
-    ctx.fillStyle = 'rgba(255,255,255,.4)';
-    for (let wx = b.x + 10; wx < b.x + b.width - 10; wx += 25) {
-      ctx.fillRect(wx, b.y + 8, 15, 15);
-    }
+    drawBlock(b, i);
   });
 
-  ctx.fillStyle = '#555';
-  ctx.fillRect(0, 30, canvas.width, 8);
-  ctx.fillRect(crane.x, 30, 8, 15);
+  // --- КРАН ---
+  drawCrane();
 
-  ctx.strokeStyle = '#333';
+  // --- НЕСОМЫЙ БЛОК ---
+  const bx = crane.x + 4 - block.width / 2;
+  const carried = {x: bx, y: block.y, width: block.width, height: block.height};
+  // тень-проекция на земле/башне (подсказка выравнивания)
+  ctx.fillStyle = 'rgba(20,40,60,.10)';
+  ctx.beginPath();
+  ctx.ellipse(crane.x + 4, groundY - 2, block.width * 0.42, 5, 0, 0, Math.PI*2);
+  ctx.fill();
+  drawBlock(carried, tower.length, true);
+
+  // --- ЧАСТИЦЫ (эффект PERFECT/GOOD) ---
+  drawParticles();
+}
+
+function drawCloud(cx, cy, scale) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(scale, scale);
+  ctx.fillStyle = 'rgba(20,60,90,.06)';
+  ctx.beginPath();
+  ctx.ellipse(0, 10, 40, 10, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(0, 0, 16, 0, Math.PI*2);
+  ctx.arc(20, -4, 20, 0, Math.PI*2);
+  ctx.arc(42, 0, 15, 0, Math.PI*2);
+  ctx.arc(20, 8, 18, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawBlock(b, index, isCarried) {
+  const pal = BLOCK_PALETTE[index % BLOCK_PALETTE.length];
+
+  // тень под блоком
+  ctx.fillStyle = 'rgba(20,30,50,.12)';
+  ctx.fillRect(b.x + 3, b.y + b.height - 2, b.width, 5);
+
+  const grad = ctx.createLinearGradient(0, b.y, 0, b.y + b.height);
+  grad.addColorStop(0, pal.top);
+  grad.addColorStop(1, pal.mid);
+  ctx.fillStyle = grad;
+  roundRect(b.x, b.y, b.width, b.height, 4);
+  ctx.fill();
+
+  // верхняя грань (объём/ledge)
+  ctx.fillStyle = 'rgba(255,255,255,.45)';
+  roundRect(b.x, b.y, b.width, Math.min(6, b.height * 0.28), 4);
+  ctx.fill();
+
+  // контур
+  ctx.strokeStyle = pal.edge;
+  ctx.lineWidth = 1.5;
+  roundRect(b.x, b.y, b.width, b.height, 4);
+  ctx.stroke();
+
+  // окна
+  ctx.fillStyle = isCarried ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.85)';
+  const winSize = Math.max(6, b.width / 7);
+  for (let wx = b.x + 8; wx < b.x + b.width - winSize; wx += winSize + 6) {
+    ctx.fillRect(wx, b.y + b.height * 0.42, winSize * 0.7, b.height * 0.32);
+  }
+
+  if (isCarried) {
+    // блик выделения на несомом блоке
+    ctx.strokeStyle = 'rgba(255,255,255,.8)';
+    ctx.lineWidth = 2;
+    roundRect(b.x - 1, b.y - 1, b.width + 2, b.height + 2, 5);
+    ctx.stroke();
+  }
+}
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function drawCrane() {
+  const railY = 30;
+  const w = canvas.width;
+
+  // рельс
+  const railGrad = ctx.createLinearGradient(0, railY, 0, railY + 8);
+  railGrad.addColorStop(0, '#6b7785');
+  railGrad.addColorStop(1, '#454f5b');
+  ctx.fillStyle = railGrad;
+  ctx.fillRect(0, railY, w, 6);
+
+  // решётчатая мачта (лёгкий узор)
+  ctx.strokeStyle = 'rgba(70,80,95,.35)';
+  ctx.lineWidth = 1.5;
+  for (let x = 10; x < w; x += 24) {
+    ctx.beginPath(); ctx.moveTo(x, railY + 6); ctx.lineTo(x + 12, railY + 12); ctx.stroke();
+  }
+
+  // кабина крана (тележка)
+  ctx.fillStyle = '#f5b301';
+  roundRect(crane.x - 10, railY - 10, 24, 14, 3);
+  ctx.fill();
+  ctx.strokeStyle = '#c98d00';
+  ctx.lineWidth = 1.5;
+  roundRect(crane.x - 10, railY - 10, 24, 14, 3);
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.55)';
+  ctx.fillRect(crane.x - 6, railY - 7, 8, 6);
+
+  // трос
+  ctx.strokeStyle = '#3a4048';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(crane.x + 4, 45);
+  ctx.moveTo(crane.x + 4, railY + 8);
   ctx.lineTo(crane.x + 4, block.y);
   ctx.stroke();
 
-  const bx = crane.x + 4 - block.width / 2;
-  ctx.fillStyle = '#6ab2f2';
-  ctx.fillRect(bx, block.y, block.width, block.height);
-  ctx.strokeStyle = '#357abd';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(bx, block.y, block.width, block.height);
-  ctx.fillStyle = 'rgba(255,255,255,.4)';
-  ctx.fillRect(bx + 10, block.y + 8, 15, 15);
+  // крюк
+  ctx.strokeStyle = '#3a4048';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.arc(crane.x + 4, block.y - 3, 4, 0.2, Math.PI - 0.2);
+  ctx.stroke();
 }
 
 function buildBlock() {
@@ -710,6 +931,12 @@ function buildBlock() {
   }
 
   maxCombo = Math.max(maxCombo, comboCount);
+
+  if (result === 'PERFECT') {
+    spawnBurst(blockCenter, block.y + block.height / 2, '#f5b301', 16);
+  } else if (result === 'GOOD') {
+    spawnBurst(blockCenter, block.y + block.height / 2, '#6ab2f2', 8);
+  }
 
   let mult = 1;
   if (comboCount >= 10) mult = 3;
