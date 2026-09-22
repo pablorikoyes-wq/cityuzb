@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Qurilish Ustasi</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{background:#e8eef5;overflow:hidden;user-select:none}
+.app{width:100%;max-width:500px;height:100vh;margin:0 auto;background:#e8eef5;position:relative;display:flex;flex-direction:column;overflow:hidden}
+.screen{display:none;flex-direction:column;height:100%;overflow-y:auto;padding-bottom:80px}
+.screen.active{display:flex}
+
+/* HEADER */
+.header{padding:14px 16px;display:flex;align-items:center;gap:10px;background:#e8eef5}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4a90e2,#357abd);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px}
+.user-info{flex:1}
+.user-info .name{font-weight:700;font-size:15px;color:#1a2b42}
+.user-info .role{font-size:11px;color:#7a8ba3}
+.balance-badge{background:#fff;border-radius:20px;padding:6px 12px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.balance-badge .coin{width:18px;height:18px;background:#f5b301;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff}
+.balance-badge .amount{font-weight:800;font-size:13px;color:#1a2b42}
+
+/* BANNER */
+.banner{margin:8px 16px;background:linear-gradient(135deg,#4a90e2,#5b9fe8);border-radius:16px;padding:16px;color:#fff;position:relative;overflow:hidden}
+.banner::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,.1);border-radius:50%}
+.banner h2{font-size:16px;font-weight:800;margin-bottom:4px}
+.banner p{font-size:12px;opacity:.9}
+
+/* CITIES */
+.section-title{padding:16px 16px 8px;font-size:15px;font-weight:800;color:#1a2b42}
+.cities-grid{padding:0 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.city-card{background:#fff;border-radius:14px;padding:8px;text-align:center;cursor:pointer;transition:transform .2s;box-shadow:0 2px 6px rgba(0,0,0,.04);position:relative}
+.city-card:active{transform:scale(.95)}
+.city-card.locked{opacity:.6}
+.city-num{position:absolute;top:4px;left:4px;background:#4a90e2;color:#fff;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.city-img{width:100%;height:50px;border-radius:10px;background:linear-gradient(135deg,#87ceeb,#b0e0f5);margin-bottom:4px;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden}
+.city-name{font-size:11px;font-weight:700;color:#1a2b42;margin-bottom:2px}
+.city-diff{font-size:9px;padding:2px 6px;border-radius:8px;display:inline-block;font-weight:600}
+.diff-easy{background:#d4f5d4;color:#2d7a2d}
+.diff-medium{background:#fff4cc;color:#8a6d00}
+.diff-hard{background:#ffd9cc;color:#a33d1a}
+.diff-extreme{background:#ffcccc;color:#a30000}
+.lock-icon{position:absolute;top:4px;right:4px;font-size:14px}
+
+/* LOCKED OVERLAY */
+.city-card.locked::after{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px}
+
+/* PROGRESS */
+.xp-bar{margin:8px 16px;background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.xp-bar .label{font-size:11px;color:#7a8ba3;font-weight:600}
+.xp-bar .bar{flex:1;height:8px;background:#e8eef5;border-radius:4px;overflow:hidden}
+.xp-bar .fill{height:100%;background:linear-gradient(90deg,#4a90e2,#6ab2f2);border-radius:4px;transition:width .3s}
+.xp-bar .value{font-size:11px;font-weight:700;color:#1a2b42}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:8px 0 14px;max-width:500px;margin:0 auto;box-shadow:0 -2px 12px rgba(0,0,0,.06);z-index:100}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 14px;cursor:pointer;color:#8a9bb5;font-size:10px;font-weight:600;border:none;background:none}
+.nav-btn.active{color:#4a90e2}
+.nav-btn .icon{font-size:20px}
+
+/* GAME SCREEN */
+.game-header{padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.back-btn{background:none;border:none;color:#4a90e2;font-size:22px;cursor:pointer;font-weight:700;padding:4px 8px}
+.game-title{font-size:16px;font-weight:800;color:#1a2b42}
+.stats-row{padding:8px 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.stat-box{background:#fff;border-radius:12px;padding:8px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.stat-box .label{font-size:10px;color:#7a8ba3;font-weight:600;margin-bottom:2px}
+.stat-box .value{font-size:15px;font-weight:800;color:#1a2b42}
+.stat-box .value.gold{color:#f5b301}
+.hearts{padding:0 16px;display:flex;gap:4px;align-items:center}
+.heart{font-size:20px}
+.wind-badge{margin:8px 16px;background:#fff;border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:6px;font-size:12px;color:#7a8ba3;font-weight:600}
+.game-canvas-wrap{margin:8px 16px;flex:1;position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#87ceeb,#b0e0f5);min-height:280px}
+.game-canvas-wrap canvas{display:block;width:100%;height:100%;touch-action:none}
+.build-btn{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#4caf50,#43a047);color:#fff;border:none;border-radius:30px;padding:14px 60px;font-size:18px;font-weight:900;letter-spacing:1px;box-shadow:0 4px 16px rgba(76,175,80,.4);cursor:pointer}
+.build-btn:active{transform:translateX(-50%) scale(.95)}
+.result-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#fff;padding:20px 40px;border-radius:20px;text-align:center;display:none;z-index:10}
+.result-overlay.show{display:block;animation:pop .3s}
+@keyframes pop{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.result-text{font-size:32px;font-weight:900;margin-bottom:8px}
+.result-perfect{color:#4caf50}
+.result-good{color:#ffc107}
+.result-bad{color:#ff9800}
+.result-miss{color:#f44336}
+
+/* PROFILE */
+.profile-header{padding:20px 16px;display:flex;align-items:center;gap:14px;background:#fff;margin:8px 16px;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#4a90e2,#357abd);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:26px}
+.profile-info .name{font-size:17px;font-weight:800;color:#1a2b42;margin-bottom:2px}
+.profile-info .id{font-size:12px;color:#7a8ba3;margin-bottom:4px}
+.profile-info .level-badge{background:#e8f0ff;color:#4a90e2;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;display:inline-block}
+
+.balance-card{margin:8px 16px;background:linear-gradient(135deg,#4a90e2,#5b9fe8);border-radius:16px;padding:16px;display:flex;justify-content:space-between;align-items:center;color:#fff;box-shadow:0 4px 16px rgba(74,144,226,.3)}
+.balance-card .amount{font-size:22px;font-weight:900;margin-top:2px}
+.balance-card .label{font-size:11px;opacity:.85}
+.withdraw-btn{background:#4caf50;color:#fff;border:none;border-radius:12px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(76,175,80,.4)}
+
+.menu-list{margin:8px 16px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.menu-item{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f0f3f8;cursor:pointer;font-size:14px;font-weight:600;color:#1a2b42}
+.menu-item:last-child{border-bottom:none}
+.menu-item:active{background:#f5f8fc}
+.menu-item .icon{font-size:20px}
+.menu-item .arrow{margin-left:auto;color:#c5cfdc;font-size:16px}
+.menu-item .badge{background:#4caf50;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:auto}
+
+/* STATS SCREEN */
+.stats-main{margin:8px 16px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.stats-main .label{font-size:12px;color:#7a8ba3;margin-bottom:4px;font-weight:600}
+.stats-main .value{font-size:26px;font-weight:900;color:#1a2b42}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 16px}
+.stats-grid .stat-item{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);text-align:center}
+.stats-grid .stat-item .emoji{font-size:26px;margin-bottom:6px}
+.stats-grid .stat-item .num{font-size:20px;font-weight:900;color:#1a2b42}
+.stats-grid .stat-item .label{font-size:11px;color:#7a8ba3;margin-top:2px;font-weight:600}
+.diff-stats{margin:8px 16px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.diff-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.diff-row:last-child{margin-bottom:0}
+.diff-row .label{font-size:13px;font-weight:700;color:#1a2b42;min-width:70px}
+.diff-row .bar{flex:1;height:10px;background:#e8eef5;border-radius:5px;overflow:hidden}
+.diff-row .fill{height:100%;border-radius:5px}
+.diff-row .pct{font-size:12px;font-weight:700;color:#1a2b42;min-width:36px;text-align:right}
+.best-results{margin:8px 16px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04);display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.best-results .best-item .emoji{font-size:22px;margin-bottom:4px}
+.best-results .best-item .num{font-size:14px;font-weight:800;color:#1a2b42}
+.best-results .best-item .label{font-size:10px;color:#7a8ba3;margin-top:2px}
+
+/* SOVRINLAR */
+.achievement{margin:8px 16px;background:#fff;border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.achievement.locked{opacity:.5}
+.achievement .ach-icon{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#f5b301);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.achievement.locked .ach-icon{background:#e8eef5}
+.achievement .ach-info{flex:1}
+.achievement .ach-name{font-size:14px;font-weight:700;color:#1a2b42;margin-bottom:2px}
+.achievement .ach-desc{font-size:11px;color:#7a8ba3}
+.achievement .ach-progress{font-size:11px;font-weight:700;color:#4a90e2;margin-top:2px}
+
+/* WITHDRAW */
+.withdraw-card{margin:8px 16px;background:#fff;border-radius:16px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.withdraw-card .available{font-size:12px;color:#7a8ba3;margin-bottom:4px;font-weight:600}
+.withdraw-card .balance-big{font-size:32px;font-weight:900;color:#1a2b42;margin-bottom:16px}
+.method-tabs{display:flex;background:#f0f3f8;border-radius:12px;padding:3px;margin-bottom:16px}
+.method-tab{flex:1;padding:10px;border:none;background:none;border-radius:10px;font-size:13px;font-weight:700;color:#7a8ba3;cursor:pointer}
+.method-tab.active{background:#4a90e2;color:#fff}
+.method-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.method-card{background:#fff;border:2px solid #e8eef5;border-radius:12px;padding:12px;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:#1a2b42}
+.method-card.active{border-color:#4a90e2;background:#f0f7ff}
+.method-card .logo{font-size:20px;margin-bottom:4px}
+.withdraw-input{width:100%;background:#f0f3f8;border:2px solid #e8eef5;border-radius:12px;padding:14px;font-size:15px;text-align:center;font-weight:700;color:#1a2b42;outline:none;margin-bottom:12px}
+.withdraw-input:focus{border-color:#4a90e2;background:#fff}
+.withdraw-submit{width:100%;background:#4a90e2;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px}
+.withdraw-submit:disabled{background:#c5cfdc;cursor:not-allowed}
+.min-hint{font-size:11px;color:#7a8ba3;margin-top:8px;text-align:center}
+
+/* SPONSORS */
+.sponsor-card{margin:8px 16px;background:#fff;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:pointer}
+.sponsor-card .sp-icon{width:44px;height:44px;border-radius:50%;background:#e8f0ff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.sponsor-card .sp-info{flex:1}
+.sponsor-card .sp-name{font-size:14px;font-weight:700;color:#1a2b42}
+.sponsor-card .sp-action{background:#4a90e2;color:#fff;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700}
+.sponsor-card.checked .sp-action{background:#4caf50}
+
+/* TOAST */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:rgba(0,0,0,.85);color:#fff;padding:12px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;transition:transform .3s;max-width:90%;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;color:#7a8ba3;font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="loading" id="loading">⏳ Загрузка...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// КОНФИГ
+// ============================================================
+const API_URL = 'http://107-189-21-103.sslip.io:8081';
+const MIN_WITHDRAW = 100000;
+
+let tg = window.Telegram?.WebApp;
+let user = null;
+let channels = [];
+let initData = '';
+let currentScreen = 'main';
+let gameState = null;
+
+// ============================================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================================
+async function init() {
+  try {
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      initData = tg.initData || '';
+    }
+
+    // Загружаем пользователя
+    const res = await fetch(`${API_URL}/api/user`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        init_data: initData,
+        referred_by: getReferralId()
+      })
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      document.getElementById('loading').innerText = '❌ Ошибка: ' + data.error;
+      return;
+    }
+
+    user = data.user;
+    channels = data.channels || [];
+
+    // Отрисовываем интерфейс
+    render();
+
+  } catch (e) {
+    console.error(e);
+    document.getElementById('loading').innerText = '❌ Ошибка сети. Проверьте интернет.';
+  }
+}
+
+function getReferralId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('ref') ? parseInt(params.get('ref')) : null;
+}
+
+// ============================================================
+// ОТРИСОВКА ОСНОВНОГО ИНТЕРФЕЙСА
+// ============================================================
+function render() {
+  document.getElementById('app').innerHTML = `
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <div class="screen active" id="screen-main">
+      <div class="header">
+        <div class="avatar">${(user.first_name || 'И')[0].toUpperCase()}</div>
+        <div class="user-info">
+          <div class="name">${user.first_name || 'Игрок'}</div>
+          <div class="role">Qurilish Ustasi</div>
+        </div>
+        <div class="balance-badge">
+          <div class="coin">$</div>
+          <div class="amount" id="main-balance">${formatSum(user.balance)}</div>
+        </div>
+      </div>
+
+      <div class="banner">
+        <h2>Kichik shaharlardan buyuk O'zbekistongacha!</h2>
+        <p>Quring, rivojlantiring, g'alaba qozoning!</p>
+      </div>
+
+      <div class="xp-bar">
+        <div class="label">${user.level}-daraja</div>
+        <div class="bar"><div class="fill" style="width:${(user.xp % 1000) / 10}%"></div></div>
+        <div class="value">${user.xp % 1000}/1000 XP</div>
+      </div>
+
+      <div class="section-title">Shaharlar (10 ta)</div>
+      <div class="cities-grid" id="cities-grid"></div>
+    </div>
+
+    <!-- СТАТИСТИКА -->
+    <div class="screen" id="screen-stats">
+      <div class="game-header">
+        <div></div>
+        <div class="game-title">Statistika</div>
+        <div></div>
+      </div>
+      <div class="stats-main">
+        <div class="label">Jami ishlangan</div>
+        <div class="value">${formatSum(user.total_earned)} <span style="font-size:14px;color:#7a8ba3">so'm</span></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="emoji">🎮</div><div class="num">${user.total_games}</div><div class="label">O'yinlar</div></div>
+        <div class="stat-item"><div class="emoji">🏢</div><div class="num">${user.total_floors}</div><div class="label">Qurilgan qavatlar</div></div>
+      </div>
+      <div class="best-results">
+        <div class="best-item"><div class="emoji">🏆</div><div class="num">${user.best_height}</div><div class="label">Eng baland bino</div></div>
+        <div class="best-item"><div class="emoji">🎯</div><div class="num">${Math.round(user.best_accuracy)}%</div><div class="label">Aniqlik</div></div>
+        <div class="best-item"><div class="emoji">🔥</div><div class="num">x${user.best_combo}</div><div class="label">Combo</div></div>
+      </div>
+    </div>
+
+    <!-- ДОСТИЖЕНИЯ -->
+    <div class="screen" id="screen-ach">
+      <div class="game-header">
+        <div></div>
+        <div class="game-title">Sovrinlar</div>
+        <div></div>
+      </div>
+      <div id="achievements-list"></div>
+    </div>
+
+    <!-- ПРОФИЛЬ -->
+    <div class="screen" id="screen-profile">
+      <div class="game-header">
+        <div></div>
+        <div class="game-title">Profil</div>
+        <div></div>
+      </div>
+      <div class="profile-header">
+        <div class="profile-avatar">${(user.first_name || 'И')[0].toUpperCase()}</div>
+        <div class="profile-info">
+          <div class="name">${user.first_name || 'Игрок'}</div>
+          <div class="id">ID: ${user.user_id}</div>
+          <div class="level-badge">${user.level}-daraja</div>
+        </div>
+      </div>
+      <div class="balance-card">
+        <div>
+          <div class="label">Sizning balansingiz</div>
+          <div class="amount">${formatSum(user.balance)} so'm</div>
+        </div>
+        <button class="withdraw-btn" onclick="openWithdraw()">💸 Вывод</button>
+      </div>
+      <div class="menu-list">
+        <div class="menu-item" onclick="toast('Tez kunda!')"><span class="icon">🏆</span> Mening yutuqlarim <span class="arrow">›</span></div>
+        <div class="menu-item" onclick="showReferral()"><span class="icon">🎁</span> Do'stlarni taklif qilish <span class="badge">+1000</span></div>
+        <div class="menu-item" onclick="showLeaderboard()"><span class="icon">📊</span> Reyting <span class="arrow">›</span></div>
+        <div class="menu-item" onclick="toast('Tez kunda!')"><span class="icon">⚙️</span> Sozlamalar <span class="arrow">›</span></div>
+        <div class="menu-item" onclick="toast('Admin bilan bog\\'lanish')"><span class="icon">❓</span> Yordam <span class="arrow">›</span></div>
+        <div class="menu-item" onclick="toast('@your_admin')"><span class="icon">📞</span> Biz bilan bog'lanish <span class="arrow">›</span></div>
+      </div>
+    </div>
+
+    <!-- ИГРА -->
+    <div class="screen" id="screen-game">
+      <div class="game-header">
+        <button class="back-btn" onclick="exitGame()">←</button>
+        <div class="game-title" id="game-city">Shahar</div>
+        <div></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="label">Qavatlar</div><div class="value" id="stat-floors">0</div></div>
+        <div class="stat-box"><div class="label">Maqsad</div><div class="value" id="stat-goal">10</div></div>
+        <div class="stat-box"><div class="label">Mukofot</div><div class="value gold" id="stat-reward">0</div></div>
+      </div>
+      <div class="hearts" id="hearts">
+        <span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span>
+      </div>
+      <div class="wind-badge">💨 <span id="wind-text">Shamol: 0%</span></div>
+      <div class="game-canvas-wrap" id="canvas-wrap">
+        <canvas id="game-canvas"></canvas>
+        <button class="build-btn" id="build-btn" onclick="buildBlock()">QURISH</button>
+        <div class="result-overlay" id="result-overlay">
+          <div class="result-text" id="result-text">PERFECT</div>
+          <div style="font-size:14px;opacity:.8" id="result-reward">+0 so'm</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ВЫВОД -->
+    <div class="screen" id="screen-withdraw">
+      <div class="game-header">
+        <button class="back-btn" onclick="showScreen('profile')">←</button>
+        <div class="game-title">Pul yechib olish</div>
+        <div></div>
+      </div>
+      <div class="withdraw-card">
+        <div class="available">Yechib olish uchun mavjud</div>
+        <div class="balance-big">${formatSum(user.balance)} so'm</div>
+
+        <div class="method-tabs">
+          <button class="method-tab active" onclick="selectMethod('sbp', this)">Telefon raqam</button>
+          <button class="method-tab" onclick="selectMethod('card', this)">Karta raqamiga</button>
+        </div>
+
+        <div class="method-cards" id="method-cards">
+          <div class="method-card active" onclick="selectBank('HUMO', this)"><div class="logo">💳</div>HUMO</div>
+          <div class="method-card" onclick="selectBank('UZCARD', this)"><div class="logo">💳</div>UZCARD</div>
+          <div class="method-card" onclick="selectBank('VISA', this)"><div class="logo">💳</div>VISA</div>
+          <div class="method-card" onclick="selectBank('CARD', this)"><div class="logo">💳</div>Boshqa karta</div>
+        </div>
+
+        <input type="tel" class="withdraw-input" id="withdraw-account" placeholder="Telefon raqami (12 raqam)" maxlength="16" oninput="this.value=this.value.replace(/\\D/g,'')">
+
+        <button class="withdraw-submit" id="withdraw-btn" onclick="continueWithdraw()" disabled>Davom etish</button>
+        <div class="min-hint">Minimal: 100 000 so'm</div>
+      </div>
+    </div>
+
+    <!-- СПОНСОРЫ -->
+    <div class="screen" id="screen-sponsors">
+      <div class="game-header">
+        <button class="back-btn" onclick="showScreen('withdraw')">←</button>
+        <div class="game-title">Tekshirish</div>
+        <div></div>
+      </div>
+      <div class="section-title" style="font-size:13px;text-align:center;color:#7a8ba3;font-weight:600;padding:8px 16px">
+        Pul yechib olishni yakunlash uchun homiylarga obuna bo'ling
+      </div>
+      <div id="sponsors-list"></div>
+      <div style="padding:16px">
+        <button class="withdraw-submit" onclick="checkSubscription()">Obunani tekshirish</button>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav" id="bottom-nav">
+      <button class="nav-btn active" onclick="showScreen('main')"><span class="icon">🏠</span>Bosh sahifa</button>
+      <button class="nav-btn" onclick="showScreen('stats')"><span class="icon">📊</span>Statistika</button>
+      <button class="nav-btn" onclick="showScreen('ach')"><span class="icon">🏆</span>Sovrinlar</button>
+      <button class="nav-btn" onclick="showScreen('profile')"><span class="icon">👤</span>Profil</button>
+    </div>
+  `;
+
+  renderCities();
+  renderAchievements();
+  renderSponsors();
+}
+
+// ============================================================
+// ФОРМАТИРОВАНИЕ
+// ============================================================
+function formatSum(n) {
+  return (n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.innerText = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// ЭКРАНЫ
+// ============================================================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + name);
+  if (el) el.classList.add('active');
+
+  // Обновляем навигацию
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const navMap = {main: 0, stats: 1, ach: 2, profile: 3};
+  if (navMap[name] !== undefined) {
+    document.querySelectorAll('.nav-btn')[navMap[name]]?.classList.add('active');
+  }
+
+  // Скрываем нижнее меню на играх/выводах
+  const hideNav = ['game', 'withdraw', 'sponsors'].includes(name);
+  document.getElementById('bottom-nav').style.display = hideNav ? 'none' : 'flex';
+
+  currentScreen = name;
+}
+
+// ============================================================
+// ГОРОДА
+// ============================================================
+const CITIES = [
+  {name: "Qo'ng'irot", emoji: "🏘", diff: "easy", diffText: "Oson"},
+  {name: "Chiroqchi", emoji: "🏘", diff: "easy", diffText: "Oson"},
+  {name: "Shahrisabz", emoji: "🏛", diff: "easy", diffText: "Oson"},
+  {name: "Qarshi", emoji: "🏛", diff: "medium", diffText: "O'rta"},
+  {name: "Buxoro", emoji: "🕌", diff: "medium", diffText: "O'rta"},
+  {name: "Samarqand", emoji: "🕌", diff: "medium", diffText: "O'rta"},
+  {name: "Xiva", emoji: "🏰", diff: "hard", diffText: "Qiyin"},
+  {name: "Nukus", emoji: "🏜", diff: "hard", diffText: "Qiyin"},
+  {name: "Toshkent", emoji: "🌆", diff: "hard", diffText: "Juda qiyin"},
+  {name: "Tashkent City", emoji: "🏙", diff: "extreme", diffText: "Ekstremal"}
+];
+
+function renderCities() {
+  const grid = document.getElementById('cities-grid');
+  if (!grid) return;
+
+  // Открытые города зависят от уровня
+  const unlocked = Math.min(user.level, 10);
+
+  grid.innerHTML = CITIES.map((city, i) => {
+    const isLocked = i >= unlocked;
+    return `
+      <div class="city-card ${isLocked ? 'locked' : ''}" onclick="${isLocked ? `toast('${i+1}-daraja kerak')` : `startGame(${i})`}">
+        <div class="city-num">${i+1}</div>
+        <div class="city-img">${city.emoji}</div>
+        <div class="city-name">${city.name}</div>
+        <div class="city-diff diff-${city.diff}">${city.diffText}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// ДОСТИЖЕНИЯ
+// ============================================================
+const ACHIEVEMENTS = [
+  {key: 'first_game', name: 'Birinchi qadam', desc: 'Birinchi o\'yinni o\'ynang', emoji: '🎮', check: u => u.total_games >= 1},
+  {key: 'games_10', name: 'Faol o\'yinchi', desc: '10 ta o\'yin', emoji: '🎯', check: u => u.total_games >= 10},
+  {key: 'games_100', name: 'Professional', desc: '100 ta o\'yin', emoji: '🏅', check: u => u.total_games >= 100},
+  {key: 'floors_50', name: 'Quruvchi', desc: '50 qavat', emoji: '🏗', check: u => u.total_floors >= 50},
+  {key: 'floors_500', name: 'Usta', desc: '500 qavat', emoji: '🏢', check: u => u.total_floors >= 500},
+  {key: 'earned_100k', name: 'Birinchi million', desc: '100 000 so\'m', emoji: '💰', check: u => u.total_earned >= 100000},
+  {key: 'earned_1m', name: 'Millioner', desc: '1 000 000 so\'m', emoji: '💎', check: u => u.total_earned >= 1000000},
+  {key: 'combo_10', name: 'Combo Master', desc: 'Combo x10', emoji: '🔥', check: u => u.best_combo >= 10},
+  {key: 'height_50', name: 'Osmono\'par', desc: '50 qavat bir o\'yinda', emoji: '🌆', check: u => u.best_height >= 50},
+  {key: 'accuracy_95', name: 'Snayper', desc: '95% aniqlik', emoji: '🎯', check: u => u.best_accuracy >= 95},
+];
+
+function renderAchievements() {
+  const list = document.getElementById('achievements-list');
+  if (!list) return;
+
+  list.innerHTML = ACHIEVEMENTS.map(a => {
+    const unlocked = a.check(user);
+    return `
+      <div class="achievement ${unlocked ? '' : 'locked'}">
+        <div class="ach-icon">${a.emoji}</div>
+        <div class="ach-info">
+          <div class="ach-name">${a.name}</div>
+          <div class="ach-desc">${a.desc}</div>
+          ${unlocked ? '<div class="ach-progress">✅ Ochildi</div>' : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// ИГРА
+// ============================================================
+let canvas, ctx, animId;
+let crane = {x: 50, dir: 1, speed: 2};
+let block = {x: 50, y: 20, width: 60, height: 30};
+let tower = [];
+let gameActive = false;
+let lives = 3;
+let floors = 0;
+let goal = 10;
+let earned = 0;
+let currentCity = null;
+let comboCount = 0;
+let maxCombo = 0;
+let perfectCount = 0;
+let totalAttempts = 0;
+
+function startGame(cityIndex) {
+  currentCity = CITIES[cityIndex];
+  lives = 3;
+  floors = 0;
+  earned = 0;
+  tower = [];
+  comboCount = 0;
+  maxCombo = 0;
+  perfectCount = 0;
+  totalAttempts = 0;
+  gameActive = true;
+
+  // Сложность
+  const diffMap = {easy: 1, medium: 1.5, hard: 2, extreme: 2.5};
+  const diffMult = diffMap[currentCity.diff] || 1;
+  crane.speed = 1.5 * diffMult;
+  block.width = 70 - (diffMult * 10);
+
+  goal = 10 + (cityIndex * 2);
+
+  document.getElementById('game-city').innerText = currentCity.name;
+  document.getElementById('stat-goal').innerText = goal;
+  document.getElementById('stat-floors').innerText = 0;
+  document.getElementById('stat-reward').innerText = 0;
+
+  showScreen('game');
+
+  setTimeout(() => {
+    canvas = document.getElementById('game-canvas');
+    const wrap = document.getElementById('canvas-wrap');
+    canvas.width = wrap.clientWidth;
+    canvas.height = wrap.clientHeight;
+    ctx = canvas.getContext('2d');
+
+    // Стартовый блок
+    tower.push({x: canvas.width/2 - 60, y: canvas.height - 80, width: 120, height: 40});
+
+    gameLoop();
+  }, 100);
+}
+
+function gameLoop() {
+  if (!gameActive) return;
+
+  // Двигаем кран
+  crane.x += crane.dir * crane.speed;
+  if (crane.x > canvas.width - 80 || crane.x < 20) {
+    crane.dir *= -1;
+  }
+
+  draw();
+  animId = requestAnimationFrame(gameLoop);
+}
+
+function draw() {
+  if (!ctx) return;
+
+  // Небо
+  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  grad.addColorStop(0, '#87ceeb');
+  grad.addColorStop(1, '#b0e0f5');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Облака
+  ctx.fillStyle = 'rgba(255,255,255,.6)';
+  ctx.beginPath();
+  ctx.arc(60, 40, 25, 0, Math.PI*2);
+  ctx.arc(90, 40, 30, 0, Math.PI*2);
+  ctx.arc(120, 40, 25, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(canvas.width - 100, 60, 20, 0, Math.PI*2);
+  ctx.arc(canvas.width - 70, 60, 25, 0, Math.PI*2);
+  ctx.fill();
+
+  // Земля
+  ctx.fillStyle = '#8bc34a';
+  ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+
+  // Башня
+  tower.forEach((b, i) => {
+    ctx.fillStyle = i % 2 === 0 ? '#e8a87c' : '#d68c5a';
+    ctx.fillRect(b.x, b.y, b.width, b.height);
+    ctx.strokeStyle = '#a35d2e';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(b.x, b.y, b.width, b.height);
+    // Окна
+    ctx.fillStyle = 'rgba(255,255,255,.4)';
+    for (let wx = b.x + 10; wx < b.x + b.width - 10; wx += 25) {
+      ctx.fillRect(wx, b.y + 8, 15, 15);
+    }
+  });
+
+  // Кран-балка
+  ctx.fillStyle = '#555';
+  ctx.fillRect(0, 30, canvas.width, 8);
+  ctx.fillRect(crane.x, 30, 8, 15);
+
+  // Трос
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(crane.x + 4, 45);
+  ctx.lineTo(crane.x + 4, block.y);
+  ctx.stroke();
+
+  // Блок (падающий этаж)
+  const bx = crane.x + 4 - block.width / 2;
+  ctx.fillStyle = '#6ab2f2';
+  ctx.fillRect(bx, block.y, block.width, block.height);
+  ctx.strokeStyle = '#357abd';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(bx, block.y, block.width, block.height);
+  ctx.fillStyle = 'rgba(255,255,255,.4)';
+  ctx.fillRect(bx + 10, block.y + 8, 15, 15);
+}
+
+function buildBlock() {
+  if (!gameActive) return;
+
+  totalAttempts++;
+  const lastBlock = tower[tower.length - 1];
+  const blockCenter = crane.x + 4;
+  const lastCenter = lastBlock.x + lastBlock.width / 2;
+  const diff = Math.abs(blockCenter - lastCenter);
+  const tolerance = lastBlock.width / 2;
+
+  let result, reward, color;
+  if (diff < tolerance * 0.15) {
+    result = 'PERFECT';
+    reward = 200;
+    color = 'perfect';
+    comboCount++;
+    perfectCount++;
+  } else if (diff < tolerance * 0.5) {
+    result = 'GOOD';
+    reward = 100;
+    color = 'good';
+    comboCount++;
+  } else if (diff < tolerance) {
+    result = 'BAD';
+    reward = 50;
+    color = 'bad';
+    comboCount = 0;
+  } else {
+    result = 'MISS';
+    reward = 0;
+    color = 'miss';
+    lives--;
+    comboCount = 0;
+  }
+
+  maxCombo = Math.max(maxCombo, comboCount);
+
+  // Комбо-множитель
+  let mult = 1;
+  if (comboCount >= 10) mult = 3;
+  else if (comboCount >= 5) mult = 2;
+  else if (comboCount >= 3) mult = 1.5;
+
+  reward = Math.round(reward * mult);
+  earned += reward;
+  floors++;
+
+  // Показываем результат
+  const overlay = document.getElementById('result-overlay');
+  const text = document.getElementById('result-text');
+  const rew = document.getElementById('result-reward');
+  text.className = 'result-text result-' + color;
+  text.innerText = result + (mult > 1 ? ` x${mult}` : '');
+  rew.innerText = '+' + formatSum(reward) + ' so\'m';
+  overlay.classList.add('show');
+  setTimeout(() => overlay.classList.remove('show'), 600);
+
+  // Добавляем блок в башню
+  if (result !== 'MISS') {
+    tower.push({
+      x: lastBlock.x + (blockCenter - lastCenter) - block.width / 2,
+      y: lastBlock.y - block.height,
+      width: block.width,
+      height: block.height
+    });
+  }
+
+  // Обновляем UI
+  document.getElementById('stat-floors').innerText = floors;
+  document.getElementById('stat-reward').innerText = formatSum(earned);
+  updateHearts();
+
+  // Проверяем условия окончания
+  if (lives <= 0 || floors >= goal) {
+    endGame();
+  }
+}
+
+function updateHearts() {
+  const el = document.getElementById('hearts');
+  el.innerHTML = Array(3).fill(0).map((_, i) => 
+    `<span class="heart">${i < lives ? '❤️' : '🖤'}</span>`
+  ).join('');
+}
+
+async function endGame() {
+  gameActive = false;
+  cancelAnimationFrame(animId);
+
+  const accuracy = totalAttempts > 0 ? (perfectCount / totalAttempts) * 100 : 0;
+
+  // Отправляем на сервер
+  try {
+    const res = await fetch(`${API_URL}/api/save_game`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        init_data: initData,
+        city: currentCity.name,
+        floors: floors,
+        accuracy: accuracy,
+        combo: maxCombo,
+        earned: earned
+      })
+    });
+    const data = await res.json();
+    if (data.user) {
+      user = data.user;
+    }
+  } catch (e) {
+    console.error('Save error:', e);
+  }
+
+  // Показываем результат
+  setTimeout(() => {
+    toast(`🏗 ${floors} qavat | 🎯 ${Math.round(accuracy)}% | 🔥 x${maxCombo} | 💰 +${formatSum(earned)} so'm`);
+    setTimeout(() => {
+      exitGame();
+    }, 2500);
+  }, 700);
+}
+
+function exitGame() {
+  gameActive = false;
+  cancelAnimationFrame(animId);
+  showScreen('main');
+  location.reload();
+}
+
+// ============================================================
+// ВЫВОД
+// ============================================================
+let selectedMethod = 'sbp';
+let selectedBank = 'HUMO';
+
+function openWithdraw() {
+  if (user.balance < MIN_WITHDRAW) {
+    toast(`Minimal: ${formatSum(MIN_WITHDRAW)} so'm`);
+    return;
+  }
+  showScreen('withdraw');
+}
+
+function selectMethod(method, el) {
+  selectedMethod = method;
+  document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  
+  const acc = document.getElementById('withdraw-account');
+  acc.placeholder = method === 'sbp' ? 'Telefon raqami (12 raqam)' : 'Karta raqami (16 raqam)';
+  acc.maxLength = method === 'sbp' ? 12 : 16;
+  acc.value = '';
+  validateWithdraw();
+}
+
+function selectBank(bank, el) {
+  selectedBank = bank;
+  document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  validateWithdraw();
+}
+
+function validateWithdraw() {
+  const acc = document.getElementById('withdraw-account').value;
+  const min = selectedMethod === 'sbp' ? 12 : 16;
+  const btn = document.getElementById('withdraw-btn');
+  btn.disabled = !(acc.length >= min);
+}
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'withdraw-account') validateWithdraw();
+});
+
+function continueWithdraw() {
+  const account = document.getElementById('withdraw-account').value;
+  if (!account) return;
+  showScreen('sponsors');
+}
+
+// ============================================================
+// СПОНСОРЫ
+// ============================================================
+function renderSponsors() {
+  const list = document.getElementById('sponsors-list');
+  if (!list) return;
+
+  list.innerHTML = channels.map((ch, i) => `
+    <div class="sponsor-card" onclick="window.open('${ch.url}', '_blank')">
+      <div class="sp-icon">📢</div>
+      <div class="sp-info">
+        <div class="sp-name">${ch.name}</div>
+      </div>
+      <div class="sp-action">Obuna</div>
+    </div>
+  `).join('');
+}
+
+async function checkSubscription() {
+  try {
+    const res = await fetch(`${API_URL}/api/check_subscription`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({init_data: initData})
+    });
+    const data = await res.json();
+
+    if (data.subscribed) {
+      // Отправляем заявку на вывод
+      const account = document.getElementById('withdraw-account').value;
+      const amount = user.balance;
+
+      const wRes = await fetch(`${API_URL}/api/withdraw`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          init_data: initData,
+          amount: amount,
+          method: selectedMethod === 'sbp' ? selectedBank : selectedMethod,
+          account: account
+        })
+      });
+      const wData = await wRes.json();
+
+      if (wData.success) {
+        toast('✅ Заявка отправлена! Ожидайте');
+        setTimeout(() => location.reload(), 2000);
+      } else {
+        toast('❌ ' + (wData.error || 'Ошибка'));
+      }
+    } else {
+      toast('❌ Obuna bo\\'ling: ' + (data.not_subscribed || []).join(', '));
+    }
+  } catch (e) {
+    toast('❌ Ошибка сети');
+  }
+}
+
+// ============================================================
+// ДОПОЛНИТЕЛЬНОЕ
+// ============================================================
+function showReferral() {
+  const link = `https://t.me/YOUR_BOT?start=ref_${user.user_id}`;
+  if (tg) {
+    tg.showAlert('🎁 Do\\'stlaringizni taklif qiling!\\n\\nSizning havolangiz:\\n' + link);
+  } else {
+    alert('Referral: ' + link);
+  }
+}
+
+function showLeaderboard() {
+  toast('Tez kunda!');
+}
+
+// ============================================================
+// СТАРТ
+// ============================================================
+init();
+</script>
+
+</body>
+</html>
