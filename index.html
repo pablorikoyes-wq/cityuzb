@@ -3,176 +3,220 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Qurilish Ustasi</title>
+<title>CityUz — Qurilish Ustasi</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
+:root{
+  --color-bg:#e8eef5;
+  --color-bg-soft:#f5f8fc;
+  --color-primary:#4a90e2;
+  --color-primary-dark:#357abd;
+  --color-primary-soft:#5b9fe8;
+  --color-primary-light:#6ab2f2;
+  --color-primary-bg:#e8f0ff;
+  --color-success:#4caf50;
+  --color-success-dark:#43a047;
+  --color-gold:#f5b301;
+  --color-text:#1a2b42;
+  --color-text-soft:#7a8ba3;
+  --color-text-faint:#8a9bb5;
+  --color-border:#c5cfdc;
+  --color-divider:#f0f3f8;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px;
+  --radius-sm:10px; --radius-md:14px; --radius-lg:16px; --radius-xl:20px; --radius-full:999px;
+  --shadow-sm:0 2px 6px rgba(26,43,66,.06);
+  --shadow-md:0 4px 14px rgba(26,43,66,.08),0 1px 2px rgba(26,43,66,.04);
+  --shadow-lg:0 10px 28px rgba(26,43,66,.12);
+  --shadow-glow-blue:0 10px 22px rgba(74,144,226,.35),0 2px 6px rgba(74,144,226,.25);
+  --shadow-glow-green:0 10px 22px rgba(76,175,80,.35),0 2px 6px rgba(76,175,80,.25);
+  --shadow-glow-gold:0 8px 18px rgba(245,179,1,.3);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-body{background:#e8eef5;overflow:hidden;user-select:none}
-.app{width:100%;max-width:500px;height:100vh;margin:0 auto;background:#e8eef5;position:relative;display:flex;flex-direction:column;overflow:hidden}
-.screen{display:none;flex-direction:column;height:100%;overflow-y:auto;padding-bottom:80px}
+body{background:var(--color-bg);overflow:hidden;user-select:none}
+.app{width:100%;max-width:500px;height:100vh;margin:0 auto;background:var(--color-bg);position:relative;display:flex;flex-direction:column;overflow:hidden}
+.screen{display:none;flex-direction:column;height:100%;overflow-y:auto;padding-bottom:80px;opacity:0;transform:translateY(8px);transition:opacity .3s var(--ease-out),transform .3s var(--ease-out)}
 .screen.active{display:flex}
+.screen.active.in{opacity:1;transform:translateY(0)}
 
 /* HEADER */
-.header{padding:14px 16px;display:flex;align-items:center;gap:10px;background:#e8eef5}
-.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4a90e2,#357abd);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px}
+.header{padding:14px 16px;display:flex;align-items:center;gap:10px;background:var(--color-bg)}
+.brand-row{padding:10px 16px 0;display:flex;align-items:center;gap:6px}
+.brand-row .brand-mark{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:var(--shadow-glow-blue)}
+.brand-row .brand-word{font-size:12px;font-weight:800;color:var(--color-primary-dark);letter-spacing:.3px}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(150deg,var(--color-primary-light),var(--color-primary) 55%,var(--color-primary-dark));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;box-shadow:var(--shadow-glow-blue),inset 0 1px 1px rgba(255,255,255,.4)}
 .user-info{flex:1}
-.user-info .name{font-weight:700;font-size:15px;color:#1a2b42}
-.user-info .role{font-size:11px;color:#7a8ba3}
-.balance-badge{background:#fff;border-radius:20px;padding:6px 12px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.balance-badge .coin{width:18px;height:18px;background:#f5b301;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#fff}
-.balance-badge .amount{font-weight:800;font-size:13px;color:#1a2b42}
+.user-info .name{font-weight:700;font-size:15px;color:var(--color-text)}
+.user-info .role{font-size:11px;color:var(--color-text-soft)}
+.balance-badge{background:#fff;border-radius:var(--radius-full);padding:6px 12px;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,.6)}
+.balance-badge .coin{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;filter:drop-shadow(0 1px 1px rgba(245,179,1,.4))}
+.balance-badge .amount{font-weight:800;font-size:13px;color:var(--color-text)}
 
 /* BANNER */
-.banner{margin:8px 16px;background:linear-gradient(135deg,#4a90e2,#5b9fe8);border-radius:16px;padding:16px;color:#fff;position:relative;overflow:hidden}
-.banner::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,.1);border-radius:50%}
-.banner h2{font-size:16px;font-weight:800;margin-bottom:4px}
-.banner p{font-size:12px;opacity:.9}
+.banner{margin:8px 16px;background:linear-gradient(135deg,var(--color-primary-light),var(--color-primary) 45%,var(--color-primary-dark));border-radius:var(--radius-lg);padding:16px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow-glow-blue)}
+.banner::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,.14);border-radius:50%}
+.banner::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0) 40%);pointer-events:none}
+.banner h2{font-size:16px;font-weight:800;margin-bottom:4px;position:relative}
+.banner p{font-size:12px;opacity:.9;position:relative}
 
 /* CITIES */
-.section-title{padding:16px 16px 8px;font-size:15px;font-weight:800;color:#1a2b42}
+.section-title{padding:16px 16px 8px;font-size:15px;font-weight:800;color:var(--color-text)}
 .cities-grid{padding:0 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.city-card{background:#fff;border-radius:14px;padding:8px;text-align:center;cursor:pointer;transition:transform .2s;box-shadow:0 2px 6px rgba(0,0,0,.04);position:relative}
-.city-card:active{transform:scale(.95)}
+.city-card{background:#fff;border-radius:var(--radius-md);padding:8px;text-align:center;cursor:pointer;transition:transform .18s var(--ease-out),box-shadow .18s var(--ease-out);box-shadow:var(--shadow-sm);position:relative;border:1px solid rgba(255,255,255,.8)}
+.city-card:active{transform:scale(.95);box-shadow:var(--shadow-sm)}
+.city-card:not(.locked):hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .city-card.locked{opacity:.6}
-.city-num{position:absolute;top:4px;left:4px;background:#4a90e2;color:#fff;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.city-img{width:100%;height:50px;border-radius:10px;background:linear-gradient(135deg,#87ceeb,#b0e0f5);margin-bottom:4px;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden}
-.city-name{font-size:11px;font-weight:700;color:#1a2b42;margin-bottom:2px}
+.city-num{position:absolute;top:4px;left:4px;background:var(--color-primary);color:#fff;width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(74,144,226,.5)}
+.city-img{width:100%;height:50px;border-radius:10px;background:linear-gradient(150deg,#a9e0f5,#87ceeb 60%,#6bc4ea);margin-bottom:4px;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;box-shadow:inset 0 -6px 10px rgba(0,60,90,.12)}
+.city-name{font-size:11px;font-weight:700;color:var(--color-text);margin-bottom:2px}
 .city-diff{font-size:9px;padding:2px 6px;border-radius:8px;display:inline-block;font-weight:600}
 .diff-easy{background:#d4f5d4;color:#2d7a2d}
 .diff-medium{background:#fff4cc;color:#8a6d00}
 .diff-hard{background:#ffd9cc;color:#a33d1a}
 .diff-extreme{background:#ffcccc;color:#a30000}
 .lock-icon{position:absolute;top:4px;right:4px;font-size:14px}
-
-/* LOCKED OVERLAY */
 .city-card.locked::after{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px}
 
 /* PROGRESS */
 .xp-bar{margin:8px 16px;background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px}
-.xp-bar .label{font-size:11px;color:#7a8ba3;font-weight:600}
-.xp-bar .bar{flex:1;height:8px;background:#e8eef5;border-radius:4px;overflow:hidden}
-.xp-bar .fill{height:100%;background:linear-gradient(90deg,#4a90e2,#6ab2f2);border-radius:4px;transition:width .3s}
-.xp-bar .value{font-size:11px;font-weight:700;color:#1a2b42}
+.xp-bar .label{font-size:11px;color:var(--color-text-soft);font-weight:600}
+.xp-bar .bar{flex:1;height:8px;background:var(--color-bg);border-radius:4px;overflow:hidden}
+.xp-bar .fill{height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-primary-light));border-radius:4px;transition:width .3s}
+.xp-bar .value{font-size:11px;font-weight:700;color:var(--color-text)}
 
 /* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:8px 0 14px;max-width:500px;margin:0 auto;box-shadow:0 -2px 12px rgba(0,0,0,.06);z-index:100}
-.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 14px;cursor:pointer;color:#8a9bb5;font-size:10px;font-weight:600;border:none;background:none}
-.nav-btn.active{color:#4a90e2}
-.nav-btn .icon{font-size:20px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);display:flex;justify-content:space-around;padding:8px 0 14px;max-width:500px;margin:0 auto;box-shadow:0 -4px 20px rgba(26,43,66,.08);z-index:100;border-top:1px solid rgba(255,255,255,.6)}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 14px;cursor:pointer;color:var(--color-text-faint);font-size:10px;font-weight:600;border:none;background:none;transition:color .2s,transform .2s}
+.nav-btn.active{color:var(--color-primary);transform:translateY(-1px)}
+.nav-btn .icon{font-size:20px;transition:transform .2s}
+.nav-btn.active .icon{transform:scale(1.12)}
 
 /* GAME SCREEN */
 .game-header{padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.back-btn{background:none;border:none;color:#4a90e2;font-size:22px;cursor:pointer;font-weight:700;padding:4px 8px}
-.game-title{font-size:16px;font-weight:800;color:#1a2b42}
+.back-btn{background:none;border:none;color:var(--color-primary);font-size:22px;cursor:pointer;font-weight:700;padding:4px 8px}
+.game-title{font-size:16px;font-weight:800;color:var(--color-text)}
 .stats-row{padding:8px 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .stat-box{background:#fff;border-radius:12px;padding:8px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.04)}
-.stat-box .label{font-size:10px;color:#7a8ba3;font-weight:600;margin-bottom:2px}
-.stat-box .value{font-size:15px;font-weight:800;color:#1a2b42}
-.stat-box .value.gold{color:#f5b301}
+.stat-box .label{font-size:10px;color:var(--color-text-soft);font-weight:600;margin-bottom:2px}
+.stat-box .value{font-size:15px;font-weight:800;color:var(--color-text)}
+.stat-box .value.gold{color:var(--color-gold)}
 .hearts{padding:0 16px;display:flex;gap:4px;align-items:center}
 .heart{font-size:20px}
-.wind-badge{margin:8px 16px;background:#fff;border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:6px;font-size:12px;color:#7a8ba3;font-weight:600}
+.wind-badge{margin:8px 16px;background:#fff;border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-soft);font-weight:600}
 .game-canvas-wrap{margin:8px 16px;flex:1;position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#87ceeb,#b0e0f5);min-height:280px}
 .game-canvas-wrap canvas{display:block;width:100%;height:100%;touch-action:none}
-.build-btn{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#4caf50,#43a047);color:#fff;border:none;border-radius:30px;padding:14px 60px;font-size:18px;font-weight:900;letter-spacing:1px;box-shadow:0 4px 16px rgba(76,175,80,.4);cursor:pointer}
-.build-btn:active{transform:translateX(-50%) scale(.95)}
+.build-btn{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#5fce63,var(--color-success) 50%,var(--color-success-dark));color:#fff;border:none;border-radius:var(--radius-full);padding:14px 60px;font-size:18px;font-weight:900;letter-spacing:1px;box-shadow:var(--shadow-glow-green),inset 0 1px 1px rgba(255,255,255,.4);cursor:pointer;transition:transform .15s var(--ease-out),box-shadow .15s var(--ease-out)}
+.build-btn:active{transform:translateX(-50%) scale(.95);box-shadow:0 4px 10px rgba(76,175,80,.35)}
 .result-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#fff;padding:20px 40px;border-radius:20px;text-align:center;display:none;z-index:10}
 .result-overlay.show{display:block;animation:pop .3s}
 @keyframes pop{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
 .result-text{font-size:32px;font-weight:900;margin-bottom:8px}
-.result-perfect{color:#4caf50}
+.result-perfect{color:var(--color-success)}
 .result-good{color:#ffc107}
 .result-bad{color:#ff9800}
 .result-miss{color:#f44336}
 
 /* PROFILE */
 .profile-header{padding:20px 16px;display:flex;align-items:center;gap:14px;background:#fff;margin:8px 16px;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.profile-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#4a90e2,#357abd);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:26px}
-.profile-info .name{font-size:17px;font-weight:800;color:#1a2b42;margin-bottom:2px}
-.profile-info .id{font-size:12px;color:#7a8ba3;margin-bottom:4px}
-.profile-info .level-badge{background:#e8f0ff;color:#4a90e2;font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;display:inline-block}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:26px}
+.profile-info .name{font-size:17px;font-weight:800;color:var(--color-text);margin-bottom:2px}
+.profile-info .id{font-size:12px;color:var(--color-text-soft);margin-bottom:4px}
+.profile-info .level-badge{background:var(--color-primary-bg);color:var(--color-primary);font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;display:inline-block}
 
-.balance-card{margin:8px 16px;background:linear-gradient(135deg,#4a90e2,#5b9fe8);border-radius:16px;padding:16px;display:flex;justify-content:space-between;align-items:center;color:#fff;box-shadow:0 4px 16px rgba(74,144,226,.3)}
-.balance-card .amount{font-size:22px;font-weight:900;margin-top:2px}
-.balance-card .label{font-size:11px;opacity:.85}
-.withdraw-btn{background:#4caf50;color:#fff;border:none;border-radius:12px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(76,175,80,.4)}
+.balance-card{margin:8px 16px;background:linear-gradient(135deg,var(--color-primary-light),var(--color-primary) 50%,var(--color-primary-dark));border-radius:var(--radius-lg);padding:16px;display:flex;justify-content:space-between;align-items:center;color:#fff;box-shadow:var(--shadow-glow-blue);position:relative;overflow:hidden}
+.balance-card::before{content:'';position:absolute;top:-30px;left:-30px;width:100px;height:100px;background:rgba(255,255,255,.12);border-radius:50%}
+.balance-card .amount{font-size:22px;font-weight:900;margin-top:2px;position:relative}
+.balance-card .label{font-size:11px;opacity:.85;position:relative}
 
 .menu-list{margin:8px 16px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.menu-item{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f0f3f8;cursor:pointer;font-size:14px;font-weight:600;color:#1a2b42}
+.menu-item{padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--color-divider);cursor:pointer;font-size:14px;font-weight:600;color:var(--color-text)}
 .menu-item:last-child{border-bottom:none}
-.menu-item:active{background:#f5f8fc}
+.menu-item:active{background:var(--color-bg-soft)}
 .menu-item .icon{font-size:20px}
-.menu-item .arrow{margin-left:auto;color:#c5cfdc;font-size:16px}
-.menu-item .badge{background:#4caf50;color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:auto}
+.menu-item .arrow{margin-left:auto;color:var(--color-border);font-size:16px}
+.menu-item .badge{background:var(--color-success);color:#fff;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:auto}
 
 /* STATS SCREEN */
 .stats-main{margin:8px 16px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.stats-main .label{font-size:12px;color:#7a8ba3;margin-bottom:4px;font-weight:600}
-.stats-main .value{font-size:26px;font-weight:900;color:#1a2b42}
+.stats-main .label{font-size:12px;color:var(--color-text-soft);margin-bottom:4px;font-weight:600}
+.stats-main .value{font-size:26px;font-weight:900;color:var(--color-text)}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 16px}
 .stats-grid .stat-item{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);text-align:center}
 .stats-grid .stat-item .emoji{font-size:26px;margin-bottom:6px}
-.stats-grid .stat-item .num{font-size:20px;font-weight:900;color:#1a2b42}
-.stats-grid .stat-item .label{font-size:11px;color:#7a8ba3;margin-top:2px;font-weight:600}
-.diff-stats{margin:8px 16px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.diff-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.diff-row:last-child{margin-bottom:0}
-.diff-row .label{font-size:13px;font-weight:700;color:#1a2b42;min-width:70px}
-.diff-row .bar{flex:1;height:10px;background:#e8eef5;border-radius:5px;overflow:hidden}
-.diff-row .fill{height:100%;border-radius:5px}
-.diff-row .pct{font-size:12px;font-weight:700;color:#1a2b42;min-width:36px;text-align:right}
+.stats-grid .stat-item .num{font-size:20px;font-weight:900;color:var(--color-text)}
+.stats-grid .stat-item .label{font-size:11px;color:var(--color-text-soft);margin-top:2px;font-weight:600}
 .best-results{margin:8px 16px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04);display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
 .best-results .best-item .emoji{font-size:22px;margin-bottom:4px}
-.best-results .best-item .num{font-size:14px;font-weight:800;color:#1a2b42}
-.best-results .best-item .label{font-size:10px;color:#7a8ba3;margin-top:2px}
+.best-results .best-item .num{font-size:14px;font-weight:800;color:var(--color-text)}
+.best-results .best-item .label{font-size:10px;color:var(--color-text-soft);margin-top:2px}
 
 /* SOVRINLAR */
 .achievement{margin:8px 16px;background:#fff;border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
 .achievement.locked{opacity:.5}
-.achievement .ach-icon{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#ffd700,#f5b301);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.achievement.locked .ach-icon{background:#e8eef5}
+.achievement .ach-icon{width:48px;height:48px;border-radius:50%;background:linear-gradient(150deg,#ffe469,#ffd700 45%,var(--color-gold));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:var(--shadow-glow-gold),inset 0 1px 1px rgba(255,255,255,.5)}
+.achievement.locked .ach-icon{background:var(--color-bg)}
 .achievement .ach-info{flex:1}
-.achievement .ach-name{font-size:14px;font-weight:700;color:#1a2b42;margin-bottom:2px}
-.achievement .ach-desc{font-size:11px;color:#7a8ba3}
-.achievement .ach-progress{font-size:11px;font-weight:700;color:#4a90e2;margin-top:2px}
+.achievement .ach-name{font-size:14px;font-weight:700;color:var(--color-text);margin-bottom:2px}
+.achievement .ach-desc{font-size:11px;color:var(--color-text-soft)}
+.achievement .ach-progress{font-size:11px;font-weight:700;color:var(--color-primary);margin-top:2px}
 
-/* WITHDRAW */
-.withdraw-card{margin:8px 16px;background:#fff;border-radius:16px;padding:20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.withdraw-card .available{font-size:12px;color:#7a8ba3;margin-bottom:4px;font-weight:600}
-.withdraw-card .balance-big{font-size:32px;font-weight:900;color:#1a2b42;margin-bottom:16px}
-.method-tabs{display:flex;background:#f0f3f8;border-radius:12px;padding:3px;margin-bottom:16px}
-.method-tab{flex:1;padding:10px;border:none;background:none;border-radius:10px;font-size:13px;font-weight:700;color:#7a8ba3;cursor:pointer}
-.method-tab.active{background:#4a90e2;color:#fff}
-.method-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.method-card{background:#fff;border:2px solid #e8eef5;border-radius:12px;padding:12px;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:#1a2b42}
-.method-card.active{border-color:#4a90e2;background:#f0f7ff}
-.method-card .logo{font-size:20px;margin-bottom:4px}
-.withdraw-input{width:100%;background:#f0f3f8;border:2px solid #e8eef5;border-radius:12px;padding:14px;font-size:15px;text-align:center;font-weight:700;color:#1a2b42;outline:none;margin-bottom:12px}
-.withdraw-input:focus{border-color:#4a90e2;background:#fff}
-.withdraw-submit{width:100%;background:#4a90e2;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px}
-.withdraw-submit:disabled{background:#c5cfdc;cursor:not-allowed}
-.min-hint{font-size:11px;color:#7a8ba3;margin-top:8px;text-align:center}
+/* BONUS (было "вывод") */
+.bonus-hint{font-size:13px;text-align:center;color:var(--color-text-soft);font-weight:600;padding:8px 16px 16px}
+.bonus-submit{width:100%;background:var(--color-primary);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px}
 
 /* SPONSORS */
-.sponsor-card{margin:8px 16px;background:#fff;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:pointer}
-.sponsor-card .sp-icon{width:44px;height:44px;border-radius:50%;background:#e8f0ff;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.sponsor-card{margin:8px 16px;background:#fff;border-radius:var(--radius-md);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm);cursor:pointer;transition:transform .15s var(--ease-out),box-shadow .15s var(--ease-out)}
+.sponsor-card:active{transform:scale(.98);box-shadow:var(--shadow-sm)}
+.sponsor-card .sp-icon{width:44px;height:44px;border-radius:50%;background:linear-gradient(150deg,var(--color-primary-bg),#dbe9ff);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 .sponsor-card .sp-info{flex:1}
-.sponsor-card .sp-name{font-size:14px;font-weight:700;color:#1a2b42}
-.sponsor-card .sp-action{background:#4a90e2;color:#fff;padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700}
-.sponsor-card.checked .sp-action{background:#4caf50}
+.sponsor-card .sp-name{font-size:14px;font-weight:700;color:var(--color-text)}
+.sponsor-card .sp-action{background:linear-gradient(135deg,var(--color-primary-light),var(--color-primary-dark));color:#fff;padding:8px 16px;border-radius:var(--radius-sm);font-size:12px;font-weight:700;box-shadow:0 3px 8px rgba(74,144,226,.35)}
+.sponsor-card.checked .sp-action{background:linear-gradient(135deg,#5fce63,var(--color-success-dark));box-shadow:0 3px 8px rgba(76,175,80,.35)}
 
 /* TOAST */
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:rgba(0,0,0,.85);color:#fff;padding:12px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;transition:transform .3s;max-width:90%;text-align:center}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-/* LOADING */
-.loading{display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;color:#7a8ba3;font-weight:600}
+/* LOADING / SKELETON */
+.loading{display:flex;flex-direction:column;align-items:center;height:100vh;padding-top:64px;color:var(--color-text-soft);font-weight:600}
+.brand-logo{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:36px}
+.brand-logo .brand-icon{width:60px;height:60px;border-radius:var(--radius-lg);background:linear-gradient(150deg,var(--color-primary-light),var(--color-primary) 55%,var(--color-primary-dark));display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:var(--shadow-glow-blue),inset 0 1px 1px rgba(255,255,255,.4);animation:brandPulse 1.8s ease-in-out infinite}
+.brand-logo .brand-name{font-size:20px;font-weight:900;color:var(--color-text);letter-spacing:.4px}
+.brand-logo .brand-sub{font-size:11px;color:var(--color-text-soft);font-weight:600}
+@keyframes brandPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.skeleton{width:100%;max-width:500px;padding:0 16px}
+.sk{position:relative;overflow:hidden;background:#e4ebf3;border-radius:var(--radius-md)}
+.sk::after{content:'';position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);animation:shimmer 1.4s infinite}
+@keyframes shimmer{100%{transform:translateX(100%)}}
+.sk-banner{height:78px;border-radius:var(--radius-lg);margin-bottom:10px}
+.sk-bar{height:14px;width:45%;margin:0 0 14px;border-radius:var(--radius-sm)}
+.sk-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.sk-tile{height:78px}
 </style>
 </head>
 <body>
 
 <div class="app" id="app">
-  <div class="loading" id="loading">⏳ Загрузка...</div>
+  <div class="loading" id="loading">
+    <div class="brand-logo">
+      <div class="brand-icon">🏗️</div>
+      <div class="brand-name">CityUz</div>
+      <div class="brand-sub">Qurilish Ustasi yuklanmoqda…</div>
+    </div>
+    <div class="skeleton">
+      <div class="sk sk-banner"></div>
+      <div class="sk sk-bar"></div>
+      <div class="sk-grid">
+        <div class="sk sk-tile"></div>
+        <div class="sk sk-tile"></div>
+        <div class="sk sk-tile"></div>
+        <div class="sk sk-tile"></div>
+        <div class="sk sk-tile"></div>
+        <div class="sk sk-tile"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -182,14 +226,13 @@ body{background:#e8eef5;overflow:hidden;user-select:none}
 // КОНФИГ
 // ============================================================
 const API_URL = 'http://107-189-21-103.sslip.io:8081';
-const MIN_WITHDRAW = 100000;
+const BONUS_AMOUNT = 500; // монет за подписку на все каналы
 
 let tg = window.Telegram?.WebApp;
 let user = null;
 let channels = [];
 let initData = '';
 let currentScreen = 'main';
-let gameState = null;
 
 // ============================================================
 // ИНИЦИАЛИЗАЦИЯ
@@ -209,7 +252,7 @@ async function init() {
       user_id: tg?.initDataUnsafe?.user?.id || 123456789,
       first_name: tg?.initDataUnsafe?.user?.first_name || 'Игрок',
       username: tg?.initDataUnsafe?.user?.username || '',
-      balance: 100000,
+      balance: 12450,
       xp: 250,
       level: 1,
       total_games: 0,
@@ -218,20 +261,20 @@ async function init() {
       best_height: 0,
       best_accuracy: 0,
       best_combo: 0,
+      bonus_claimed: false,
     };
 
     channels = [
-      {url: "https://t.me/+y21STJee1WphZjNi", "name": "ISH HAMMAGA"},
-      {url: "https://telegram.me/+9hB_bnX7QGI5ZTIy", "name": "💎Strategiya Markazi💎"},
-      {url: "https://t.me/+OetsLzD4YZ00NDdi", "name": "PhotoStock To'lovlari"}
+      {url: "https://t.me/+y21STJee1WphZjNi", name: "ISH HAMMAGA"},
+      {url: "https://telegram.me/+9hB_bnX7QGI5ZTIy", name: "💎Strategiya Markazi💎"},
+      {url: "https://t.me/+OetsLzD4YZ00NDdi", name: "PhotoStock To'lovlari"}
     ];
 
-    // Отрисовываем интерфейс
     render();
 
   } catch (e) {
     console.error(e);
-    document.getElementById('loading').innerText = '❌ Ошибка: ' + e.message;
+    document.getElementById('loading').innerText = '❌ Xatolik: ' + e.message;
   }
 }
 function getReferralId() {
@@ -246,6 +289,10 @@ function render() {
   document.getElementById('app').innerHTML = `
     <!-- ГЛАВНЫЙ ЭКРАН -->
     <div class="screen active" id="screen-main">
+      <div class="brand-row">
+        <div class="brand-mark">🏗️</div>
+        <div class="brand-word">CityUz</div>
+      </div>
       <div class="header">
         <div class="avatar">${(user.first_name || 'И')[0].toUpperCase()}</div>
         <div class="user-info">
@@ -253,8 +300,8 @@ function render() {
           <div class="role">Qurilish Ustasi</div>
         </div>
         <div class="balance-badge">
-          <div class="coin">$</div>
-          <div class="amount" id="main-balance">${formatSum(user.balance)}</div>
+          <div class="coin">🪙</div>
+          <div class="amount" id="main-balance">${formatNum(user.balance)}</div>
         </div>
       </div>
 
@@ -282,7 +329,7 @@ function render() {
       </div>
       <div class="stats-main">
         <div class="label">Jami ishlangan</div>
-        <div class="value">${formatSum(user.total_earned)} <span style="font-size:14px;color:#7a8ba3">so'm</span></div>
+        <div class="value">${formatNum(user.total_earned)} <span style="font-size:14px;color:#7a8ba3">tanga</span></div>
       </div>
       <div class="stats-grid">
         <div class="stat-item"><div class="emoji">🎮</div><div class="num">${user.total_games}</div><div class="label">O'yinlar</div></div>
@@ -322,18 +369,18 @@ function render() {
       </div>
       <div class="balance-card">
         <div>
-          <div class="label">Sizning balansingiz</div>
-          <div class="amount">${formatSum(user.balance)} so'm</div>
+          <div class="label">Sizning tangalaringiz</div>
+          <div class="amount">🪙 ${formatNum(user.balance)}</div>
         </div>
-        <button class="withdraw-btn" onclick="openWithdraw()">💸 Вывод</button>
       </div>
       <div class="menu-list">
         <div class="menu-item" onclick="toast('Tez kunda!')"><span class="icon">🏆</span> Mening yutuqlarim <span class="arrow">›</span></div>
         <div class="menu-item" onclick="showReferral()"><span class="icon">🎁</span> Do'stlarni taklif qilish <span class="badge">+1000</span></div>
+        <div class="menu-item" onclick="openBonus()"><span class="icon">📢</span> Bonus olish ${user.bonus_claimed ? '' : `<span class="badge">+${BONUS_AMOUNT}</span>`}<span class="arrow">›</span></div>
         <div class="menu-item" onclick="showLeaderboard()"><span class="icon">📊</span> Reyting <span class="arrow">›</span></div>
         <div class="menu-item" onclick="toast('Tez kunda!')"><span class="icon">⚙️</span> Sozlamalar <span class="arrow">›</span></div>
-        <div class="menu-item" onclick="toast('Admin bilan bog\\'lanish')"><span class="icon">❓</span> Yordam <span class="arrow">›</span></div>
-        <div class="menu-item" onclick="toast('@your_admin')"><span class="icon">📞</span> Biz bilan bog'lanish <span class="arrow">›</span></div>
+        <div class="menu-item" onclick="toast('Admin bilan bogʻlanish')"><span class="icon">❓</span> Yordam <span class="arrow">›</span></div>
+        <div class="menu-item" onclick="toast('@your_admin')"><span class="icon">📞</span> Biz bilan bogʻlanish <span class="arrow">›</span></div>
       </div>
     </div>
 
@@ -358,54 +405,22 @@ function render() {
         <button class="build-btn" id="build-btn" onclick="buildBlock()">QURISH</button>
         <div class="result-overlay" id="result-overlay">
           <div class="result-text" id="result-text">PERFECT</div>
-          <div style="font-size:14px;opacity:.8" id="result-reward">+0 so'm</div>
+          <div style="font-size:14px;opacity:.8" id="result-reward">+0 tanga</div>
         </div>
       </div>
     </div>
 
-    <!-- ВЫВОД -->
-    <div class="screen" id="screen-withdraw">
-      <div class="game-header">
-        <button class="back-btn" onclick="showScreen('profile')">←</button>
-        <div class="game-title">Pul yechib olish</div>
-        <div></div>
-      </div>
-      <div class="withdraw-card">
-        <div class="available">Yechib olish uchun mavjud</div>
-        <div class="balance-big">${formatSum(user.balance)} so'm</div>
-
-        <div class="method-tabs">
-          <button class="method-tab active" onclick="selectMethod('sbp', this)">Telefon raqam</button>
-          <button class="method-tab" onclick="selectMethod('card', this)">Karta raqamiga</button>
-        </div>
-
-        <div class="method-cards" id="method-cards">
-          <div class="method-card active" onclick="selectBank('HUMO', this)"><div class="logo">💳</div>HUMO</div>
-          <div class="method-card" onclick="selectBank('UZCARD', this)"><div class="logo">💳</div>UZCARD</div>
-          <div class="method-card" onclick="selectBank('VISA', this)"><div class="logo">💳</div>VISA</div>
-          <div class="method-card" onclick="selectBank('CARD', this)"><div class="logo">💳</div>Boshqa karta</div>
-        </div>
-
-        <input type="tel" class="withdraw-input" id="withdraw-account" placeholder="Telefon raqami (12 raqam)" maxlength="16" oninput="this.value=this.value.replace(/\\D/g,'')">
-
-        <button class="withdraw-submit" id="withdraw-btn" onclick="continueWithdraw()" disabled>Davom etish</button>
-        <div class="min-hint">Minimal: 100 000 so'm</div>
-      </div>
-    </div>
-
-    <!-- СПОНСОРЫ -->
+    <!-- БОНУС ЗА ПОДПИСКУ (было "вывод") -->
     <div class="screen" id="screen-sponsors">
       <div class="game-header">
-        <button class="back-btn" onclick="showScreen('withdraw')">←</button>
-        <div class="game-title">Tekshirish</div>
+        <button class="back-btn" onclick="showScreen('profile')">←</button>
+        <div class="game-title">Bonus olish</div>
         <div></div>
       </div>
-      <div class="section-title" style="font-size:13px;text-align:center;color:#7a8ba3;font-weight:600;padding:8px 16px">
-        Pul yechib olishni yakunlash uchun homiylarga obuna bo'ling
-      </div>
+      <div class="bonus-hint">Bonus olish uchun quyidagi kanallarga obuna bo'ling</div>
       <div id="sponsors-list"></div>
       <div style="padding:16px">
-        <button class="withdraw-submit" onclick="checkSubscription()">Obunani tekshirish</button>
+        <button class="bonus-submit" onclick="checkSubscription()">Obunani tekshirish</button>
       </div>
     </div>
 
@@ -421,12 +436,15 @@ function render() {
   renderCities();
   renderAchievements();
   renderSponsors();
+
+  const activeEl = document.querySelector('.screen.active');
+  if (activeEl) requestAnimationFrame(() => requestAnimationFrame(() => activeEl.classList.add('in')));
 }
 
 // ============================================================
 // ФОРМАТИРОВАНИЕ
 // ============================================================
-function formatSum(n) {
+function formatNum(n) {
   return (n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 }
 
@@ -441,19 +459,20 @@ function toast(msg) {
 // ЭКРАНЫ
 // ============================================================
 function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.classList.remove('in'); });
   const el = document.getElementById('screen-' + name);
-  if (el) el.classList.add('active');
+  if (el) {
+    el.classList.add('active');
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('in')));
+  }
 
-  // Обновляем навигацию
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   const navMap = {main: 0, stats: 1, ach: 2, profile: 3};
   if (navMap[name] !== undefined) {
     document.querySelectorAll('.nav-btn')[navMap[name]]?.classList.add('active');
   }
 
-  // Скрываем нижнее меню на играх/выводах
-  const hideNav = ['game', 'withdraw', 'sponsors'].includes(name);
+  const hideNav = ['game', 'sponsors'].includes(name);
   document.getElementById('bottom-nav').style.display = hideNav ? 'none' : 'flex';
 
   currentScreen = name;
@@ -479,7 +498,6 @@ function renderCities() {
   const grid = document.getElementById('cities-grid');
   if (!grid) return;
 
-  // Открытые города зависят от уровня
   const unlocked = Math.min(user.level, 10);
 
   grid.innerHTML = CITIES.map((city, i) => {
@@ -499,15 +517,15 @@ function renderCities() {
 // ДОСТИЖЕНИЯ
 // ============================================================
 const ACHIEVEMENTS = [
-  {key: 'first_game', name: 'Birinchi qadam', desc: 'Birinchi o\'yinni o\'ynang', emoji: '🎮', check: u => u.total_games >= 1},
-  {key: 'games_10', name: 'Faol o\'yinchi', desc: '10 ta o\'yin', emoji: '🎯', check: u => u.total_games >= 10},
-  {key: 'games_100', name: 'Professional', desc: '100 ta o\'yin', emoji: '🏅', check: u => u.total_games >= 100},
+  {key: 'first_game', name: 'Birinchi qadam', desc: "Birinchi o'yinni o'ynang", emoji: '🎮', check: u => u.total_games >= 1},
+  {key: 'games_10', name: "Faol o'yinchi", desc: "10 ta o'yin", emoji: '🎯', check: u => u.total_games >= 10},
+  {key: 'games_100', name: 'Professional', desc: "100 ta o'yin", emoji: '🏅', check: u => u.total_games >= 100},
   {key: 'floors_50', name: 'Quruvchi', desc: '50 qavat', emoji: '🏗', check: u => u.total_floors >= 50},
   {key: 'floors_500', name: 'Usta', desc: '500 qavat', emoji: '🏢', check: u => u.total_floors >= 500},
-  {key: 'earned_100k', name: 'Birinchi million', desc: '100 000 so\'m', emoji: '💰', check: u => u.total_earned >= 100000},
-  {key: 'earned_1m', name: 'Millioner', desc: '1 000 000 so\'m', emoji: '💎', check: u => u.total_earned >= 1000000},
+  {key: 'earned_10k', name: 'Birinchi qadam', desc: '10 000 tanga', emoji: '💰', check: u => u.total_earned >= 10000},
+  {key: 'earned_100k', name: 'Millioner', desc: '100 000 tanga', emoji: '💎', check: u => u.total_earned >= 100000},
   {key: 'combo_10', name: 'Combo Master', desc: 'Combo x10', emoji: '🔥', check: u => u.best_combo >= 10},
-  {key: 'height_50', name: 'Osmono\'par', desc: '50 qavat bir o\'yinda', emoji: '🌆', check: u => u.best_height >= 50},
+  {key: 'height_50', name: "Osmono'par", desc: "50 qavat bir o'yinda", emoji: '🌆', check: u => u.best_height >= 50},
   {key: 'accuracy_95', name: 'Snayper', desc: '95% aniqlik', emoji: '🎯', check: u => u.best_accuracy >= 95},
 ];
 
@@ -560,7 +578,6 @@ function startGame(cityIndex) {
   totalAttempts = 0;
   gameActive = true;
 
-  // Сложность
   const diffMap = {easy: 1, medium: 1.5, hard: 2, extreme: 2.5};
   const diffMult = diffMap[currentCity.diff] || 1;
   crane.speed = 1.5 * diffMult;
@@ -582,7 +599,6 @@ function startGame(cityIndex) {
     canvas.height = wrap.clientHeight;
     ctx = canvas.getContext('2d');
 
-    // Стартовый блок
     tower.push({x: canvas.width/2 - 60, y: canvas.height - 80, width: 120, height: 40});
 
     gameLoop();
@@ -592,7 +608,6 @@ function startGame(cityIndex) {
 function gameLoop() {
   if (!gameActive) return;
 
-  // Двигаем кран
   crane.x += crane.dir * crane.speed;
   if (crane.x > canvas.width - 80 || crane.x < 20) {
     crane.dir *= -1;
@@ -605,14 +620,12 @@ function gameLoop() {
 function draw() {
   if (!ctx) return;
 
-  // Небо
   const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
   grad.addColorStop(0, '#87ceeb');
   grad.addColorStop(1, '#b0e0f5');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Облака
   ctx.fillStyle = 'rgba(255,255,255,.6)';
   ctx.beginPath();
   ctx.arc(60, 40, 25, 0, Math.PI*2);
@@ -625,30 +638,25 @@ function draw() {
   ctx.arc(canvas.width - 70, 60, 25, 0, Math.PI*2);
   ctx.fill();
 
-  // Земля
   ctx.fillStyle = '#8bc34a';
   ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
 
-  // Башня
   tower.forEach((b, i) => {
     ctx.fillStyle = i % 2 === 0 ? '#e8a87c' : '#d68c5a';
     ctx.fillRect(b.x, b.y, b.width, b.height);
     ctx.strokeStyle = '#a35d2e';
     ctx.lineWidth = 2;
     ctx.strokeRect(b.x, b.y, b.width, b.height);
-    // Окна
     ctx.fillStyle = 'rgba(255,255,255,.4)';
     for (let wx = b.x + 10; wx < b.x + b.width - 10; wx += 25) {
       ctx.fillRect(wx, b.y + 8, 15, 15);
     }
   });
 
-  // Кран-балка
   ctx.fillStyle = '#555';
   ctx.fillRect(0, 30, canvas.width, 8);
   ctx.fillRect(crane.x, 30, 8, 15);
 
-  // Трос
   ctx.strokeStyle = '#333';
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -656,7 +664,6 @@ function draw() {
   ctx.lineTo(crane.x + 4, block.y);
   ctx.stroke();
 
-  // Блок (падающий этаж)
   const bx = crane.x + 4 - block.width / 2;
   ctx.fillStyle = '#6ab2f2';
   ctx.fillRect(bx, block.y, block.width, block.height);
@@ -704,7 +711,6 @@ function buildBlock() {
 
   maxCombo = Math.max(maxCombo, comboCount);
 
-  // Комбо-множитель
   let mult = 1;
   if (comboCount >= 10) mult = 3;
   else if (comboCount >= 5) mult = 2;
@@ -714,17 +720,15 @@ function buildBlock() {
   earned += reward;
   floors++;
 
-  // Показываем результат
   const overlay = document.getElementById('result-overlay');
   const text = document.getElementById('result-text');
   const rew = document.getElementById('result-reward');
   text.className = 'result-text result-' + color;
   text.innerText = result + (mult > 1 ? ` x${mult}` : '');
-  rew.innerText = '+' + formatSum(reward) + ' so\'m';
+  rew.innerText = '+' + formatNum(reward) + ' tanga';
   overlay.classList.add('show');
   setTimeout(() => overlay.classList.remove('show'), 600);
 
-  // Добавляем блок в башню
   if (result !== 'MISS') {
     tower.push({
       x: lastBlock.x + (blockCenter - lastCenter) - block.width / 2,
@@ -734,12 +738,10 @@ function buildBlock() {
     });
   }
 
-  // Обновляем UI
   document.getElementById('stat-floors').innerText = floors;
-  document.getElementById('stat-reward').innerText = formatSum(earned);
+  document.getElementById('stat-reward').innerText = formatNum(earned);
   updateHearts();
 
-  // Проверяем условия окончания
   if (lives <= 0 || floors >= goal) {
     endGame();
   }
@@ -747,7 +749,7 @@ function buildBlock() {
 
 function updateHearts() {
   const el = document.getElementById('hearts');
-  el.innerHTML = Array(3).fill(0).map((_, i) => 
+  el.innerHTML = Array(3).fill(0).map((_, i) =>
     `<span class="heart">${i < lives ? '❤️' : '🖤'}</span>`
   ).join('');
 }
@@ -758,7 +760,14 @@ async function endGame() {
 
   const accuracy = totalAttempts > 0 ? (perfectCount / totalAttempts) * 100 : 0;
 
-  // Отправляем на сервер
+  user.balance += earned;
+  user.total_games += 1;
+  user.total_floors += floors;
+  user.total_earned += earned;
+  user.best_height = Math.max(user.best_height, floors);
+  user.best_accuracy = Math.max(user.best_accuracy, accuracy);
+  user.best_combo = Math.max(user.best_combo, maxCombo);
+
   try {
     const res = await fetch(`${API_URL}/api/save_game`, {
       method: 'POST',
@@ -780,9 +789,8 @@ async function endGame() {
     console.error('Save error:', e);
   }
 
-  // Показываем результат
   setTimeout(() => {
-    toast(`🏗 ${floors} qavat | 🎯 ${Math.round(accuracy)}% | 🔥 x${maxCombo} | 💰 +${formatSum(earned)} so'm`);
+    toast(`🏗 ${floors} qavat | 🎯 ${Math.round(accuracy)}% | 🔥 x${maxCombo} | 🪙 +${formatNum(earned)} tanga`);
     setTimeout(() => {
       exitGame();
     }, 2500);
@@ -792,63 +800,21 @@ async function endGame() {
 function exitGame() {
   gameActive = false;
   cancelAnimationFrame(animId);
+  render();
   showScreen('main');
-  location.reload();
 }
 
 // ============================================================
-// ВЫВОД
+// БОНУС ЗА ПОДПИСКУ
 // ============================================================
-let selectedMethod = 'sbp';
-let selectedBank = 'HUMO';
-
-function openWithdraw() {
-  if (user.balance < MIN_WITHDRAW) {
-    toast(`Minimal: ${formatSum(MIN_WITHDRAW)} so'm`);
+function openBonus() {
+  if (user.bonus_claimed) {
+    toast("Bonus allaqachon olingan");
     return;
   }
-  showScreen('withdraw');
-}
-
-function selectMethod(method, el) {
-  selectedMethod = method;
-  document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  
-  const acc = document.getElementById('withdraw-account');
-  acc.placeholder = method === 'sbp' ? 'Telefon raqami (12 raqam)' : 'Karta raqami (16 raqam)';
-  acc.maxLength = method === 'sbp' ? 12 : 16;
-  acc.value = '';
-  validateWithdraw();
-}
-
-function selectBank(bank, el) {
-  selectedBank = bank;
-  document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  validateWithdraw();
-}
-
-function validateWithdraw() {
-  const acc = document.getElementById('withdraw-account').value;
-  const min = selectedMethod === 'sbp' ? 12 : 16;
-  const btn = document.getElementById('withdraw-btn');
-  btn.disabled = !(acc.length >= min);
-}
-
-document.addEventListener('input', e => {
-  if (e.target.id === 'withdraw-account') validateWithdraw();
-});
-
-function continueWithdraw() {
-  const account = document.getElementById('withdraw-account').value;
-  if (!account) return;
   showScreen('sponsors');
 }
 
-// ============================================================
-// СПОНСОРЫ
-// ============================================================
 function renderSponsors() {
   const list = document.getElementById('sponsors-list');
   if (!list) return;
@@ -874,33 +840,16 @@ async function checkSubscription() {
     const data = await res.json();
 
     if (data.subscribed) {
-      // Отправляем заявку на вывод
-      const account = document.getElementById('withdraw-account').value;
-      const amount = user.balance;
-
-      const wRes = await fetch(`${API_URL}/api/withdraw`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          init_data: initData,
-          amount: amount,
-          method: selectedMethod === 'sbp' ? selectedBank : selectedMethod,
-          account: account
-        })
-      });
-      const wData = await wRes.json();
-
-      if (wData.success) {
-        toast('✅ Заявка отправлена! Ожидайте');
-        setTimeout(() => location.reload(), 2000);
-      } else {
-        toast('❌ ' + (wData.error || 'Ошибка'));
-      }
+      user.balance += BONUS_AMOUNT;
+      user.bonus_claimed = true;
+      toast(`✅ Bonus qoʻshildi: +${BONUS_AMOUNT} tanga`);
+      render();
+      showScreen('profile');
     } else {
-      toast('❌ Obuna bo\\'ling: ' + (data.not_subscribed || []).join(', '));
+      toast("❌ Obuna bo'ling: " + (data.not_subscribed || []).join(', '));
     }
   } catch (e) {
-    toast('❌ Ошибка сети');
+    toast('❌ Tarmoq xatosi');
   }
 }
 
@@ -910,7 +859,7 @@ async function checkSubscription() {
 function showReferral() {
   const link = `https://t.me/YOUR_BOT?start=ref_${user.user_id}`;
   if (tg) {
-    tg.showAlert('🎁 Do\\'stlaringizni taklif qiling!\\n\\nSizning havolangiz:\\n' + link);
+    tg.showAlert("🎁 Do'stlaringizni taklif qiling!\n\nSizning havolangiz:\n" + link);
   } else {
     alert('Referral: ' + link);
   }
