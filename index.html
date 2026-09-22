@@ -42,6 +42,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .screen{display:none;flex-direction:column;height:100%;overflow-y:auto;padding-bottom:92px;opacity:0;transform:translateY(8px);transition:opacity .3s var(--ease-out),transform .3s var(--ease-out)}
 .screen.active{display:flex}
 .screen.active.in{opacity:1;transform:translateY(0)}
+#screen-main{padding-bottom:16px}
 
 /* ОКНА (карточки-секции) */
 .window{margin:8px 16px;border-radius:var(--radius-lg);position:relative;overflow:hidden}
@@ -90,7 +91,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .city-card.locked::after{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px}
 
 /* ВИТРИНА: 10-й город (Tashkent City) — крупная карточка в самом низу, надпись по центру */
-.city-showcase-card{margin:10px 16px 0;height:120px;position:relative;border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;box-shadow:var(--shadow-lg);transition:transform .18s var(--ease-out)}
+.city-showcase-card{margin:10px 0 0;height:120px;position:relative;border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;box-shadow:var(--shadow-lg);transition:transform .18s var(--ease-out)}
 .city-showcase-card:active{transform:scale(.98)}
 .city-showcase-card .showcase-img{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(150deg,#5b7fae,#2f4d78 60%,#1a2b42)}
 .city-showcase-card .showcase-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px;gap:2px;background:linear-gradient(180deg,rgba(10,20,35,.15),rgba(10,20,35,.72))}
@@ -107,8 +108,9 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .xp-bar .value{font-size:11px;font-weight:700;color:var(--color-text)}
 
 /* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:center;gap:8px;padding:10px 0 16px;max-width:500px;margin:0 auto;box-shadow:0 -2px 10px rgba(26,43,66,.05);z-index:100}
-.nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 16px;cursor:pointer;color:var(--color-text-faint);font-size:11px;font-weight:600;border:none;background:none;transition:color .2s,transform .2s}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:center;gap:10px;padding:12px 0 18px;max-width:500px;margin:0 auto;box-shadow:0 -2px 10px rgba(26,43,66,.05);z-index:100}
+.nav-bar-inline{display:flex;justify-content:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider)}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 18px;cursor:pointer;color:var(--color-text-faint);font-size:11px;font-weight:600;border:none;background:none;transition:color .2s,transform .2s}
 .nav-btn.active{color:var(--color-primary);transform:translateY(-1px)}
 .nav-btn .icon{display:flex;align-items:center;justify-content:center;transition:transform .2s}
 .nav-btn.active .icon{transform:scale(1.12)}
@@ -256,10 +258,10 @@ const BONUS_AMOUNT = 500; // монет за подписку на все кан
 // SVG-ИКОНКИ (вместо части эмодзи — для чёткого/единого стиля)
 // ============================================================
 const ICONS = {
-  home: '<span class="icon"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1v-9"/></svg></span>',
-  stats: '<span class="icon"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg></span>',
-  trophy: '<span class="icon"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 5H5a2 2 0 0 0 0 4h1.5M16 5h3a2 2 0 0 1 0 4h-1.5"/><path d="M12 13v3m-3 4h6m-3-4v4"/></svg></span>',
-  user: '<span class="icon"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.6 4-5.5 7-5.5s5.8 1.9 7 5.5"/></svg></span>',
+  home: '<span class="icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1v-9"/></svg></span>',
+  stats: '<span class="icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg></span>',
+  trophy: '<span class="icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 5H5a2 2 0 0 0 0 4h1.5M16 5h3a2 2 0 0 1 0 4h-1.5"/><path d="M12 13v3m-3 4h6m-3-4v4"/></svg></span>',
+  user: '<span class="icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.6 4-5.5 7-5.5s5.8 1.9 7 5.5"/></svg></span>',
   back: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>',
 };
 
@@ -343,14 +345,22 @@ function render() {
         <p>Quring, rivojlantiring, g'alaba qozoning!</p>
       </div>
 
-      <!-- СТРАНИЦА ПОВЕРХ: список городов (слоты иконок №1–9), накрывает подложку -->
+      <!-- СТРАНИЦА ПОВЕРХ: окно Shaharlar тянется до конца и вбирает в себя меню -->
       <div class="window window-cities sheet-page">
         <div class="section-title">Shaharlar (10 ta)</div>
         <div class="cities-grid" id="cities-grid"></div>
-      </div>
 
-      <!-- ВИТРИНА (самый низ, слот иконки №10) -->
-      <div id="city-showcase"></div>
+        <!-- ВИТРИНА (слот иконки №10) -->
+        <div id="city-showcase"></div>
+
+        <!-- МЕНЮ ВНУТРИ ОКНА (только на главном экране) -->
+        <div class="nav-bar nav-bar-inline">
+          <button class="nav-btn active" onclick="showScreen('main')">${ICONS.home}Bosh sahifa</button>
+          <button class="nav-btn" onclick="showScreen('stats')">${ICONS.stats}Statistika</button>
+          <button class="nav-btn" onclick="showScreen('ach')">${ICONS.trophy}Sovrinlar</button>
+          <button class="nav-btn" onclick="showScreen('profile')">${ICONS.user}Profil</button>
+        </div>
+      </div>
     </div>
 
     <!-- СТАТИСТИКА -->
@@ -457,9 +467,9 @@ function render() {
       </div>
     </div>
 
-    <!-- BOTTOM NAV -->
-    <div class="bottom-nav" id="bottom-nav">
-      <button class="nav-btn active" onclick="showScreen('main')">${ICONS.home}Bosh sahifa</button>
+    <!-- BOTTOM NAV (для остальных экранов — statistika/sovrinlar/profil/game) -->
+    <div class="nav-bar bottom-nav" id="bottom-nav">
+      <button class="nav-btn" onclick="showScreen('main')">${ICONS.home}Bosh sahifa</button>
       <button class="nav-btn" onclick="showScreen('stats')">${ICONS.stats}Statistika</button>
       <button class="nav-btn" onclick="showScreen('ach')">${ICONS.trophy}Sovrinlar</button>
       <button class="nav-btn" onclick="showScreen('profile')">${ICONS.user}Profil</button>
@@ -502,11 +512,14 @@ function showScreen(name) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   const navMap = {main: 0, stats: 1, ach: 2, profile: 3};
   if (navMap[name] !== undefined) {
-    document.querySelectorAll('.nav-btn')[navMap[name]]?.classList.add('active');
+    document.querySelectorAll('.nav-bar').forEach(bar => {
+      bar.querySelectorAll('.nav-btn')[navMap[name]]?.classList.add('active');
+    });
   }
 
-  const hideNav = ['game', 'sponsors'].includes(name);
-  document.getElementById('bottom-nav').style.display = hideNav ? 'none' : 'flex';
+  // Фиксированное меню внизу нужно на всех экранах, КРОМЕ главного (там оно встроено в окно Shaharlar) и игры/бонуса
+  const hideFixedNav = ['game', 'sponsors', 'main'].includes(name);
+  document.getElementById('bottom-nav').style.display = hideFixedNav ? 'none' : 'flex';
 
   currentScreen = name;
 }
