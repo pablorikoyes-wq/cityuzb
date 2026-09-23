@@ -52,10 +52,11 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 /* ОКНА (карточки-секции) */
 .window{margin:8px 16px;border-radius:var(--radius-lg);position:relative;overflow:hidden}
 
-/* ПЛАШКА №1 — самая верхняя тонкая полоска (бренд + баланс). Часть "стопки окон": накрывает подложку снизу так же, как остальные окна, и умеет показывать картинку-фон */
+/* ПЛАШКА №1 — самая верхняя тонкая полоска (бренд + баланс). Часть "стопки окон": накрывает подложку снизу так же, как остальные окна, и умеет показывать картинку-фон. Если задан TOP_IMAGE — заголовок "CityUz" прячется, баланс остаётся всегда (это рабочие данные, а не украшение) */
 .top-strip{margin:8px 16px 0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--radius-lg) var(--radius-lg) 0 0;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;z-index:1}
 .top-strip-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 .top-strip::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.88));z-index:0}
+.top-strip.has-image::after{background:linear-gradient(180deg,rgba(10,20,35,.05),rgba(10,20,35,.28))}
 .brand-row{display:flex;align-items:center;gap:7px;position:relative;z-index:1}
 .brand-row .brand-mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:var(--shadow-glow-blue)}
 .brand-row .brand-word{font-size:14px;font-weight:800;color:var(--color-primary-dark);letter-spacing:.3px}
@@ -64,10 +65,11 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .balance-badge .amount{font-weight:800;font-size:14px;color:var(--color-text)}
 
 /* ОКНО 2 — заголовок-приветствие */
-/* СТРАНИЦА-ПОДЛОЖКА (та же ширина, что и окно городов — края идут вровень). Наезжает снизу на top-strip и умеет показывать картинку-фон */
+/* СТРАНИЦА-ПОДЛОЖКА (та же ширина, что и окно городов — края идут вровень). Наезжает снизу на top-strip и умеет показывать картинку-фон. Если задан HERO_IMAGE — текст полностью прячется, остаётся чистое фото */
 .hero-page{margin:-14px 16px 0;background:linear-gradient(135deg,var(--color-primary-soft),var(--color-primary-dark));padding:22px 16px 44px;color:#fff;position:relative;overflow:hidden;border-radius:var(--radius-lg) var(--radius-lg) 0 0;z-index:2}
 .hero-page-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 .hero-page::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(91,159,232,.72),rgba(53,122,189,.8));z-index:0}
+.hero-page.has-image::after{background:linear-gradient(180deg,rgba(10,20,35,0),rgba(10,20,35,.22))}
 .hero-page h2,.hero-page p{position:relative;z-index:1}
 .hero-page h2{font-size:16px;font-weight:800;margin-bottom:4px}
 .hero-page p{font-size:12px;opacity:.9}
@@ -366,12 +368,12 @@ function render() {
     <!-- ГЛАВНЫЙ ЭКРАН -->
     <div class="screen active" id="screen-main">
 
-      <!-- ПЛАШКА №1 (самая верхняя, часть стопки окон, может нести картинку-фон) -->
-      <div class="top-strip">
+      <!-- ПЛАШКА №1 (самая верхняя, часть стопки окон, может нести картинку-фон). Если задан TOP_IMAGE — заголовок "CityUz" прячется, баланс остаётся всегда -->
+      <div class="top-strip ${TOP_IMAGE ? 'has-image' : ''}">
         ${TOP_IMAGE ? `<img class="top-strip-img" src="${TOP_IMAGE}" alt="">` : ''}
         <div class="brand-row">
           <div class="brand-mark">🏗️</div>
-          <div class="brand-word">CityUz</div>
+          ${TOP_IMAGE ? '' : `<div class="brand-word">CityUz</div>`}
         </div>
         <div class="balance-badge">
           <div class="coin">🪙</div>
@@ -379,11 +381,11 @@ function render() {
         </div>
       </div>
 
-      <!-- СТРАНИЦА-ПОДЛОЖКА: заголовок-приветствие (накрывает top-strip снизу, сама накрывается окном городов), может нести картинку-фон -->
-      <div class="hero-page">
-        ${HERO_IMAGE ? `<img class="hero-page-img" src="${HERO_IMAGE}" alt="">` : ''}
+      <!-- СТРАНИЦА-ПОДЛОЖКА: заголовок-приветствие (накрывает top-strip снизу, сама накрывается окном городов), может нести картинку-фон. Если задан HERO_IMAGE — текст полностью прячется -->
+      <div class="hero-page ${HERO_IMAGE ? 'has-image' : ''}">
+        ${HERO_IMAGE ? `<img class="hero-page-img" src="${HERO_IMAGE}" alt="">` : `
         <h2>Kichik shaharlardan buyuk O'zbekistongacha!</h2>
-        <p>Quring, rivojlantiring, g'alaba qozoning!</p>
+        <p>Quring, rivojlantiring, g'alaba qozoning!</p>`}
       </div>
 
       <!-- СТРАНИЦА ПОВЕРХ: окно Shaharlar тянется до конца и вбирает в себя меню -->
