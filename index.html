@@ -78,6 +78,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .city-card:not(.locked):hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .city-card.locked{opacity:.6}
 .icon-slot-city{width:100%;height:80px;border-radius:10px;margin-bottom:0;display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden;position:relative}
+.icon-slot-city img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .city-label-row{position:absolute;top:4px;left:4px;right:4px;display:flex;align-items:center;gap:4px;z-index:2;min-width:0}
 .city-num{flex:none;background:var(--color-primary);color:#fff;width:16px;height:16px;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(74,144,226,.5)}
 .city-name{flex:1;min-width:0;font-size:10px;font-weight:800;color:#fff;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,30,50,.55)}
@@ -94,6 +95,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .city-showcase-card{margin:10px 0 0;height:120px;position:relative;border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;box-shadow:var(--shadow-lg);transition:transform .18s var(--ease-out)}
 .city-showcase-card:active{transform:scale(.98)}
 .city-showcase-card .showcase-img{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(150deg,#5b7fae,#2f4d78 60%,#1a2b42)}
+.city-showcase-card .showcase-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .city-showcase-card .showcase-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px;gap:2px;background:linear-gradient(180deg,rgba(10,20,35,.15),rgba(10,20,35,.72))}
 .city-showcase-card .showcase-lock-center{font-size:20px;margin-bottom:2px}
 .city-showcase-card .showcase-name-center{font-size:16px;font-weight:800;color:#fff}
@@ -527,18 +529,24 @@ function showScreen(name) {
 // ============================================================
 // ГОРОДА
 // ============================================================
+// ССЫЛКИ НА КАРТИНКИ ГОРОДОВ — вставляй сюда (поле image). Пусто — просто пустой градиентный квадрат.
 const CITIES = [
-  {name: "Qo'ng'irot", emoji: "🏘", diff: "easy", diffText: "Oson"},
-  {name: "Chiroqchi", emoji: "🏘", diff: "easy", diffText: "Oson"},
-  {name: "Shahrisabz", emoji: "🏛", diff: "easy", diffText: "Oson"},
-  {name: "Qarshi", emoji: "🏛", diff: "medium", diffText: "O'rta"},
-  {name: "Buxoro", emoji: "🕌", diff: "medium", diffText: "O'rta"},
-  {name: "Samarqand", emoji: "🕌", diff: "medium", diffText: "O'rta"},
-  {name: "Xiva", emoji: "🏰", diff: "hard", diffText: "Qiyin"},
-  {name: "Nukus", emoji: "🏜", diff: "hard", diffText: "Qiyin"},
-  {name: "Toshkent", emoji: "🌆", diff: "hard", diffText: "Juda qiyin"},
-  {name: "Tashkent City", emoji: "🏙", diff: "extreme", diffText: "Ekstremal"}
+  {name: "Qo'ng'irot",    image: "https://i.postimg.cc/wMKkb616/c62743ba-343c-4f82-adf0-2f465f2f86cb.png", diff: "easy",    diffText: "Oson"},
+  {name: "Chiroqchi",     image: "https://i.postimg.cc/ZRN8N1Vc/ba919b7d-9177-4e6c-8361-8acd8a58d2ba.png", diff: "easy",    diffText: "Oson"},
+  {name: "Shahrisabz",    image: "https://i.postimg.cc/0NnRsBYq/6c0e4206-0c45-4844-90bb-89eb54b759bd.png", diff: "easy",    diffText: "Oson"},
+  {name: "Qarshi",        image: "https://i.postimg.cc/vHsJ4y3t/8d249070-4a1c-4325-9104-d6c6126206a7.png", diff: "medium",  diffText: "O'rta"},
+  {name: "Buxoro",        image: "https://i.postimg.cc/3rg656Y2/64c8e689-a28c-4a89-add0-418b3eaff853.png", diff: "medium",  diffText: "O'rta"},
+  {name: "Samarqand",     image: "https://i.postimg.cc/7L291GLJ/e3dd6600-b64d-46c5-a08d-f4713d8bc085.png", diff: "medium",  diffText: "O'rta"},
+  {name: "Xiva",          image: "https://i.postimg.cc/dtV9HS0f/9439237e-06c6-4503-9af9-8608f5316ce2.png", diff: "hard",    diffText: "Qiyin"},
+  {name: "Nukus",         image: "https://i.postimg.cc/wMKkb616/c62743ba-343c-4f82-adf0-2f465f2f86cb.png", diff: "hard",    diffText: "Qiyin"},
+  {name: "Toshkent",      image: "", diff: "hard",    diffText: "Juda qiyin"},
+  {name: "Tashkent City", image: "https://i.postimg.cc/sDhcSGHn/ebc3b672-a0d4-4f99-bf3e-eadc2ea733de.png", diff: "extreme", diffText: "Ekstremal"} // 10-й, витрина внизу
 ];
+
+// Рисует картинку внутри слота, если ссылка задана в CITIES[i].image, иначе — пусто (виден фон-градиент)
+function cityMedia(city) {
+  return city.image ? `<img src="${city.image}" alt="${city.name}">` : '';
+}
 
 function renderCities() {
   const grid = document.getElementById('cities-grid');
@@ -553,7 +561,7 @@ function renderCities() {
     return `
       <div class="city-card ${isLocked ? 'locked' : ''}" onclick="${isLocked ? `toast('${i+1}-daraja kerak')` : `startGame(${i})`}">
         <div class="icon-slot-city city-img" data-slot="city-${i+1}">
-          ${city.emoji}
+          ${cityMedia(city)}
           <div class="city-label-row">
             <div class="city-num">${i+1}</div>
             <div class="city-name">${city.name}</div>
@@ -571,7 +579,7 @@ function renderCities() {
     const isLocked = i >= unlocked;
     showcase.innerHTML = `
       <div class="city-showcase-card ${isLocked ? 'locked' : ''}" onclick="${isLocked ? `toast('${i+1}-daraja kerak')` : `startGame(${i})`}">
-        <div class="showcase-img" data-slot="city-10">${city.emoji}</div>
+        <div class="showcase-img" data-slot="city-10">${cityMedia(city)}</div>
         <div class="showcase-overlay">
           ${isLocked ? `<div class="showcase-lock-center">🔒</div>` : ''}
           <div class="showcase-name-center">${city.name}</div>
