@@ -304,9 +304,17 @@ const CRANE_HEIGHT = 175;
 const CRANE_HOOK_ANCHOR_X = 0.5;
 const CRANE_HOOK_ANCHOR_Y = 0.6;
 // "Длинные верёвки" — расстояние от крюка на картинке крана до домика
-const CRANE_ROPE_LENGTH = 130;
+const CRANE_ROPE_LENGTH = 60;
 // Амплитуда раскачивания домика влево-вправо от центра считается как половина ширины
 // домика (см. startGame) — крюк ходит не дальше половины своей же ширины в каждую сторону
+
+// Картинка самого крюка (вместо простой дуги, нарисованной кодом)
+const CRANE_HOOK_IMAGE = 'https://i.postimg.cc/SKcTyjHs/BCO-01415911-1d28-40e7-9022-0beeb4fbb9ef.png';
+// Высота картинки крюка на экране
+const CRANE_HOOK_HEIGHT = 34;
+// На сколько крюк чуть приподнимается/опускается вместе с раскачиванием (для реалистичности,
+// "чутчуть") — по центру качания ниже всего, по краям чуть выше, как настоящий маятник
+const CRANE_BOB_AMPLITUDE = 14;
 
 // Синяя шапка-окно с крупным заголовком (Statistika / Sovrinlar / Profil), с местом под картинку
 function sectionHero(title, image) {
@@ -345,6 +353,15 @@ if (CRANE_IMAGE) {
   craneImg = new Image();
   craneImg.onload = () => { craneImgReady = true; };
   craneImg.src = CRANE_IMAGE;
+}
+
+// Картинка крюка — тоже грузится один раз
+let craneHookImg = null;
+let craneHookImgReady = false;
+if (CRANE_HOOK_IMAGE) {
+  craneHookImg = new Image();
+  craneHookImg.onload = () => { craneHookImgReady = true; };
+  craneHookImg.src = CRANE_HOOK_IMAGE;
 }
 
 let tg = window.Telegram?.WebApp;
@@ -724,6 +741,7 @@ let crane = {speed: 2};
 // текущее смещение домика от центра (маятник, обновляется каждый кадр в gameLoop)
 let pivotX = 0;
 let craneSwingX = 0;
+let craneSwingY = 0;
 let craneSwingAmplitude = 55;
 let block = {x: 50, y: 20, width: 150, height: 110};
 let tower = [];
@@ -878,9 +896,12 @@ function gameLoop() {
   if (!gameActive) return;
   frame++;
 
-  // Домик качается маятником вокруг центра, пока висит на крюке — не бегает от края до края
+  // Крюк качается маятником вокруг центра, пока висит — не бегает от края до края,
+  // и чуть приподнимается/опускается вместе с раскачиванием (для реалистичности)
   if (!isDropping) {
-    craneSwingX = Math.sin(frame * crane.speed * 0.02) * craneSwingAmplitude;
+    const swingPhase = frame * crane.speed * 0.02;
+    craneSwingX = Math.sin(swingPhase) * craneSwingAmplitude;
+    craneSwingY = -Math.abs(Math.sin(swingPhase)) * CRANE_BOB_AMPLITUDE;
   }
 
   updateParticles();
@@ -1027,7 +1048,7 @@ function draw() {
     drawBlock({x: fallingBlock.x, y: fallingBlock.y, width: fallingBlock.width, height: fallingBlock.height}, tower.length, false);
   } else {
     const bx = hookX - block.width / 2;
-    const carried = {x: bx, y: block.y, width: block.width, height: block.height};
+    const carried = {x: bx, y: block.y + craneSwingY, width: block.width, height: block.height};
     drawBlock(carried, tower.length, true);
   }
 
@@ -1212,16 +1233,20 @@ function drawCrane() {
   const hookX = pivotX + craneSwingX;
 
   if (craneImgReady && craneImg) {
-    // Картинка крана — неподвижная, стоит по центру сверху, прижата к самому верху экрана
+    // Картинка крана — неподвижная, стоит по центру сверху. Рисуем ТОЛЬКО верхнюю часть
+    // картинки (мачту/стрелу, до точки крюка) — нарисованную на самой картинке верёвку
+    // обрезаем, чтобы двигалась только наша, настоящая (см. ниже), а не статичная с картинки.
     const ir = (craneImg.naturalWidth || 1) / (craneImg.naturalHeight || 1);
     const craneW = CRANE_HEIGHT * ir;
     const craneDrawX = pivotX - craneW * CRANE_HOOK_ANCHOR_X;
-    ctx.drawImage(craneImg, craneDrawX, 0, craneW, CRANE_HEIGHT);
+    const srcW = craneImg.naturalWidth || 1;
+    const srcCropH = (craneImg.naturalHeight || 1) * CRANE_HOOK_ANCHOR_Y;
+    ctx.drawImage(craneImg, 0, 0, srcW, srcCropH, craneDrawX, 0, craneW, hookAnchorY);
 
     // Прячем значок/водяной знак в левом верхнем углу картинки крана — закрашиваем цветом неба.
     // Если пятно будет видно (размер/цвет не совпал) — подправь ширину/высоту ниже.
     ctx.fillStyle = '#b7dff2';
-    ctx.fillRect(craneDrawX, 0, craneW * 0.16, CRANE_HEIGHT * 0.13);
+    ctx.fillRect(craneDrawX, 0, craneW * 0.16, hookAnchorY * 0.25);
   } else {
     // Запасной вариант без картинки: простая мачта по центру
     ctx.fillStyle = '#6b7785';
@@ -1231,20 +1256,32 @@ function drawCrane() {
     ctx.fill();
   }
 
-  // трос — качается вместе с домиком (у основания чуть меньше, у крюка сильнее — эффект маятника)
+  // Крюк едет как тележка налево-направо и чуть приподнимается/опускается (для реалистичности)
+  const hookY = block.y + craneSwingY;
+
+  // две верёвки (буквой V к крюку) держат домик с двух сторон
+  const ropeSpread = block.width * 0.26;
   ctx.strokeStyle = '#3a4048';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(pivotX + craneSwingX * 0.2, hookAnchorY);
-  ctx.lineTo(hookX, block.y);
+  ctx.moveTo(hookX, hookAnchorY);
+  ctx.lineTo(hookX - ropeSpread, hookY);
+  ctx.moveTo(hookX, hookAnchorY);
+  ctx.lineTo(hookX + ropeSpread, hookY);
   ctx.stroke();
 
-  // крюк
-  ctx.strokeStyle = '#3a4048';
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.arc(hookX, block.y - 3, 4, 0.2, Math.PI - 0.2);
-  ctx.stroke();
+  // сам крюк — картинка (если задана), иначе простая дуга кодом
+  if (craneHookImgReady && craneHookImg) {
+    const hir = (craneHookImg.naturalWidth || 1) / (craneHookImg.naturalHeight || 1);
+    const hookW = CRANE_HOOK_HEIGHT * hir;
+    ctx.drawImage(craneHookImg, hookX - hookW / 2, hookY - 6, hookW, CRANE_HOOK_HEIGHT);
+  } else {
+    ctx.strokeStyle = '#3a4048';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(hookX, hookY - 3, 4, 0.2, Math.PI - 0.2);
+    ctx.stroke();
+  }
 }
 
 function buildBlock() {
@@ -1285,9 +1322,9 @@ function buildBlock() {
   maxCombo = Math.max(maxCombo, comboCount);
 
   if (result === 'PERFECT') {
-    spawnBurst(blockCenter, block.y + block.height / 2, '#f5b301', 16);
+    spawnBurst(blockCenter, block.y + craneSwingY + block.height / 2, '#f5b301', 16);
   } else if (result === 'GOOD') {
-    spawnBurst(blockCenter, block.y + block.height / 2, '#6ab2f2', 8);
+    spawnBurst(blockCenter, block.y + craneSwingY + block.height / 2, '#6ab2f2', 8);
   }
 
   let mult = 1;
@@ -1315,8 +1352,8 @@ function buildBlock() {
     isDropping = true;
     fallingBlock = {
       x: lastBlock.x + (blockCenter - lastCenter) - block.width / 2,
-      y: block.y,
-      startY: block.y,
+      y: block.y + craneSwingY,
+      startY: block.y + craneSwingY,
       targetScreenY: (lastBlock.y - block.height) + worldOffset,
       landWorldY: lastBlock.y - block.height,
       width: block.width,
