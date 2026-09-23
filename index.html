@@ -53,7 +53,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .window{margin:8px 16px;border-radius:var(--radius-lg);position:relative;overflow:hidden}
 
 /* ПЛАШКА №1 — самая верхняя тонкая полоска (бренд + баланс). Часть "стопки окон": накрывает подложку снизу так же, как остальные окна, и умеет показывать картинку-фон. Если задан TOP_IMAGE — заголовок "CityUz" прячется, баланс остаётся всегда (это рабочие данные, а не украшение) */
-.top-strip{margin:8px 16px 0;padding:12px 14px;min-height:75px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--radius-lg) var(--radius-lg) 0 0;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;z-index:1}
+.top-strip{margin:8px 16px 0;padding:8px 14px;min-height:44px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--radius-lg) var(--radius-lg) 0 0;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;z-index:1}
 .top-strip-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 .top-strip::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.88));z-index:0}
 .top-strip.has-image::after{background:linear-gradient(180deg,rgba(10,20,35,.05),rgba(10,20,35,.28))}
@@ -284,6 +284,29 @@ const HERO_IMAGE = 'https://i.postimg.cc/k5Ypmt2s/3f74eccc-cf57-43ca-aa0c-4f7dd0
 const STATS_IMAGE = '';
 const ACH_IMAGE = '';
 const PROFILE_IMAGE = '';
+// Фон игры (кран/башня). Крупная картинка города (небо+здания+улица), которая медленно
+// проезжает вверх-вниз параллельно тому, как растёт башня (параллакс). Пусто — рисуется
+// простое небо кодом (запасной вариант, ничего не сломается, пока картинка не добавлена).
+const GAME_BG_IMAGE = 'https://i.postimg.cc/RV8qbvQN/Copilot-20260923-151143.png';
+// Доля высоты картинки (0 = самый верх, 1 = самый низ), где на фото находится "линия земли" —
+// площадка/бордюр, на который встанет башня. У этой картинки площадка примерно на 2/3 высоты вниз.
+// Если после проверки в Telegram площадка окажется выше/ниже реальной башни — подвинь это число.
+const GAME_BG_GROUND_FRACTION = 0.67;
+
+// Картинка крана (вместо тележки, рисованной кодом). Кран стоит неподвижно по центру сверху,
+// домик качается на верёвке маятником — чуть влево-вправо, не до краёв экрана.
+const CRANE_IMAGE = 'https://i.postimg.cc/tTKnnySy/Copilot-20260923-152645.png';
+// Высота картинки крана на экране ("повыше") — можно увеличить/уменьшить
+const CRANE_HEIGHT = 175;
+// Где на картинке крана находится крюк/трос: доля ширины (0=слева..1=справа) и доля высоты
+// (0=верх..1=низ) картинки. Прикинуто на глаз — если трос на экране окажется мимо крюка на
+// картинке, подправь эти два числа.
+const CRANE_HOOK_ANCHOR_X = 0.5;
+const CRANE_HOOK_ANCHOR_Y = 0.6;
+// "Длинные верёвки" — расстояние от крюка на картинке крана до домика
+const CRANE_ROPE_LENGTH = 130;
+// Амплитуда раскачивания домика влево-вправо от центра считается как половина ширины
+// домика (см. startGame) — крюк ходит не дальше половины своей же ширины в каждую сторону
 
 // Синяя шапка-окно с крупным заголовком (Statistika / Sovrinlar / Profil), с местом под картинку
 function sectionHero(title, image) {
@@ -305,6 +328,24 @@ const ICONS = {
   user: '<span class="icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.2-3.6 4-5.5 7-5.5s5.8 1.9 7 5.5"/></svg></span>',
   back: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>',
 };
+
+// Картинка фона игры грузится один раз и переиспользуется во всех заездах
+let gameBgImg = null;
+let gameBgReady = false;
+if (GAME_BG_IMAGE) {
+  gameBgImg = new Image();
+  gameBgImg.onload = () => { gameBgReady = true; };
+  gameBgImg.src = GAME_BG_IMAGE;
+}
+
+// Картинка крана — тоже грузится один раз
+let craneImg = null;
+let craneImgReady = false;
+if (CRANE_IMAGE) {
+  craneImg = new Image();
+  craneImg.onload = () => { craneImgReady = true; };
+  craneImg.src = CRANE_IMAGE;
+}
 
 let tg = window.Telegram?.WebApp;
 let user = null;
@@ -373,7 +414,6 @@ function render() {
         ${TOP_IMAGE ? `<img class="top-strip-img" src="${TOP_IMAGE}" alt="">` : ''}
         <div class="brand-row">
           <div class="brand-mark">🏗️</div>
-          ${TOP_IMAGE ? '' : `<div class="brand-word">CityUz</div>`}
         </div>
         <div class="balance-badge">
           <div class="coin">🪙</div>
@@ -679,8 +719,13 @@ function renderAchievements() {
 // ИГРА
 // ============================================================
 let canvas, ctx, animId;
-let crane = {x: 50, dir: 1, speed: 2};
-let block = {x: 50, y: 20, width: 60, height: 30};
+let crane = {speed: 2};
+// Кран стоит на месте, качается домик: pivotX — центр качания (центр экрана), craneSwingX —
+// текущее смещение домика от центра (маятник, обновляется каждый кадр в gameLoop)
+let pivotX = 0;
+let craneSwingX = 0;
+let craneSwingAmplitude = 55;
+let block = {x: 50, y: 20, width: 150, height: 110};
 let tower = [];
 let gameActive = false;
 let lives = 3;
@@ -694,13 +739,41 @@ let perfectCount = 0;
 let totalAttempts = 0;
 let particles = [];
 let frame = 0;
+// КАМЕРА/ПАРАЛЛАКС: worldOffset плавно тянется к worldOffsetTarget. Земля и башня едут
+// с этим значением (1x), картинка фона — медленнее (см. draw()), кран остаётся на месте.
+let worldOffset = 0;
+let worldOffsetTarget = 0;
 
-// Тематическая палитра блоков (голубой/золотой — в духе CityUz)
+// ПАДЕНИЕ ЭТАЖА: домик не встаёт мгновенно, а падает на башню умеренно быстро (см. buildBlock
+// и updateFallingBlock). isDropping блокирует повторный тап, пока предыдущий не приземлился.
+let fallingBlock = null;
+let isDropping = false;
+let landingSquash = 0;
+
+// Фасадные материалы этажей (кирпич / камень) — чередуются, как на референсе:
+// терракотовый кирпич и светлый песочный камень, с белым карнизом сверху каждого этажа
 const BLOCK_PALETTE = [
-  {top:'#7fc8f5', mid:'#5aa8e8', edge:'#3d7cc9'},
-  {top:'#ffd873', mid:'#f5b301', edge:'#c98d00'},
-  {top:'#8fe0c2', mid:'#4fbd93', edge:'#2f8f6c'},
+  {brickTop:'#d98a5a', brickMid:'#c1693f', brickDark:'#9c4f2e', mortar:'rgba(255,235,210,.55)', trim:'#f3ece0'},
+  {brickTop:'#ecd6a8', brickMid:'#dcc190', brickDark:'#b89968', mortar:'rgba(255,250,235,.6)',  trim:'#f6f1e4'},
 ];
+
+// СВОИ КАРТИНКИ ДОМИКОВ (этажей) — вставляй сюда ссылки, они будут чередоваться по этажам
+// (индекс 0, 2, 4… — первая картинка; 1, 3, 5… — вторая, и т.д., можно добавить ещё элементов).
+// Размер этажа один и тот же весь заезд (block.width x block.height, см. startGame), картинка
+// сама аккуратно впишется без искажений (как background-size:cover — лишнее обрежется).
+// Пусто — рисуется запасной вариант кодом (кирпичная кладка выше, BLOCK_PALETTE).
+const FLOOR_IMAGES = [
+  '',
+  '',
+];
+const floorImgObjs = FLOOR_IMAGES.map(url => {
+  if (!url) return null;
+  const img = new Image();
+  img.ready = false;
+  img.onload = () => { img.ready = true; };
+  img.src = url;
+  return img;
+});
 
 function spawnBurst(x, y, colorHex, count) {
   for (let i = 0; i < count; i++) {
@@ -750,12 +823,22 @@ function startGame(cityIndex) {
   totalAttempts = 0;
   particles = [];
   frame = 0;
+  worldOffset = 0;
+  worldOffsetTarget = 0;
+  fallingBlock = null;
+  isDropping = false;
+  landingSquash = 0;
   gameActive = true;
 
   const diffMap = {easy: 1, medium: 1.5, hard: 2, extreme: 2.5};
   const diffMult = diffMap[currentCity.diff] || 1;
   crane.speed = 1.5 * diffMult;
-  block.width = 70 - (diffMult * 10);
+  // Домики крупные (влезают на площадку с фото), высота всегда одна и та же —
+  // сложность влияет только на ширину (уже мишень) и скорость крана
+  block.width = 170 - (diffMult * 20);
+  block.height = 110;
+  // Крюк качается не дальше половины ширины домика в каждую сторону от центра
+  craneSwingAmplitude = block.width / 2;
 
   goal = 10 + (cityIndex * 2);
 
@@ -773,7 +856,19 @@ function startGame(cityIndex) {
     canvas.height = wrap.clientHeight;
     ctx = canvas.getContext('2d');
 
-    tower.push({x: canvas.width/2 - 60, y: canvas.height - 80, width: 120, height: 40});
+    // Кран стоит по центру, домик висит на длинной верёвке ниже крюка на картинке крана
+    pivotX = canvas.width / 2;
+    const hookAnchorY = CRANE_HEIGHT * CRANE_HOOK_ANCHOR_Y;
+    block.y = hookAnchorY + CRANE_ROPE_LENGTH;
+
+    // Стартовый (нулевой) этаж — тех же размеров, что и игровые домики, стоит ровно на
+    // линии площадки (groundY = canvas.height - 40, см. draw())
+    tower.push({
+      x: canvas.width / 2 - block.width / 2,
+      y: (canvas.height - 40) - block.height,
+      width: block.width,
+      height: block.height
+    });
 
     gameLoop();
   }, 100);
@@ -783,21 +878,64 @@ function gameLoop() {
   if (!gameActive) return;
   frame++;
 
-  crane.x += crane.dir * crane.speed;
-  if (crane.x > canvas.width - 80 || crane.x < 20) {
-    crane.dir *= -1;
+  // Домик качается маятником вокруг центра, пока висит на крюке — не бегает от края до края
+  if (!isDropping) {
+    craneSwingX = Math.sin(frame * crane.speed * 0.02) * craneSwingAmplitude;
   }
 
   updateParticles();
+  updateFallingBlock();
+  landingSquash *= 0.82;
+  if (landingSquash < 0.01) landingSquash = 0;
+
   draw();
   animId = requestAnimationFrame(gameLoop);
+}
+
+// Падение домика на башню: не мгновенно, а с разгоном (умеренно быстро), и с эффектом
+// приземления (сплющивание + пыль) в конце
+function updateFallingBlock() {
+  if (!fallingBlock) return;
+
+  const FALL_FRAMES = 16; // умеренно быстро — не "бам", но и не медленно
+  fallingBlock.t = Math.min(1, fallingBlock.t + 1 / FALL_FRAMES);
+  const eased = fallingBlock.t * fallingBlock.t; // разгон, как при настоящем падении
+  fallingBlock.y = fallingBlock.startY + (fallingBlock.targetScreenY - fallingBlock.startY) * eased;
+
+  if (fallingBlock.t >= 1) {
+    // Приземлились — этаж по-настоящему встаёт в башню, камера едет, эффект удара
+    tower.push({
+      x: fallingBlock.x,
+      y: fallingBlock.landWorldY,
+      width: fallingBlock.width,
+      height: fallingBlock.height
+    });
+    worldOffsetTarget += fallingBlock.height;
+    landingSquash = 1;
+    spawnBurst(fallingBlock.x + fallingBlock.width / 2, fallingBlock.targetScreenY + fallingBlock.height, 'rgba(130,110,85,.75)', 10);
+
+    fallingBlock = null;
+    isDropping = false;
+
+    document.getElementById('stat-floors').innerText = floors;
+    document.getElementById('stat-reward').innerText = formatNum(earned);
+    updateHearts();
+
+    if (lives <= 0 || floors >= goal) {
+      endGame();
+    }
+  }
 }
 
 function draw() {
   if (!ctx) return;
   const w = canvas.width, h = canvas.height;
 
-  // --- НЕБО ---
+  // Камера плавно подъезжает к цели — чем больше этажей построено, тем больше сдвиг
+  worldOffset += (worldOffsetTarget - worldOffset) * 0.14;
+  const groundY = h - 40;
+
+  // --- НЕБО (неподвижная база — если картинка фона не долистала верх, снизу видно небо) ---
   const sky = ctx.createLinearGradient(0, 0, 0, h);
   sky.addColorStop(0, '#a9def0');
   sky.addColorStop(0.6, '#cdeaf7');
@@ -805,51 +943,95 @@ function draw() {
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, w, h);
 
-  // мягкое солнце
-  const sunGrad = ctx.createRadialGradient(w - 46, 34, 2, w - 46, 34, 42);
-  sunGrad.addColorStop(0, 'rgba(255,244,200,.95)');
-  sunGrad.addColorStop(1, 'rgba(255,244,200,0)');
-  ctx.fillStyle = sunGrad;
-  ctx.beginPath(); ctx.arc(w - 46, 34, 42, 0, Math.PI*2); ctx.fill();
+  if (gameBgReady && gameBgImg) {
+    // --- ФОН-КАРТИНКА ГОРОДА: едет параллельно игре, но медленнее башни (параллакс) ---
+    // GAME_BG_GROUND_FRACTION — на какой высоте картинки (0 = верх, 1 = низ) находится
+    // "линия земли" (площадка под барьерами), чтобы она совпала с тем местом, где реально
+    // стоит башня в игре. Если после проверки в Telegram площадка на фото окажется чуть выше
+    // или ниже башни — поправь это число (строка с const GAME_BG_GROUND_FRACTION).
+    const bgH = h * 1.6;
+    const bgParallax = worldOffset * 0.4;
+    const bgY = (groundY - GAME_BG_GROUND_FRACTION * bgH) + bgParallax;
+    ctx.drawImage(gameBgImg, 0, bgY, w, bgH);
+  } else {
+    // мягкое солнце
+    const sunGrad = ctx.createRadialGradient(w - 46, 34, 2, w - 46, 34, 42);
+    sunGrad.addColorStop(0, 'rgba(255,244,200,.95)');
+    sunGrad.addColorStop(1, 'rgba(255,244,200,0)');
+    ctx.fillStyle = sunGrad;
+    ctx.beginPath(); ctx.arc(w - 46, 34, 42, 0, Math.PI*2); ctx.fill();
 
-  // облака (мягкие, с лёгкой тенью снизу)
-  drawCloud(50 + Math.sin(frame/160)*6, 36, 1);
-  drawCloud(w - 130 + Math.cos(frame/190)*6, 58, 0.8);
-
-  // --- ГОРИЗОНТ / ЗЕМЛЯ ---
-  const groundY = h - 40;
-  ctx.fillStyle = 'rgba(0,40,20,.10)';
-  ctx.fillRect(0, groundY - 3, w, 3);
-  const groundGrad = ctx.createLinearGradient(0, groundY, 0, h);
-  groundGrad.addColorStop(0, '#9ed976');
-  groundGrad.addColorStop(1, '#7cc158');
-  ctx.fillStyle = groundGrad;
-  ctx.fillRect(0, groundY, w, 40);
-  ctx.strokeStyle = 'rgba(255,255,255,.35)';
-  ctx.lineWidth = 2;
-  for (let gx = -((frame*0.3)%18); gx < w; gx += 18) {
-    ctx.beginPath(); ctx.moveTo(gx, groundY + 6); ctx.lineTo(gx + 9, groundY + 6); ctx.stroke();
+    // облака — тоже едут медленнее башни, для того же эффекта параллакса
+    const cloudParallax = worldOffset * 0.4;
+    drawCloud(50 + Math.sin(frame/160)*6, 36 + cloudParallax, 1);
+    drawCloud(w - 130 + Math.cos(frame/190)*6, 58 + cloudParallax, 0.8);
   }
 
-  // --- БАШНЯ ---
+  // --- МИР (земля + башня): едет вместе с камерой на полной скорости ---
+  ctx.save();
+  ctx.translate(0, worldOffset);
+
+  if (gameBgReady && gameBgImg) {
+    // Картинка фона уже сама рисует площадку/тротуар — просто лёгкий контактный контур под башней,
+    // чтобы блоки не выглядели подвешенными в воздухе
+    ctx.fillStyle = 'rgba(0,30,20,.16)';
+    ctx.fillRect(0, groundY - 2, w, 2);
+  } else {
+    // Запасной вариант без картинки: своя нарисованная травка-газон
+    ctx.fillStyle = 'rgba(0,40,20,.10)';
+    ctx.fillRect(0, groundY - 3, w, 3);
+    const groundGrad = ctx.createLinearGradient(0, groundY, 0, groundY + 400);
+    groundGrad.addColorStop(0, '#9ed976');
+    groundGrad.addColorStop(1, '#7cc158');
+    ctx.fillStyle = groundGrad;
+    ctx.fillRect(0, groundY, w, 400);
+    ctx.strokeStyle = 'rgba(255,255,255,.35)';
+    ctx.lineWidth = 2;
+    for (let gx = -((frame*0.3)%18); gx < w; gx += 18) {
+      ctx.beginPath(); ctx.moveTo(gx, groundY + 6); ctx.lineTo(gx + 9, groundY + 6); ctx.stroke();
+    }
+  }
+
   tower.forEach((b, i) => {
-    drawBlock(b, i);
+    // Верхний (только что приземлившийся) этаж на секунду "сплющивается" от удара и пружинит назад
+    if (i === tower.length - 1 && landingSquash > 0.01) {
+      const cx = b.x + b.width / 2, cy = b.y + b.height;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1 + landingSquash * 0.12, 1 - landingSquash * 0.22);
+      ctx.translate(-cx, -cy);
+      drawBlock(b, i);
+      ctx.restore();
+    } else {
+      drawBlock(b, i);
+    }
   });
 
-  // --- КРАН ---
+  ctx.restore();
+
+  // --- КРАН (всегда на фиксированном месте наверху экрана, не едет с камерой) ---
   drawCrane();
 
-  // --- НЕСОМЫЙ БЛОК ---
-  const bx = crane.x + 4 - block.width / 2;
-  const carried = {x: bx, y: block.y, width: block.width, height: block.height};
-  // тень-проекция на земле/башне (подсказка выравнивания)
-  ctx.fillStyle = 'rgba(20,40,60,.10)';
+  // --- ДОМИК: либо падает на башню, либо ждёт на крюке (качается маятником) ---
+  const hookX = pivotX + craneSwingX;
+  const topBlock = tower[tower.length - 1];
+  const shadowY = topBlock.y + worldOffset;
+  const shadowX = fallingBlock ? (fallingBlock.x + fallingBlock.width / 2) : hookX;
+  // тень-подсказка на верхушке текущей башни (место посадки)
+  ctx.fillStyle = 'rgba(20,40,60,.14)';
   ctx.beginPath();
-  ctx.ellipse(crane.x + 4, groundY - 2, block.width * 0.42, 5, 0, 0, Math.PI*2);
+  ctx.ellipse(shadowX, shadowY - 2, block.width * 0.42, 5, 0, 0, Math.PI*2);
   ctx.fill();
-  drawBlock(carried, tower.length, true);
 
-  // --- ЧАСТИЦЫ (эффект PERFECT/GOOD) ---
+  if (fallingBlock) {
+    drawBlock({x: fallingBlock.x, y: fallingBlock.y, width: fallingBlock.width, height: fallingBlock.height}, tower.length, false);
+  } else {
+    const bx = hookX - block.width / 2;
+    const carried = {x: bx, y: block.y, width: block.width, height: block.height};
+    drawBlock(carried, tower.length, true);
+  }
+
+  // --- ЧАСТИЦЫ (эффект PERFECT/GOOD/приземления) ---
   drawParticles();
 }
 
@@ -872,42 +1054,145 @@ function drawCloud(cx, cy, scale) {
 }
 
 function drawBlock(b, index, isCarried) {
-  const pal = BLOCK_PALETTE[index % BLOCK_PALETTE.length];
-
-  // тень под блоком
-  ctx.fillStyle = 'rgba(20,30,50,.12)';
-  ctx.fillRect(b.x + 3, b.y + b.height - 2, b.width, 5);
-
-  const grad = ctx.createLinearGradient(0, b.y, 0, b.y + b.height);
-  grad.addColorStop(0, pal.top);
-  grad.addColorStop(1, pal.mid);
-  ctx.fillStyle = grad;
-  roundRect(b.x, b.y, b.width, b.height, 4);
-  ctx.fill();
-
-  // верхняя грань (объём/ledge)
-  ctx.fillStyle = 'rgba(255,255,255,.45)';
-  roundRect(b.x, b.y, b.width, Math.min(6, b.height * 0.28), 4);
-  ctx.fill();
-
-  // контур
-  ctx.strokeStyle = pal.edge;
-  ctx.lineWidth = 1.5;
-  roundRect(b.x, b.y, b.width, b.height, 4);
-  ctx.stroke();
-
-  // окна
-  ctx.fillStyle = isCarried ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.85)';
-  const winSize = Math.max(6, b.width / 7);
-  for (let wx = b.x + 8; wx < b.x + b.width - winSize; wx += winSize + 6) {
-    ctx.fillRect(wx, b.y + b.height * 0.42, winSize * 0.7, b.height * 0.32);
+  // Если для этого этажа задана своя картинка домика (и она уже загрузилась) — рисуем её
+  const floorImg = floorImgObjs.length ? floorImgObjs[index % floorImgObjs.length] : null;
+  if (floorImg && floorImg.ready) {
+    drawBlockImage(b, floorImg, isCarried);
+    return;
   }
 
+  const pal = BLOCK_PALETTE[index % BLOCK_PALETTE.length];
+  const r = 3;
+
+  // тень контакта с этажом снизу
+  ctx.fillStyle = 'rgba(20,15,10,.18)';
+  ctx.fillRect(b.x + 2, b.y + b.height - 2, b.width - 4, 4);
+
+  ctx.save();
+  roundRect(b.x, b.y, b.width, b.height, r);
+  ctx.clip();
+
+  // кирпичная/каменная кладка — объёмный градиент по высоте
+  const grad = ctx.createLinearGradient(b.x, b.y, b.x, b.y + b.height);
+  grad.addColorStop(0, pal.brickTop);
+  grad.addColorStop(0.55, pal.brickMid);
+  grad.addColorStop(1, pal.brickDark);
+  ctx.fillStyle = grad;
+  ctx.fillRect(b.x, b.y, b.width, b.height);
+
+  // ряды кладки со смещением через ряд (мортир — швы между кирпичами)
+  const courseH = Math.max(5, b.height / 8);
+  const brickW = Math.max(10, b.width / 4);
+  ctx.strokeStyle = pal.mortar;
+  ctx.lineWidth = 1;
+  let row = 0;
+  for (let cy = b.y; cy < b.y + b.height; cy += courseH) {
+    ctx.beginPath(); ctx.moveTo(b.x, cy); ctx.lineTo(b.x + b.width, cy); ctx.stroke();
+    const offset = (row % 2 === 0) ? 0 : brickW / 2;
+    for (let cx = b.x - brickW + offset; cx < b.x + b.width; cx += brickW) {
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, Math.min(cy + courseH, b.y + b.height)); ctx.stroke();
+    }
+    row++;
+  }
+
+  // боковой свет/тень для объёма (светлее слева, темнее справа)
+  const sideShade = ctx.createLinearGradient(b.x, 0, b.x + b.width, 0);
+  sideShade.addColorStop(0, 'rgba(255,255,255,.12)');
+  sideShade.addColorStop(0.7, 'rgba(0,0,0,0)');
+  sideShade.addColorStop(1, 'rgba(0,0,0,.2)');
+  ctx.fillStyle = sideShade;
+  ctx.fillRect(b.x, b.y, b.width, b.height);
+
+  ctx.restore();
+
+  // белый карниз сверху этажа (как на референсе — граница между этажами)
+  const trimH = Math.max(3, Math.min(7, b.height * 0.16));
+  ctx.fillStyle = pal.trim;
+  roundRect(b.x - 1, b.y, b.width + 2, trimH, 2);
+  ctx.fill();
+
+  // окна: 1–3 в ряд по ширине этажа, с рамой, стеклом, переплётом и бликом
+  const winCount = Math.max(1, Math.min(3, Math.round(b.width / 48)));
+  const winGap = Math.max(5, b.width * 0.06);
+  const winW = (b.width - winGap * (winCount + 1)) / winCount;
+  const winY = b.y + b.height * 0.4;
+  const winH = b.height * 0.42;
+  for (let i = 0; i < winCount; i++) {
+    const wx = b.x + winGap + i * (winW + winGap);
+    ctx.fillStyle = pal.trim;
+    roundRect(wx - 2, winY - 2, winW + 4, winH + 4, 2);
+    ctx.fill();
+
+    const glass = ctx.createLinearGradient(wx, winY, wx, winY + winH);
+    glass.addColorStop(0, isCarried ? '#bfe6f7' : '#8fd3ee');
+    glass.addColorStop(1, isCarried ? '#7bb9d6' : '#3f8fb8');
+    ctx.fillStyle = glass;
+    ctx.fillRect(wx, winY, winW, winH);
+
+    ctx.strokeStyle = pal.trim;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(wx + winW / 2, winY); ctx.lineTo(wx + winW / 2, winY + winH);
+    ctx.moveTo(wx, winY + winH / 2); ctx.lineTo(wx + winW, winY + winH / 2);
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(255,255,255,.35)';
+    ctx.fillRect(wx + 2, winY + 2, Math.max(2, winW * 0.22), winH * 0.4);
+  }
+
+  // общий контур этажа
+  ctx.strokeStyle = pal.brickDark;
+  ctx.lineWidth = 1.2;
+  roundRect(b.x, b.y, b.width, b.height, r);
+  ctx.stroke();
+
   if (isCarried) {
-    // блик выделения на несомом блоке
-    ctx.strokeStyle = 'rgba(255,255,255,.8)';
+    // блик выделения на несомом блоке (видно, что он "активный")
+    ctx.strokeStyle = 'rgba(255,255,255,.85)';
     ctx.lineWidth = 2;
-    roundRect(b.x - 1, b.y - 1, b.width + 2, b.height + 2, 5);
+    roundRect(b.x - 1, b.y - 1, b.width + 2, b.height + 2, r + 1);
+    ctx.stroke();
+  }
+}
+
+// Рисует свою картинку домика на месте этажа — вписывает без искажений пропорций (лишнее
+// обрезается по краям, как CSS object-fit:cover), с той же скруглённой рамкой, что и у кирпича
+function drawBlockImage(b, img, isCarried) {
+  const r = 3;
+
+  ctx.fillStyle = 'rgba(20,15,10,.18)';
+  ctx.fillRect(b.x + 2, b.y + b.height - 2, b.width - 4, 4);
+
+  ctx.save();
+  roundRect(b.x, b.y, b.width, b.height, r);
+  ctx.clip();
+
+  const ir = (img.naturalWidth || 1) / (img.naturalHeight || 1);
+  const br = b.width / b.height;
+  let dw, dh, dx, dy;
+  if (ir > br) {
+    dh = b.height;
+    dw = dh * ir;
+    dx = b.x - (dw - b.width) / 2;
+    dy = b.y;
+  } else {
+    dw = b.width;
+    dh = dw / ir;
+    dx = b.x;
+    dy = b.y - (dh - b.height) / 2;
+  }
+  ctx.drawImage(img, dx, dy, dw, dh);
+  ctx.restore();
+
+  ctx.strokeStyle = 'rgba(0,0,0,.25)';
+  ctx.lineWidth = 1.2;
+  roundRect(b.x, b.y, b.width, b.height, r);
+  ctx.stroke();
+
+  if (isCarried) {
+    ctx.strokeStyle = 'rgba(255,255,255,.85)';
+    ctx.lineWidth = 2;
+    roundRect(b.x - 1, b.y - 1, b.width + 2, b.height + 2, r + 1);
     ctx.stroke();
   }
 }
@@ -923,56 +1208,51 @@ function roundRect(x, y, w, h, r) {
 }
 
 function drawCrane() {
-  const railY = 30;
-  const w = canvas.width;
+  const hookAnchorY = CRANE_HEIGHT * CRANE_HOOK_ANCHOR_Y;
+  const hookX = pivotX + craneSwingX;
 
-  // рельс
-  const railGrad = ctx.createLinearGradient(0, railY, 0, railY + 8);
-  railGrad.addColorStop(0, '#6b7785');
-  railGrad.addColorStop(1, '#454f5b');
-  ctx.fillStyle = railGrad;
-  ctx.fillRect(0, railY, w, 6);
+  if (craneImgReady && craneImg) {
+    // Картинка крана — неподвижная, стоит по центру сверху, прижата к самому верху экрана
+    const ir = (craneImg.naturalWidth || 1) / (craneImg.naturalHeight || 1);
+    const craneW = CRANE_HEIGHT * ir;
+    const craneDrawX = pivotX - craneW * CRANE_HOOK_ANCHOR_X;
+    ctx.drawImage(craneImg, craneDrawX, 0, craneW, CRANE_HEIGHT);
 
-  // решётчатая мачта (лёгкий узор)
-  ctx.strokeStyle = 'rgba(70,80,95,.35)';
-  ctx.lineWidth = 1.5;
-  for (let x = 10; x < w; x += 24) {
-    ctx.beginPath(); ctx.moveTo(x, railY + 6); ctx.lineTo(x + 12, railY + 12); ctx.stroke();
+    // Прячем значок/водяной знак в левом верхнем углу картинки крана — закрашиваем цветом неба.
+    // Если пятно будет видно (размер/цвет не совпал) — подправь ширину/высоту ниже.
+    ctx.fillStyle = '#b7dff2';
+    ctx.fillRect(craneDrawX, 0, craneW * 0.16, CRANE_HEIGHT * 0.13);
+  } else {
+    // Запасной вариант без картинки: простая мачта по центру
+    ctx.fillStyle = '#6b7785';
+    ctx.fillRect(pivotX - 4, 0, 8, hookAnchorY);
+    ctx.fillStyle = '#f5b301';
+    roundRect(pivotX - 16, hookAnchorY - 8, 32, 14, 3);
+    ctx.fill();
   }
 
-  // кабина крана (тележка)
-  ctx.fillStyle = '#f5b301';
-  roundRect(crane.x - 10, railY - 10, 24, 14, 3);
-  ctx.fill();
-  ctx.strokeStyle = '#c98d00';
-  ctx.lineWidth = 1.5;
-  roundRect(crane.x - 10, railY - 10, 24, 14, 3);
-  ctx.stroke();
-  ctx.fillStyle = 'rgba(255,255,255,.55)';
-  ctx.fillRect(crane.x - 6, railY - 7, 8, 6);
-
-  // трос
+  // трос — качается вместе с домиком (у основания чуть меньше, у крюка сильнее — эффект маятника)
   ctx.strokeStyle = '#3a4048';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(crane.x + 4, railY + 8);
-  ctx.lineTo(crane.x + 4, block.y);
+  ctx.moveTo(pivotX + craneSwingX * 0.2, hookAnchorY);
+  ctx.lineTo(hookX, block.y);
   ctx.stroke();
 
   // крюк
   ctx.strokeStyle = '#3a4048';
   ctx.lineWidth = 2.5;
   ctx.beginPath();
-  ctx.arc(crane.x + 4, block.y - 3, 4, 0.2, Math.PI - 0.2);
+  ctx.arc(hookX, block.y - 3, 4, 0.2, Math.PI - 0.2);
   ctx.stroke();
 }
 
 function buildBlock() {
-  if (!gameActive) return;
+  if (!gameActive || isDropping) return;
 
   totalAttempts++;
   const lastBlock = tower[tower.length - 1];
-  const blockCenter = crane.x + 4;
+  const blockCenter = pivotX + craneSwingX;
   const lastCenter = lastBlock.x + lastBlock.width / 2;
   const diff = Math.abs(blockCenter - lastCenter);
   const tolerance = lastBlock.width / 2;
@@ -1029,20 +1309,28 @@ function buildBlock() {
   setTimeout(() => overlay.classList.remove('show'), 600);
 
   if (result !== 'MISS') {
-    tower.push({
+    // Домик не встаёт сразу — отпускается с крюка и падает на башню (см. updateFallingBlock).
+    // Пока падает — новый тап не проходит (isDropping), а стата/камера/проверка на победу
+    // обновятся только в момент приземления.
+    isDropping = true;
+    fallingBlock = {
       x: lastBlock.x + (blockCenter - lastCenter) - block.width / 2,
-      y: lastBlock.y - block.height,
+      y: block.y,
+      startY: block.y,
+      targetScreenY: (lastBlock.y - block.height) + worldOffset,
+      landWorldY: lastBlock.y - block.height,
       width: block.width,
-      height: block.height
-    });
-  }
+      height: block.height,
+      t: 0
+    };
+  } else {
+    document.getElementById('stat-floors').innerText = floors;
+    document.getElementById('stat-reward').innerText = formatNum(earned);
+    updateHearts();
 
-  document.getElementById('stat-floors').innerText = floors;
-  document.getElementById('stat-reward').innerText = formatNum(earned);
-  updateHearts();
-
-  if (lives <= 0 || floors >= goal) {
-    endGame();
+    if (lives <= 0 || floors >= goal) {
+      endGame();
+    }
   }
 }
 
