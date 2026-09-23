@@ -42,30 +42,38 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .screen{display:none;flex-direction:column;height:100%;overflow-y:auto;padding-bottom:92px;opacity:0;transform:translateY(8px);transition:opacity .3s var(--ease-out),transform .3s var(--ease-out)}
 .screen.active{display:flex}
 .screen.active.in{opacity:1;transform:translateY(0)}
-#screen-main{padding-bottom:16px}
+#screen-main{padding-bottom:8px;overflow-y:hidden}
+#screen-main .window-cities.sheet-page{flex:1;display:flex;flex-direction:column;min-height:0}
+.cities-scroll{flex:1;overflow-y:auto;min-height:0}
+.nav-bar-inline{flex:none}
 
 /* ОКНА (карточки-секции) */
 .window{margin:8px 16px;border-radius:var(--radius-lg);position:relative;overflow:hidden}
 
-/* ПЛАШКА №1 — самая верхняя тонкая полоска (бренд + баланс) */
-.top-strip{margin:8px 16px 0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--radius-md);box-shadow:var(--shadow-sm)}
-.brand-row{display:flex;align-items:center;gap:7px}
+/* ПЛАШКА №1 — самая верхняя тонкая полоска (бренд + баланс). Часть "стопки окон": накрывает подложку снизу так же, как остальные окна, и умеет показывать картинку-фон */
+.top-strip{margin:8px 16px 0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--radius-lg) var(--radius-lg) 0 0;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;z-index:1}
+.top-strip-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.top-strip::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.88));z-index:0}
+.brand-row{display:flex;align-items:center;gap:7px;position:relative;z-index:1}
 .brand-row .brand-mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark));display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:var(--shadow-glow-blue)}
 .brand-row .brand-word{font-size:14px;font-weight:800;color:var(--color-primary-dark);letter-spacing:.3px}
-.balance-badge{background:var(--color-bg-soft);border-radius:var(--radius-full);padding:6px 13px;display:flex;align-items:center;gap:6px}
+.balance-badge{background:var(--color-bg-soft);border-radius:var(--radius-full);padding:6px 13px;display:flex;align-items:center;gap:6px;position:relative;z-index:1}
 .balance-badge .coin{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;filter:drop-shadow(0 1px 1px rgba(245,179,1,.4))}
 .balance-badge .amount{font-weight:800;font-size:14px;color:var(--color-text)}
 
 /* ОКНО 2 — заголовок-приветствие */
-/* СТРАНИЦА-ПОДЛОЖКА (та же ширина, что и окно городов — края идут вровень) */
-.hero-page{margin:8px 16px 0;background:linear-gradient(135deg,var(--color-primary-soft),var(--color-primary-dark));padding:16px 16px 44px;color:#fff;position:relative;border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+/* СТРАНИЦА-ПОДЛОЖКА (та же ширина, что и окно городов — края идут вровень). Наезжает снизу на top-strip и умеет показывать картинку-фон */
+.hero-page{margin:-14px 16px 0;background:linear-gradient(135deg,var(--color-primary-soft),var(--color-primary-dark));padding:22px 16px 44px;color:#fff;position:relative;overflow:hidden;border-radius:var(--radius-lg) var(--radius-lg) 0 0;z-index:2}
+.hero-page-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.hero-page::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(91,159,232,.72),rgba(53,122,189,.8));z-index:0}
+.hero-page h2,.hero-page p{position:relative;z-index:1}
 .hero-page h2{font-size:16px;font-weight:800;margin-bottom:4px}
 .hero-page p{font-size:12px;opacity:.9}
 
 /* ОКНО 3 — список городов, "страница поверх страницы": наезжает на подложку сверху, края вровень с ней */
 .window-cities{background:#fff;padding:14px 14px 16px;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.7)}
 .window-cities .section-title{padding:0 0 10px}
-.sheet-page{margin-top:-26px;position:relative;z-index:2}
+.sheet-page{margin-top:-26px;position:relative;z-index:3}
 
 /* ИКОНОЧНЫЕ СЛОТЫ (сюда позже вставляются собственные картинки) */
 .icon-slot{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.16);border:1.5px dashed rgba(255,255,255,.45);border-radius:var(--radius-md);color:#fff}
@@ -116,6 +124,13 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .nav-btn.active{color:var(--color-primary);transform:translateY(-1px)}
 .nav-btn .icon{display:flex;align-items:center;justify-content:center;transition:transform .2s}
 .nav-btn.active .icon{transform:scale(1.12)}
+
+/* ШАПКА-ОКНО ОСТАЛЬНЫХ ЭКРАНОВ (Statistika / Sovrinlar / Profil) — тот же стиль, что и главный экран: синее окно сверху с крупным заголовком (можно вставить картинку), огромное белое окно снизу вбирает контент до самого низа, вровень с кнопками */
+.section-hero{margin:8px 16px 0;background:linear-gradient(180deg,rgb(12,45,86),rgb(27,55,95));padding:22px 16px 40px;color:#fff;position:relative;overflow:hidden;border-radius:var(--radius-lg) var(--radius-lg) 0 0;flex:none}
+.section-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.section-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,45,86,.25),rgba(27,55,95,.35));z-index:0}
+.section-hero h2{position:relative;z-index:1;font-size:24px;font-weight:900;letter-spacing:.2px}
+.section-body{flex:1;min-height:0;margin:-26px 16px 0;padding:22px 0 8px;background:#fff;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.7);border-radius:var(--radius-lg);position:relative;z-index:2;overflow-y:auto}
 
 /* GAME SCREEN */
 .game-header{padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
@@ -256,6 +271,25 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 const API_URL = 'http://107-189-21-103.sslip.io:8081';
 const BONUS_AMOUNT = 500; // монет за подписку на все каналы
 
+// Картинка-фон для самой верхней плашки (бренд + баланс). Пусто — просто белая плашка.
+const TOP_IMAGE = '';
+// Картинка-фон для баннера-приветствия "Kichik shaharlardan...". Пусто — просто градиент.
+const HERO_IMAGE = '';
+// Картинки-фон для синих шапок остальных экранов. Пусто — просто градиент.
+const STATS_IMAGE = '';
+const ACH_IMAGE = '';
+const PROFILE_IMAGE = '';
+
+// Синяя шапка-окно с крупным заголовком (Statistika / Sovrinlar / Profil), с местом под картинку
+function sectionHero(title, image) {
+  return `
+    <div class="section-hero">
+      ${image ? `<img class="section-hero-img" src="${image}" alt="">` : ''}
+      <h2>${title}</h2>
+    </div>
+  `;
+}
+
 // ============================================================
 // SVG-ИКОНКИ (вместо части эмодзи — для чёткого/единого стиля)
 // ============================================================
@@ -329,8 +363,9 @@ function render() {
     <!-- ГЛАВНЫЙ ЭКРАН -->
     <div class="screen active" id="screen-main">
 
-      <!-- ПЛАШКА №1 (самая верхняя, отдельная полоска) -->
+      <!-- ПЛАШКА №1 (самая верхняя, часть стопки окон, может нести картинку-фон) -->
       <div class="top-strip">
+        ${TOP_IMAGE ? `<img class="top-strip-img" src="${TOP_IMAGE}" alt="">` : ''}
         <div class="brand-row">
           <div class="brand-mark">🏗️</div>
           <div class="brand-word">CityUz</div>
@@ -341,21 +376,24 @@ function render() {
         </div>
       </div>
 
-      <!-- СТРАНИЦА-ПОДЛОЖКА: заголовок-приветствие (лежит снизу, накрывается окном городов) -->
+      <!-- СТРАНИЦА-ПОДЛОЖКА: заголовок-приветствие (накрывает top-strip снизу, сама накрывается окном городов), может нести картинку-фон -->
       <div class="hero-page">
+        ${HERO_IMAGE ? `<img class="hero-page-img" src="${HERO_IMAGE}" alt="">` : ''}
         <h2>Kichik shaharlardan buyuk O'zbekistongacha!</h2>
         <p>Quring, rivojlantiring, g'alaba qozoning!</p>
       </div>
 
       <!-- СТРАНИЦА ПОВЕРХ: окно Shaharlar тянется до конца и вбирает в себя меню -->
       <div class="window window-cities sheet-page">
-        <div class="section-title">Shaharlar (10 ta)</div>
-        <div class="cities-grid" id="cities-grid"></div>
+        <div class="cities-scroll">
+          <div class="section-title">Shaharlar (10 ta)</div>
+          <div class="cities-grid" id="cities-grid"></div>
 
-        <!-- ВИТРИНА (слот иконки №10) -->
-        <div id="city-showcase"></div>
+          <!-- ВИТРИНА (слот иконки №10) -->
+          <div id="city-showcase"></div>
+        </div>
 
-        <!-- МЕНЮ ВНУТРИ ОКНА (только на главном экране) -->
+        <!-- МЕНЮ ВНУТРИ ОКНА (только на главном экране, всегда прижато к низу окна) -->
         <div class="nav-bar nav-bar-inline">
           <button class="nav-btn active" onclick="showScreen('main')">${ICONS.home}Bosh sahifa</button>
           <button class="nav-btn" onclick="showScreen('stats')">${ICONS.stats}Statistika</button>
@@ -367,11 +405,8 @@ function render() {
 
     <!-- СТАТИСТИКА -->
     <div class="screen" id="screen-stats">
-      <div class="game-header">
-        <div></div>
-        <div class="game-title">Statistika</div>
-        <div></div>
-      </div>
+      ${sectionHero('Statistika', STATS_IMAGE)}
+      <div class="section-body">
       <div class="stats-main">
         <div class="label">Jami ishlangan</div>
         <div class="value">${formatNum(user.total_earned)} <span style="font-size:14px;color:#7a8ba3">tanga</span></div>
@@ -385,25 +420,21 @@ function render() {
         <div class="best-item"><div class="emoji">🎯</div><div class="num">${Math.round(user.best_accuracy)}%</div><div class="label">Aniqlik</div></div>
         <div class="best-item"><div class="emoji">🔥</div><div class="num">x${user.best_combo}</div><div class="label">Combo</div></div>
       </div>
+      </div>
     </div>
 
     <!-- ДОСТИЖЕНИЯ -->
     <div class="screen" id="screen-ach">
-      <div class="game-header">
-        <div></div>
-        <div class="game-title">Sovrinlar</div>
-        <div></div>
-      </div>
+      ${sectionHero('Sovrinlar', ACH_IMAGE)}
+      <div class="section-body">
       <div id="achievements-list"></div>
+      </div>
     </div>
 
     <!-- ПРОФИЛЬ -->
     <div class="screen" id="screen-profile">
-      <div class="game-header">
-        <div></div>
-        <div class="game-title">Profil</div>
-        <div></div>
-      </div>
+      ${sectionHero('Profil', PROFILE_IMAGE)}
+      <div class="section-body">
       <div class="profile-header">
         <div class="profile-avatar">${(user.first_name || 'И')[0].toUpperCase()}</div>
         <div class="profile-info">
@@ -426,6 +457,7 @@ function render() {
         <div class="menu-item" onclick="toast('Tez kunda!')"><span class="icon">⚙️</span> Sozlamalar <span class="arrow">›</span></div>
         <div class="menu-item" onclick="toast('Admin bilan bogʻlanish')"><span class="icon">❓</span> Yordam <span class="arrow">›</span></div>
         <div class="menu-item" onclick="toast('@your_admin')"><span class="icon">📞</span> Biz bilan bogʻlanish <span class="arrow">›</span></div>
+      </div>
       </div>
     </div>
 
