@@ -150,10 +150,12 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .hearts{padding:0 16px;display:flex;gap:4px;align-items:center}
 .heart{font-size:20px}
 .wind-badge{margin:8px 16px;background:#fff;border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-soft);font-weight:600}
+.combo-badge{margin:0 16px 8px;background:#fff8e6;border:1px solid #ffe1a8;border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:6px;font-size:12px;color:#b8860b;font-weight:800;transition:opacity .2s}
 .game-canvas-wrap{margin:8px 16px;flex:1;position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#87ceeb,#b0e0f5);min-height:280px}
 .game-canvas-wrap canvas{display:block;width:100%;height:100%;touch-action:none}
-.build-btn{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#5fce63,var(--color-success) 50%,var(--color-success-dark));color:#fff;border:none;border-radius:var(--radius-full);padding:14px 60px;font-size:18px;font-weight:900;letter-spacing:1px;box-shadow:var(--shadow-glow-green),inset 0 1px 1px rgba(255,255,255,.4);cursor:pointer;transition:transform .15s var(--ease-out),box-shadow .15s var(--ease-out)}
+.build-btn{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#5fce63,var(--color-success) 50%,var(--color-success-dark));color:#fff;border:none;border-radius:var(--radius-full);padding:14px 60px;font-size:18px;font-weight:900;letter-spacing:1px;box-shadow:var(--shadow-glow-green),inset 0 1px 1px rgba(255,255,255,.4);cursor:pointer;transition:transform .15s var(--ease-out),box-shadow .15s var(--ease-out),opacity .15s}
 .build-btn:active{transform:translateX(-50%) scale(.95);box-shadow:0 4px 10px rgba(76,175,80,.35)}
+.build-btn:disabled{opacity:.45;filter:grayscale(.5);cursor:default;box-shadow:none}
 .result-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#fff;padding:20px 40px;border-radius:20px;text-align:center;display:none;z-index:10}
 .result-overlay.show{display:block;animation:pop .3s}
 @keyframes pop{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
@@ -293,28 +295,31 @@ const GAME_BG_IMAGE = 'https://i.postimg.cc/RV8qbvQN/Copilot-20260923-151143.png
 // Если после проверки в Telegram площадка окажется выше/ниже реальной башни — подвинь это число.
 const GAME_BG_GROUND_FRACTION = 0.67;
 
-// Картинка крана (вместо тележки, рисованной кодом). Кран стоит неподвижно по центру сверху,
-// домик качается на верёвке маятником — чуть влево-вправо, не до краёв экрана.
-const CRANE_IMAGE = 'https://i.postimg.cc/tTKnnySy/Copilot-20260923-152645.png';
-// Высота картинки крана на экране ("повыше") — можно увеличить/уменьшить
-const CRANE_HEIGHT = 175;
-// Где на картинке крана находится крюк/трос: доля ширины (0=слева..1=справа) и доля высоты
-// (0=верх..1=низ) картинки. Прикинуто на глаз — если трос на экране окажется мимо крюка на
-// картинке, подправь эти два числа.
-const CRANE_HOOK_ANCHOR_X = 0.5;
-const CRANE_HOOK_ANCHOR_Y = 0.6;
-// "Длинные верёвки" — расстояние от крюка на картинке крана до домика
-const CRANE_ROPE_LENGTH = 60;
+// НИКАКОЙ картинки мачты/стрелы крана больше нет — только крюк (картинка ниже), закреплённый
+// в самом верху экрана, и 2 верёвки от него вниз к домику.
+// На сколько пикселей от самого верха экрана висит крюк в состоянии покоя (крюк ещё и сам
+// поднимается/опускается на CRANE_HOOK_BOB_AMPLITUDE — см. ниже и gameLoop)
+const CRANE_TOP_ANCHOR_Y = 14;
+// Верёвки — минимальная длина, домик висит почти вплотную под крюком (как на референсе).
+// ВАЖНО: должна быть больше, чем отступ низа картинки крюка (CRANE_HOOK_HEIGHT*0.55, см.
+// drawCrane) — иначе верёвка "выворачивается" вверх вместо вниз. 30 — минимум, при котором
+// она ещё нормально видна как короткая, но идёт вниз, а не ломается.
+const CRANE_ROPE_LENGTH = 30;
 // Амплитуда раскачивания домика влево-вправо от центра считается как половина ширины
-// домика (см. startGame) — крюк ходит не дальше половины своей же ширины в каждую сторону
+// домика (см. startGame) — крюк ходит не дальше половины своей же ширины в каждую сторону.
+// Начальная точка (спавн) — всегда угол 0, домик висит строго ровно. Дальше домик поворачивается
+// НА ВСТРЕЧУ ходу крюка: крюк едет влево — домик поворачивается по часовой стрелке, крюк едет
+// вправо — против часовой (как будто отстаёт/тормозит на повороте), максимум CRANE_TILT_MAX.
+const CRANE_TILT_MAX = Math.PI / 12; // 15°
+// На сколько крюк сам поднимается/опускается, пока качается (не только домик)
+const CRANE_HOOK_BOB_AMPLITUDE = 10;
+// На сколько сам домик чуть приподнимается/опускается на верёвке при раскачивании
+const CRANE_BLOCK_BOB_AMPLITUDE = 12;
 
-// Картинка самого крюка (вместо простой дуги, нарисованной кодом)
+// Картинка самого крюка — висит прямо в самом верху экрана (вместо целой картинки крана)
 const CRANE_HOOK_IMAGE = 'https://i.postimg.cc/SKcTyjHs/BCO-01415911-1d28-40e7-9022-0beeb4fbb9ef.png';
 // Высота картинки крюка на экране
 const CRANE_HOOK_HEIGHT = 34;
-// На сколько крюк чуть приподнимается/опускается вместе с раскачиванием (для реалистичности,
-// "чутчуть") — по центру качания ниже всего, по краям чуть выше, как настоящий маятник
-const CRANE_BOB_AMPLITUDE = 14;
 
 // Синяя шапка-окно с крупным заголовком (Statistika / Sovrinlar / Profil), с местом под картинку
 function sectionHero(title, image) {
@@ -346,16 +351,7 @@ if (GAME_BG_IMAGE) {
   gameBgImg.src = GAME_BG_IMAGE;
 }
 
-// Картинка крана — тоже грузится один раз
-let craneImg = null;
-let craneImgReady = false;
-if (CRANE_IMAGE) {
-  craneImg = new Image();
-  craneImg.onload = () => { craneImgReady = true; };
-  craneImg.src = CRANE_IMAGE;
-}
-
-// Картинка крюка — тоже грузится один раз
+// Картинка крюка — грузится один раз
 let craneHookImg = null;
 let craneHookImgReady = false;
 if (CRANE_HOOK_IMAGE) {
@@ -563,6 +559,7 @@ function render() {
         <span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span>
       </div>
       <div class="wind-badge">💨 <span id="wind-text">Shamol: 0%</span></div>
+      <div class="combo-badge" id="combo-badge">🔥 <span id="combo-text">Bonus: x1.00</span></div>
       <div class="game-canvas-wrap" id="canvas-wrap">
         <canvas id="game-canvas"></canvas>
         <button class="build-btn" id="build-btn" onclick="buildBlock()">QURISH</button>
@@ -743,6 +740,10 @@ let pivotX = 0;
 let craneSwingX = 0;
 let craneSwingY = 0;
 let craneSwingAmplitude = 55;
+// Угол наклона домика — навстречу ходу крюка (см. CRANE_TILT_MAX и gameLoop)
+let craneTilt = 0;
+// Крюк сам чуть поднимается/опускается, пока качается (отдельно от домика)
+let craneHookBobY = 0;
 let block = {x: 50, y: 20, width: 150, height: 110};
 let tower = [];
 let gameActive = false;
@@ -847,14 +848,21 @@ function startGame(cityIndex) {
   isDropping = false;
   landingSquash = 0;
   gameActive = true;
+  // Сброс качания — новая игра всегда начинается с домика, висящего РОВНО по центру
+  // (угол наклона = 0, точка спавна), а не с остатком раскачивания от прошлой игры
+  craneSwingX = 0;
+  craneSwingY = 0;
+  craneTilt = 0;
+  craneHookBobY = 0;
 
   const diffMap = {easy: 1, medium: 1.5, hard: 2, extreme: 2.5};
   const diffMult = diffMap[currentCity.diff] || 1;
   crane.speed = 1.5 * diffMult;
-  // Домики крупные (влезают на площадку с фото), высота всегда одна и та же —
-  // сложность влияет только на ширину (уже мишень) и скорость крана
-  block.width = 170 - (diffMult * 20);
-  block.height = 110;
+  // Домики уже (мишень поменьше — сложнее целиться) и повыше (похожи на настоящую
+  // 3-этажку с двумя подъездами в ряд, см. окна в drawBlock) — сложность влияет
+  // только на ширину и скорость крана, высота всегда одна и та же
+  block.width = 130 - (diffMult * 18);
+  block.height = 150;
   // Крюк качается не дальше половины ширины домика в каждую сторону от центра
   craneSwingAmplitude = block.width / 2;
 
@@ -864,6 +872,9 @@ function startGame(cityIndex) {
   document.getElementById('stat-goal').innerText = goal;
   document.getElementById('stat-floors').innerText = 0;
   document.getElementById('stat-reward').innerText = 0;
+  updateComboBadge();
+  const startBuildBtn = document.getElementById('build-btn');
+  if (startBuildBtn) startBuildBtn.disabled = false;
 
   showScreen('game');
 
@@ -874,10 +885,9 @@ function startGame(cityIndex) {
     canvas.height = wrap.clientHeight;
     ctx = canvas.getContext('2d');
 
-    // Кран стоит по центру, домик висит на длинной верёвке ниже крюка на картинке крана
+    // Крюк висит по центру в самом верху экрана, домик — на верёвках ниже него
     pivotX = canvas.width / 2;
-    const hookAnchorY = CRANE_HEIGHT * CRANE_HOOK_ANCHOR_Y;
-    block.y = hookAnchorY + CRANE_ROPE_LENGTH;
+    block.y = CRANE_TOP_ANCHOR_Y + CRANE_ROPE_LENGTH;
 
     // Стартовый (нулевой) этаж — тех же размеров, что и игровые домики, стоит ровно на
     // линии площадки (groundY = canvas.height - 40, см. draw())
@@ -896,12 +906,21 @@ function gameLoop() {
   if (!gameActive) return;
   frame++;
 
-  // Крюк качается маятником вокруг центра, пока висит — не бегает от края до края,
-  // и чуть приподнимается/опускается вместе с раскачиванием (для реалистичности)
+  // Точка спавна — угол 0 (домик висит ровно). Дальше: крюк едет влево-вправо по синусоиде,
+  // домик поворачивается НАВСТРЕЧУ его ходу (влево едет — по часовой, вправо едет — против
+  // часовой, отсюда знак "минус").
   if (!isDropping) {
     const swingPhase = frame * crane.speed * 0.02;
     craneSwingX = Math.sin(swingPhase) * craneSwingAmplitude;
-    craneSwingY = -Math.abs(Math.sin(swingPhase)) * CRANE_BOB_AMPLITUDE;
+    craneTilt = -Math.sin(swingPhase) * CRANE_TILT_MAX;
+    craneHookBobY = Math.sin(swingPhase * 2) * CRANE_HOOK_BOB_AMPLITUDE;
+    // ВАЖНО: домик поднимается/опускается СТРОГО вместе с крюком (та же самая величина
+    // craneHookBobY), а не по своей отдельной формуле, как было раньше. Верёвка между ними
+    // жёсткая и имеет фиксированную длину (CRANE_ROPE_LENGTH) — если бы крюк и домик
+    // двигались по вертикали по-разным формулам (с разной амплитудой/частотой), расстояние
+    // между ними каждый кадр менялось бы, и верёвка визуально "растягивалась/сжималась",
+    // из-за чего и казалось, что она болтается сама по себе. Теперь оно неизменно.
+    craneSwingY = craneHookBobY;
   }
 
   updateParticles();
@@ -913,38 +932,141 @@ function gameLoop() {
   animId = requestAnimationFrame(gameLoop);
 }
 
-// Падение домика на башню: не мгновенно, а с разгоном (умеренно быстро), и с эффектом
-// приземления (сплющивание + пыль) в конце
+// Падение домика — ТРИ ФАЗЫ, как в реальной физике:
+//   1) 'drop'   — домик падает вниз на верхушку башни почти мгновенно (быстрый щелчок, а не
+//                 медленное планирование). Считаем по РЕАЛЬНОМУ времени (performance.now()),
+//                 а не по кадрам, чтобы на телефонах с частотой экрана 90/120 Гц оно не
+//                 превращалось в мгновенный телепорт без всякого движения вообще.
+//   2) 'wobble' — и только если центр тяжести оказался за краем опоры (не PERFECT/GOOD) —
+//                 домик коротко шатается/дрожит на грани равновесия (нарастающая амплитуда)...
+//   3) 'topple' — ...а затем наклоняется (вращается вокруг того самого края, на который
+//                 опёрся, как дверь на петле) и срывается вниз мимо башни. Если же центр
+//                 тяжести был над опорой — фаз 2 и 3 нет, домик просто остаётся стоять.
+const FALL_DURATION_MS = 400;     // нормальная скорость падения на верхушку башни (была почти мгновенной)
+const WOBBLE_DURATION_MS = 350;   // короткое шатание/тряска перед тем, как не удержаться
+const WOBBLE_MAX_ANGLE = 0.16;    // ~9° — амплитуда шатания на пике
+// 'topple' считается настоящей физикой (интегрируем угловую скорость/ускорение по
+// реальному времени), а не заготовленной кривой — чем сильнее домик уже накренился, тем
+// быстрее клонится дальше, как настоящая падающая стена. Сначала потрясся (wobble), а затем
+// где-то за секунду резко наклоняется и падает вниз — ВСЕГДА до конца, пока реально не
+// уйдёт за нижний край экрана (см. flewOffScreen ниже), а не пропадает/тает по таймеру.
+const TOPPLE_MAX_DURATION_MS = 3000; // общий потолок по времени — просто страховка на случай зависания, обычно домик уходит за экран раньше и всё заканчивается по flewOffScreen
+const TOPPLE_GRAVITY = 2.2;          // "сила тяжести" для углового ускорения — крен вокруг края идёт быстрее, чем раньше
+const TOPPLE_SEED_ANGVEL = 0.3;      // лёгкий стартовый толчок, дальше падает уже сама физика
+const TOPPLE_MAX_TIP_ANGLE = 0.75;   // ~43° — до этого угла домик ещё наклоняется вокруг края опоры
+const TOPPLE_FALL_GRAVITY = 1500;    // px/сек² — ускорение свободного падения, когда оторвался от края (быстро долетает до низа экрана)
+
 function updateFallingBlock() {
   if (!fallingBlock) return;
 
-  const FALL_FRAMES = 16; // умеренно быстро — не "бам", но и не медленно
-  fallingBlock.t = Math.min(1, fallingBlock.t + 1 / FALL_FRAMES);
-  const eased = fallingBlock.t * fallingBlock.t; // разгон, как при настоящем падении
-  fallingBlock.y = fallingBlock.startY + (fallingBlock.targetScreenY - fallingBlock.startY) * eased;
+  if (fallingBlock.phase === 'drop') {
+    const elapsed = performance.now() - fallingBlock.startTime;
+    fallingBlock.t = Math.min(1, elapsed / FALL_DURATION_MS);
+    // ease-out: движение видно сразу же, к концу чуть притормаживает перед ударом
+    const eased = 1 - Math.pow(1 - fallingBlock.t, 2);
+    fallingBlock.y = fallingBlock.startY + (fallingBlock.targetScreenY - fallingBlock.startY) * eased;
+    // Магнит виден прямо во время полёта — x плавно едет от точки отпускания (releaseX)
+    // к итоговой, чуть подтянутой к центру точке (landX), а не прыгает туда мгновенно
+    fallingBlock.x = fallingBlock.releaseX + (fallingBlock.landX - fallingBlock.releaseX) * eased;
 
-  if (fallingBlock.t >= 1) {
-    // Приземлились — этаж по-настоящему встаёт в башню, камера едет, эффект удара
-    tower.push({
-      x: fallingBlock.x,
-      y: fallingBlock.landWorldY,
-      width: fallingBlock.width,
-      height: fallingBlock.height
-    });
-    worldOffsetTarget += fallingBlock.height;
-    landingSquash = 1;
-    spawnBurst(fallingBlock.x + fallingBlock.width / 2, fallingBlock.targetScreenY + fallingBlock.height, 'rgba(130,110,85,.75)', 10);
+    if (fallingBlock.t >= 1) {
+      if (fallingBlock.willLand) {
+        // Центр тяжести над опорой — устоял, встаёт в башню целиком
+        tower.push({
+          x: fallingBlock.landX,
+          y: fallingBlock.landWorldY,
+          width: fallingBlock.width,
+          height: fallingBlock.height
+        });
+        worldOffsetTarget += fallingBlock.height;
+        landingSquash = 1;
+        spawnBurst(fallingBlock.landX + fallingBlock.width / 2, fallingBlock.targetScreenY + fallingBlock.height, 'rgba(130,110,85,.75)', 10);
+        finishFallingBlock();
+      } else {
+        // Коснулся верхушки башни, но центр тяжести за краем — короткий стук от касания,
+        // и переходим в фазу шатания (fallingBlock НЕ обнуляем)
+        landingSquash = 0.6;
+        spawnBurst(fallingBlock.landX + fallingBlock.width / 2, fallingBlock.targetScreenY + fallingBlock.height, 'rgba(120,100,80,.7)', 8);
 
-    fallingBlock = null;
-    isDropping = false;
-
-    document.getElementById('stat-floors').innerText = floors;
-    document.getElementById('stat-reward').innerText = formatNum(earned);
-    updateHearts();
-
-    if (lives <= 0 || floors >= goal) {
-      endGame();
+        fallingBlock.phase = 'wobble';
+        fallingBlock.wobbleStartTime = performance.now();
+        fallingBlock.pivotX = fallingBlock.dir >= 0 ? fallingBlock.pivotRight : fallingBlock.pivotLeft;
+        fallingBlock.pivotY = fallingBlock.targetScreenY + fallingBlock.height;
+        fallingBlock.restX = fallingBlock.landX;
+        fallingBlock.restY = fallingBlock.targetScreenY;
+        fallingBlock.rotation = 0;
+        fallingBlock.pivotDX = 0;
+        fallingBlock.pivotDY = 0;
+      }
     }
+  } else if (fallingBlock.phase === 'wobble') {
+    const elapsed = performance.now() - fallingBlock.wobbleStartTime;
+    const t = Math.min(1, elapsed / WOBBLE_DURATION_MS);
+    // Дрожь нарастает по амплитуде (t) и делает ровно 3 полных колебания, так что к концу
+    // (sin 6π = 0) она сама гасится точно в нейтральном положении — без рывка перед наклоном
+    fallingBlock.rotation = Math.sin(t * Math.PI * 6) * WOBBLE_MAX_ANGLE * t;
+    fallingBlock.t = t;
+
+    if (t >= 1) {
+      fallingBlock.phase = 'topple';
+      fallingBlock.subPhase = 'tip'; // сначала наклоняется вокруг края опоры, потом 'fall' — срывается и летит
+      fallingBlock.toppleStartTime = performance.now();
+      fallingBlock.lastPhysicsTime = performance.now();
+      fallingBlock.angle = 0;
+      fallingBlock.angVel = TOPPLE_SEED_ANGVEL; // лёгкий стартовый толчок — дальше уже сама физика
+      fallingBlock.fallVel = 0;
+      fallingBlock.rotation = 0;
+      fallingBlock.pivotDX = 0;
+      fallingBlock.pivotDY = 0;
+      fallingBlock.t = 0;
+    }
+  } else if (fallingBlock.phase === 'topple') {
+    const now = performance.now();
+    const dt = Math.min(0.045, (now - fallingBlock.lastPhysicsTime) / 1000); // капаем dt — от лагов не дёргается
+    fallingBlock.lastPhysicsTime = now;
+    const dir = fallingBlock.dir;
+
+    if (fallingBlock.subPhase === 'tip') {
+      // Настоящая физика: угловое ускорение растёт вместе с углом наклона (как у настоящей
+      // падающей стены) — чем сильнее накренился, тем быстрее клонится дальше сам по себе
+      const angAccel = TOPPLE_GRAVITY * Math.sin(fallingBlock.angle + 0.08);
+      fallingBlock.angVel += angAccel * dt;
+      fallingBlock.angle += fallingBlock.angVel * dt;
+      if (fallingBlock.angle >= TOPPLE_MAX_TIP_ANGLE) {
+        fallingBlock.angle = TOPPLE_MAX_TIP_ANGLE;
+        fallingBlock.subPhase = 'fall';
+      }
+    } else {
+      // Сорвался с края опоры — дальше просто летит вниз мимо башни, довращиваясь по
+      // инерции с той скоростью, что накопил при наклоне (без дополнительного сценария)
+      fallingBlock.fallVel += TOPPLE_FALL_GRAVITY * dt;
+      fallingBlock.pivotDY += fallingBlock.fallVel * dt;
+      fallingBlock.pivotDX += dir * 40 * dt;
+      fallingBlock.angle += fallingBlock.angVel * dt;
+    }
+
+    fallingBlock.rotation = dir * fallingBlock.angle;
+    fallingBlock.t = Math.min(1, (now - fallingBlock.toppleStartTime) / TOPPLE_MAX_DURATION_MS);
+
+    const flewOffScreen = fallingBlock.pivotDY > (canvas.height + fallingBlock.height);
+    if (fallingBlock.t >= 1 || flewOffScreen) {
+      finishFallingBlock();
+    }
+  }
+}
+
+function finishFallingBlock() {
+  fallingBlock = null;
+  isDropping = false;
+  const buildBtn = document.getElementById('build-btn');
+  if (buildBtn) buildBtn.disabled = false;
+
+  document.getElementById('stat-floors').innerText = floors;
+  document.getElementById('stat-reward').innerText = formatNum(earned);
+  updateHearts();
+
+  if (lives <= 0 || floors >= goal) {
+    endGame();
   }
 }
 
@@ -1037,19 +1159,58 @@ function draw() {
   const hookX = pivotX + craneSwingX;
   const topBlock = tower[tower.length - 1];
   const shadowY = topBlock.y + worldOffset;
-  const shadowX = fallingBlock ? (fallingBlock.x + fallingBlock.width / 2) : hookX;
-  // тень-подсказка на верхушке текущей башни (место посадки)
-  ctx.fillStyle = 'rgba(20,40,60,.14)';
-  ctx.beginPath();
-  ctx.ellipse(shadowX, shadowY - 2, block.width * 0.42, 5, 0, 0, Math.PI*2);
-  ctx.fill();
+  // тень-подсказка на верхушке текущей башни (место посадки) — актуальна, пока домик реально
+  // летит ТУДА (фаза 'drop', см. updateFallingBlock); когда он уже шатается/наклоняется/падает
+  // мимо (фазы 'wobble'/'topple') — смысла в ней больше нет, убираем
+  const isTeetering = fallingBlock && (fallingBlock.phase === 'wobble' || fallingBlock.phase === 'topple');
+  if (!isTeetering) {
+    const shadowX = fallingBlock ? (fallingBlock.x + fallingBlock.width / 2) : hookX;
+    ctx.fillStyle = 'rgba(20,40,60,.14)';
+    ctx.beginPath();
+    ctx.ellipse(shadowX, shadowY - 2, block.width * 0.42, 5, 0, 0, Math.PI*2);
+    ctx.fill();
+  }
 
   if (fallingBlock) {
-    drawBlock({x: fallingBlock.x, y: fallingBlock.y, width: fallingBlock.width, height: fallingBlock.height}, tower.length, false);
+    if (isTeetering) {
+      // Не удержался на краю — сначала коснулся башни (это было ещё в фазе 'drop'), потом
+      // шатается на грани равновесия ('wobble'), а затем наклоняется вокруг того самого края,
+      // на который опёрся (как дверь на петле), и срывается вниз, довращиваясь ('topple').
+      // Домик рисуется в своей "точке покоя" (restX/restY), а всё движение — это поворот+снос
+      // холста вокруг pivotX/pivotY, поэтому ничего не дёргается и не исчезает кусками —
+      // падает/шатается весь целиком. Никакого угасания прозрачности тут больше нет — раньше
+      // домик становился невидимым (через globalAlpha) ещё ДО того, как реально долетал до
+      // низа экрана, и это выглядело так, будто он просто "пропадает" в воздухе. Теперь он
+      // остаётся полностью непрозрачным всё время и правда падает вниз, пока физически не
+      // уйдёт за нижний край экрана (см. flewOffScreen в updateFallingBlock).
+      ctx.save();
+      ctx.translate(fallingBlock.pivotX + (fallingBlock.pivotDX || 0), fallingBlock.pivotY + (fallingBlock.pivotDY || 0));
+      ctx.rotate(fallingBlock.rotation || 0);
+      ctx.translate(-fallingBlock.pivotX, -fallingBlock.pivotY);
+      const restBlock = {x: fallingBlock.restX, y: fallingBlock.restY, width: fallingBlock.width, height: fallingBlock.height};
+      drawBlock(restBlock, tower.length, false);
+      drawRopeRoof(restBlock); // верёвка-крыша рисуется тут же, внутри того же поворота — крутится вместе с домиком
+      ctx.restore();
+    } else {
+      const dropBlock = {x: fallingBlock.x, y: fallingBlock.y, width: fallingBlock.width, height: fallingBlock.height};
+      drawBlock(dropBlock, tower.length, false);
+      drawRopeRoof(dropBlock);
+    }
   } else {
+    // Домик на верёвках не просто едет влево-вправо — он качается ОДНОЙ дугой вместе с
+    // верёвкой (craneTilt — общий угол, см. gameLoop и drawCrane): накренён на краях
+    // качания, ровно висит по центру, и верёвки повёрнуты на тот же угол, что и он сам
     const bx = hookX - block.width / 2;
-    const carried = {x: bx, y: block.y + craneSwingY, width: block.width, height: block.height};
+    const by = block.y + craneSwingY;
+    const carried = {x: bx, y: by, width: block.width, height: block.height};
+    ctx.save();
+    ctx.translate(bx + block.width / 2, by);
+    ctx.rotate(craneTilt);
+    ctx.translate(-(bx + block.width / 2), -by);
     drawBlock(carried, tower.length, true);
+    // Верёвку тут отдельно не рисуем — пока домик на крюке, её рисует drawCrane() (она там
+    // приклеена сразу к обоим концам: к крюку и к этим же самым углам домика)
+    ctx.restore();
   }
 
   // --- ЧАСТИЦЫ (эффект PERFECT/GOOD/приземления) ---
@@ -1132,33 +1293,39 @@ function drawBlock(b, index, isCarried) {
   roundRect(b.x - 1, b.y, b.width + 2, trimH, 2);
   ctx.fill();
 
-  // окна: 1–3 в ряд по ширине этажа, с рамой, стеклом, переплётом и бликом
-  const winCount = Math.max(1, Math.min(3, Math.round(b.width / 48)));
-  const winGap = Math.max(5, b.width * 0.06);
-  const winW = (b.width - winGap * (winCount + 1)) / winCount;
-  const winY = b.y + b.height * 0.4;
-  const winH = b.height * 0.42;
-  for (let i = 0; i < winCount; i++) {
-    const wx = b.x + winGap + i * (winW + winGap);
-    ctx.fillStyle = pal.trim;
-    roundRect(wx - 2, winY - 2, winW + 4, winH + 4, 2);
-    ctx.fill();
+  // окна: сетка 2×3 — как у настоящей 3-этажки с двумя подъездами/квартирами в ряд
+  // (каждый этаж башни выглядит отдельным маленьким домом, а не одной плоской полосой)
+  const winCols = 2;
+  const winRows = 3;
+  const winGapX = Math.max(5, b.width * 0.08);
+  const winGapY = Math.max(4, b.height * 0.04);
+  const winW = (b.width - winGapX * (winCols + 1)) / winCols;
+  const winH = (b.height * 0.86 - winGapY * (winRows + 1)) / winRows;
+  const gridTop = b.y + b.height * 0.09;
+  for (let row = 0; row < winRows; row++) {
+    for (let col = 0; col < winCols; col++) {
+      const wx = b.x + winGapX + col * (winW + winGapX);
+      const winY = gridTop + winGapY + row * (winH + winGapY);
+      ctx.fillStyle = pal.trim;
+      roundRect(wx - 2, winY - 2, winW + 4, winH + 4, 2);
+      ctx.fill();
 
-    const glass = ctx.createLinearGradient(wx, winY, wx, winY + winH);
-    glass.addColorStop(0, isCarried ? '#bfe6f7' : '#8fd3ee');
-    glass.addColorStop(1, isCarried ? '#7bb9d6' : '#3f8fb8');
-    ctx.fillStyle = glass;
-    ctx.fillRect(wx, winY, winW, winH);
+      const glass = ctx.createLinearGradient(wx, winY, wx, winY + winH);
+      glass.addColorStop(0, isCarried ? '#bfe6f7' : '#8fd3ee');
+      glass.addColorStop(1, isCarried ? '#7bb9d6' : '#3f8fb8');
+      ctx.fillStyle = glass;
+      ctx.fillRect(wx, winY, winW, winH);
 
-    ctx.strokeStyle = pal.trim;
-    ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    ctx.moveTo(wx + winW / 2, winY); ctx.lineTo(wx + winW / 2, winY + winH);
-    ctx.moveTo(wx, winY + winH / 2); ctx.lineTo(wx + winW, winY + winH / 2);
-    ctx.stroke();
+      ctx.strokeStyle = pal.trim;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(wx + winW / 2, winY); ctx.lineTo(wx + winW / 2, winY + winH);
+      ctx.moveTo(wx, winY + winH / 2); ctx.lineTo(wx + winW, winY + winH / 2);
+      ctx.stroke();
 
-    ctx.fillStyle = 'rgba(255,255,255,.35)';
-    ctx.fillRect(wx + 2, winY + 2, Math.max(2, winW * 0.22), winH * 0.4);
+      ctx.fillStyle = 'rgba(255,255,255,.35)';
+      ctx.fillRect(wx + 2, winY + 2, Math.max(2, winW * 0.22), winH * 0.35);
+    }
   }
 
   // общий контур этажа
@@ -1229,70 +1396,90 @@ function roundRect(x, y, w, h, r) {
 }
 
 function drawCrane() {
-  const hookAnchorY = CRANE_HEIGHT * CRANE_HOOK_ANCHOR_Y;
+  // Никакой мачты/стрелы крана — только крюк, закреплённый в самом верху экрана (ходит
+  // влево-вправо вместе с раскачиванием и сам плавно поднимается/опускается).
   const hookX = pivotX + craneSwingX;
+  const anchorY = CRANE_TOP_ANCHOR_Y + craneHookBobY;
+  const ropeStartY = anchorY + CRANE_HOOK_HEIGHT * 0.55; // где у крюка реально держится трос
 
-  if (craneImgReady && craneImg) {
-    // Картинка крана — неподвижная, стоит по центру сверху. Рисуем ТОЛЬКО верхнюю часть
-    // картинки (мачту/стрелу, до точки крюка) — нарисованную на самой картинке верёвку
-    // обрезаем, чтобы двигалась только наша, настоящая (см. ниже), а не статичная с картинки.
-    const ir = (craneImg.naturalWidth || 1) / (craneImg.naturalHeight || 1);
-    const craneW = CRANE_HEIGHT * ir;
-    const craneDrawX = pivotX - craneW * CRANE_HOOK_ANCHOR_X;
-    const srcW = craneImg.naturalWidth || 1;
-    const srcCropH = (craneImg.naturalHeight || 1) * CRANE_HOOK_ANCHOR_Y;
-    ctx.drawImage(craneImg, 0, 0, srcW, srcCropH, craneDrawX, 0, craneW, hookAnchorY);
-
-    // Прячем значок/водяной знак в левом верхнем углу картинки крана — закрашиваем цветом неба.
-    // Если пятно будет видно (размер/цвет не совпал) — подправь ширину/высоту ниже.
-    ctx.fillStyle = '#b7dff2';
-    ctx.fillRect(craneDrawX, 0, craneW * 0.16, hookAnchorY * 0.25);
-  } else {
-    // Запасной вариант без картинки: простая мачта по центру
-    ctx.fillStyle = '#6b7785';
-    ctx.fillRect(pivotX - 4, 0, 8, hookAnchorY);
-    ctx.fillStyle = '#f5b301';
-    roundRect(pivotX - 16, hookAnchorY - 8, 32, 14, 3);
-    ctx.fill();
+  // Верёвка приклеена ОБОИМИ концами: пока домик реально висит на крюке (fallingBlock ещё
+  // не создан) — верхний конец приклеен к самому крюку (hookX/ropeStartY, те же величины,
+  // что рисуют сам крюк чуть ниже), а нижний — к верхним углам домика, довёрнутым на тот же
+  // craneTilt, что и сам домик в draw(). Все величины (craneSwingX/Y, craneTilt) берутся
+  // из ОДНИХ и тех же переменных в этом же кадре, что и у самого домика — поэтому верёвка
+  // никогда не "отстаёт"/не шатается отдельно, она жёстко привязана к обеим точкам сразу.
+  // Как только домик отпущен и падает/шатается/срывается — он уже физически не на крюке,
+  // и эта часть не рисуется (верёвка в этот момент просто нарисована на самом домике, см.
+  // drawRopeRoof в draw()).
+  if (!fallingBlock) {
+    const hookY = block.y + craneSwingY;
+    const ropeSpread = block.width / 2 - 3;
+    const cosT = Math.cos(craneTilt), sinT = Math.sin(craneTilt);
+    const leftX = hookX - ropeSpread * cosT, leftY = hookY - ropeSpread * sinT;
+    const rightX = hookX + ropeSpread * cosT, rightY = hookY + ropeSpread * sinT;
+    ctx.strokeStyle = '#3a4048';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(hookX, ropeStartY);
+    ctx.lineTo(leftX, leftY);
+    ctx.moveTo(hookX, ropeStartY);
+    ctx.lineTo(rightX, rightY);
+    ctx.stroke();
   }
 
-  // Крюк едет как тележка налево-направо и чуть приподнимается/опускается (для реалистичности)
-  const hookY = block.y + craneSwingY;
-
-  // две верёвки (буквой V к крюку) держат домик с двух сторон
-  const ropeSpread = block.width * 0.26;
-  ctx.strokeStyle = '#3a4048';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(hookX, hookAnchorY);
-  ctx.lineTo(hookX - ropeSpread, hookY);
-  ctx.moveTo(hookX, hookAnchorY);
-  ctx.lineTo(hookX + ropeSpread, hookY);
-  ctx.stroke();
-
-  // сам крюк — картинка (если задана), иначе простая дуга кодом
+  // сам крюк — картинка (если задана), закреплён в самом верху экрана; иначе простая дуга кодом
   if (craneHookImgReady && craneHookImg) {
     const hir = (craneHookImg.naturalWidth || 1) / (craneHookImg.naturalHeight || 1);
     const hookW = CRANE_HOOK_HEIGHT * hir;
-    ctx.drawImage(craneHookImg, hookX - hookW / 2, hookY - 6, hookW, CRANE_HOOK_HEIGHT);
+    ctx.drawImage(craneHookImg, hookX - hookW / 2, anchorY - CRANE_HOOK_HEIGHT * 0.3, hookW, CRANE_HOOK_HEIGHT);
   } else {
     ctx.strokeStyle = '#3a4048';
     ctx.lineWidth = 2.5;
     ctx.beginPath();
-    ctx.arc(hookX, hookY - 3, 4, 0.2, Math.PI - 0.2);
+    ctx.arc(hookX, anchorY + 3, 4, 0.2, Math.PI - 0.2);
     ctx.stroke();
   }
 }
+
+// Верёвка над домиком, статичная "крыша из верёвки" — просто 2 коротких отрезка от верхних
+// углов домика к точке над его центром. НИКАК не зависит от крюка/свинга крана — только от
+// координат самого домика (b.x/b.y/b.width), поэтому её нужно рисовать ВНУТРИ того же
+// ctx.save()/rotate()/translate(), что и сам домик (или вообще без трансформации, если
+// домик в этот момент рисуется без поворота) — тогда верёвка физически "прибита" к домику
+// и крутится/двигается вместе с ним, а не отдельно.
+const ROPE_ROOF_HEIGHT = 20;
+function drawRopeRoof(b) {
+  const topY = b.y - ROPE_ROOF_HEIGHT;
+  const cx = b.x + b.width / 2;
+  ctx.strokeStyle = '#3a4048';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(b.x + 4, b.y);
+  ctx.lineTo(cx, topY);
+  ctx.moveTo(b.x + b.width - 4, b.y);
+  ctx.lineTo(cx, topY);
+  ctx.stroke();
+}
+
+const MAGNET_STRENGTH = 0.4; // домик по умолчанию сам подтягивается к центру этажа снизу
 
 function buildBlock() {
   if (!gameActive || isDropping) return;
 
   totalAttempts++;
   const lastBlock = tower[tower.length - 1];
-  const blockCenter = pivotX + craneSwingX;
   const lastCenter = lastBlock.x + lastBlock.width / 2;
-  const diff = Math.abs(blockCenter - lastCenter);
   const tolerance = lastBlock.width / 2;
+  const rawBlockCenter = pivotX + craneSwingX;
+  const rawDiff = Math.abs(rawBlockCenter - lastCenter);
+  // Магнит: если бросок был не совсем мимо (в пределах допуска), точка приземления сама
+  // чуть подтягивается к центру нижнего этажа во время полёта — прощает мелкую неточность,
+  // но никак не спасает, если кинуть прямо далеко в сторону (это уже не магнит, а промах)
+  const magnetActive = rawDiff < tolerance;
+  const blockCenter = magnetActive ? rawBlockCenter + (lastCenter - rawBlockCenter) * MAGNET_STRENGTH : rawBlockCenter;
+  const diff = Math.abs(blockCenter - lastCenter);
+  const releaseLeft = rawBlockCenter - block.width / 2; // откуда домик визуально стартует (без магнита)
+  const newLeft = blockCenter - block.width / 2;          // где он в итоге реально окажется (с магнитом)
 
   let result, reward, color;
   if (diff < tolerance * 0.15) {
@@ -1307,8 +1494,10 @@ function buildBlock() {
     color = 'good';
     comboCount++;
   } else if (diff < tolerance) {
+    // Домик сел ближе к краю, чем хотелось бы, но опора всё ещё под ним — стоит, просто
+    // без награды за меткость и без комбо (шанс упасть теперь ниже — падает только настоящий MISS)
     result = 'BAD';
-    reward = 50;
+    reward = 30;
     color = 'bad';
     comboCount = 0;
   } else {
@@ -1319,6 +1508,11 @@ function buildBlock() {
     comboCount = 0;
   }
 
+  // РЕАЛЬНАЯ ФИЗИКА: падает целиком (ничего не срезается и не исчезает по кусочкам) только
+  // настоящий MISS — центр тяжести реально за краем опоры. PERFECT/GOOD/BAD — опора под
+  // центром тяжести есть, домик остаётся стоять целиком, как есть (порог падения снижен).
+  const willLand = (result !== 'MISS');
+
   maxCombo = Math.max(maxCombo, comboCount);
 
   if (result === 'PERFECT') {
@@ -1327,10 +1521,8 @@ function buildBlock() {
     spawnBurst(blockCenter, block.y + craneSwingY + block.height / 2, '#6ab2f2', 8);
   }
 
-  let mult = 1;
-  if (comboCount >= 10) mult = 3;
-  else if (comboCount >= 5) mult = 2;
-  else if (comboCount >= 3) mult = 1.5;
+  const mult = getComboMult(comboCount);
+  updateComboBadge();
 
   reward = Math.round(reward * mult);
   earned += reward;
@@ -1340,35 +1532,39 @@ function buildBlock() {
   const text = document.getElementById('result-text');
   const rew = document.getElementById('result-reward');
   text.className = 'result-text result-' + color;
-  text.innerText = result + (mult > 1 ? ` x${mult}` : '');
+  text.innerText = result + (mult > 1 && willLand ? ` x${mult.toFixed(2)}` : '');
   rew.innerText = '+' + formatNum(reward) + ' tanga';
   overlay.classList.add('show');
   setTimeout(() => overlay.classList.remove('show'), 600);
 
-  if (result !== 'MISS') {
-    // Домик не встаёт сразу — отпускается с крюка и падает на башню (см. updateFallingBlock).
-    // Пока падает — новый тап не проходит (isDropping), а стата/камера/проверка на победу
-    // обновятся только в момент приземления.
-    isDropping = true;
-    fallingBlock = {
-      x: lastBlock.x + (blockCenter - lastCenter) - block.width / 2,
-      y: block.y + craneSwingY,
-      startY: block.y + craneSwingY,
-      targetScreenY: (lastBlock.y - block.height) + worldOffset,
-      landWorldY: lastBlock.y - block.height,
-      width: block.width,
-      height: block.height,
-      t: 0
-    };
-  } else {
-    document.getElementById('stat-floors').innerText = floors;
-    document.getElementById('stat-reward').innerText = formatNum(earned);
-    updateHearts();
+  // Домик не встаёт/не исчезает сразу — отпускается с крюка и падает (см. updateFallingBlock).
+  // Он ВСЕГДА сначала летит вниз и касается верхушки башни (фаза 'drop') — и только если
+  // не удержался, дальше наклоняется и падает уже оттуда (фаза 'topple'), а не мимо башни
+  // сразу с крюка. Пока всё это происходит — новый тап не проходит (isDropping, плюс кнопка
+  // QURISH визуально гаснет), а стата/камера/проверка на победу обновятся только в самом конце.
+  isDropping = true;
+  const buildBtn = document.getElementById('build-btn');
+  if (buildBtn) buildBtn.disabled = true;
 
-    if (lives <= 0 || floors >= goal) {
-      endGame();
-    }
-  }
+  const dir = (blockCenter >= lastCenter) ? 1 : -1; // в какую сторону перевешивает, если не удержится
+  fallingBlock = {
+    phase: 'drop',
+    x: releaseLeft,
+    releaseX: releaseLeft, // откуда стартует визуально (место отпускания, без магнита)
+    landX: newLeft,        // куда в итоге притянется за время полёта (с магнитом, если он сработал)
+    y: block.y + craneSwingY,
+    startY: block.y + craneSwingY,
+    targetScreenY: (lastBlock.y - block.height) + worldOffset,
+    landWorldY: lastBlock.y - block.height,
+    width: block.width,
+    height: block.height,
+    t: 0,
+    startTime: performance.now(),
+    willLand: willLand,
+    dir: dir,
+    pivotLeft: lastBlock.x,
+    pivotRight: lastBlock.x + lastBlock.width
+  };
 }
 
 function updateHearts() {
@@ -1376,6 +1572,20 @@ function updateHearts() {
   el.innerHTML = Array(3).fill(0).map((_, i) =>
     `<span class="heart">${i < lives ? '❤️' : '🖤'}</span>`
   ).join('');
+}
+
+// Текущий бонусный множитель по серии удачных попаданий подряд (комбо) — показывается
+// живьём на экране (x1.00 / x1.50 / x2.00 / x3.00), а не только на миг во всплывающем тексте.
+function getComboMult(combo) {
+  if (combo >= 10) return 3;
+  if (combo >= 5) return 2;
+  if (combo >= 3) return 1.5;
+  return 1;
+}
+function updateComboBadge() {
+  const el = document.getElementById('combo-text');
+  if (!el) return;
+  el.innerText = 'Bonus: x' + getComboMult(comboCount).toFixed(2);
 }
 
 async function endGame() {
