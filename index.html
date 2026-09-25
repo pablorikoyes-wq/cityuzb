@@ -289,11 +289,31 @@ const PROFILE_IMAGE = '';
 // Фон игры (кран/башня). Крупная картинка города (небо+здания+улица), которая медленно
 // проезжает вверх-вниз параллельно тому, как растёт башня (параллакс). Пусто — рисуется
 // простое небо кодом (запасной вариант, ничего не сломается, пока картинка не добавлена).
-const GAME_BG_IMAGE = 'https://i.postimg.cc/RV8qbvQN/Copilot-20260923-151143.png';
+const GAME_BG_IMAGE = 'https://i.postimg.cc/yxNmfwpD/50f918e9-4017-4ee2-b3b1-ca4446855348.png';
 // Доля высоты картинки (0 = самый верх, 1 = самый низ), где на фото находится "линия земли" —
 // площадка/бордюр, на который встанет башня. У этой картинки площадка примерно на 2/3 высоты вниз.
 // Если после проверки в Telegram площадка окажется выше/ниже реальной башни — подвинь это число.
 const GAME_BG_GROUND_FRACTION = 0.67;
+// Когда башня становится высокой и камера уезжает выше самой картинки города — дальше вверх
+// идёт уже просто повторяющийся фон неба (без домов), до GAME_SKY_MAX_TILES копий подряд,
+// нарисованных заранее друг над другом, чтобы никогда не было видно пустоты.
+const GAME_SKY_IMAGE = 'https://i.postimg.cc/RV1LdL0C/4562102c-594b-4e62-aebf-27f4500239b9.png';
+const GAME_SKY_MAX_TILES = 5;
+// Облака — появляются только в зоне неба (выше картинки города), возникают то слева, то
+// справа, на случайной высоте, и медленно летят в противоположную сторону, не перекрывая
+// домики (рисуются раньше башни, поэтому всегда позади неё).
+const CLOUD_IMAGES = [
+  'https://i.postimg.cc/wjyJP5qL/499c4ba1-61fb-4268-b862-77713b604f96.png',
+  'https://i.postimg.cc/13h5mD0G/499c4ba1-61fb-4268-b862-77713b604f96.png',
+  'https://i.postimg.cc/Prk5hmQ4/499c4ba1-61fb-4268-b862-77713b604f96.png',
+  'https://i.postimg.cc/0QD1HB3H/499c4ba1-61fb-4268-b862-77713b604f96.png',
+];
+const CLOUD_MAX_ON_SCREEN = 4;
+const CLOUD_SPAWN_CHANCE_PER_FRAME = 0.006;
+const CLOUD_SPEED_MIN = 0.25;
+const CLOUD_SPEED_MAX = 0.55;
+const CLOUD_WIDTH_MIN = 60;
+const CLOUD_WIDTH_MAX = 110;
 
 // НИКАКОЙ картинки мачты/стрелы крана больше нет — только крюк (картинка ниже), закреплённый
 // в самом верху экрана, и 2 верёвки от него вниз к домику.
@@ -349,6 +369,25 @@ if (GAME_BG_IMAGE) {
   gameBgImg.onload = () => { gameBgReady = true; };
   gameBgImg.src = GAME_BG_IMAGE;
 }
+
+// Картинка повторяющегося неба (выше города) — грузится один раз
+let gameSkyImg = null;
+let gameSkyReady = false;
+if (GAME_SKY_IMAGE) {
+  gameSkyImg = new Image();
+  gameSkyImg.onload = () => { gameSkyReady = true; };
+  gameSkyImg.src = GAME_SKY_IMAGE;
+}
+
+// Картинки облаков — грузятся один раз каждая
+const cloudImgs = CLOUD_IMAGES.map(url => {
+  const img = new Image();
+  img.ready = false;
+  img.onload = () => { img.ready = true; };
+  img.src = url;
+  return img;
+});
+let clouds = []; // активные облака на экране прямо сейчас (см. updateClouds/drawClouds)
 
 // Картинка крюка — грузится один раз
 let craneHookImg = null;
@@ -1099,7 +1138,20 @@ function draw() {
     const bgH = h * 1.6;
     const bgParallax = worldOffset * 0.4;
     const bgY = (groundY - GAME_BG_GROUND_FRACTION * bgH) + bgParallax;
+    // Картинка города рисуется только ОДИН раз (у земли). Дальше вверх, там, где картинка
+    // города уже закончилась, идёт просто повторяющийся фон неба (GAME_SKY_IMAGE) —
+    // до GAME_SKY_MAX_TILES копий подряд, нарисованных заранее друг над другом, чтобы даже
+    // при очень высокой башне сверху никогда не было видно пустоты.
     ctx.drawImage(gameBgImg, 0, bgY, w, bgH);
+    if (gameSkyReady && gameSkyImg) {
+      for (let i = 1; i <= GAME_SKY_MAX_TILES; i++) {
+        ctx.drawImage(gameSkyImg, 0, bgY - i * bgH, w, bgH);
+      }
+    }
+
+    // Облака — появляются в зоне неба (выше картинки города), рисуются здесь, ДО башни,
+    // поэтому всегда позади неё и никогда не перекрывают домики (см. updateClouds)
+    drawClouds(bgY);
   } else {
     // мягкое солнце
     const sunGrad = ctx.createRadialGradient(w - 46, 34, 2, w - 46, 34, 42);
@@ -1219,6 +1271,53 @@ function draw() {
 
   // --- ЧАСТИЦЫ (эффект PERFECT/GOOD/приземления) ---
   drawParticles();
+}
+
+// Облака-картинки: спавнятся то слева, то справа, на случайной высоте в полоске неба, которая
+// сейчас реально видна на экране (то есть уже за пределами картинки города), и летят по прямой
+// в противоположную сторону. Рисуются раньше башни (см. draw()) — поэтому всегда позади неё и
+// никогда не перекрывают домики.
+function drawClouds(bgY) {
+  const w = canvas.width, h = canvas.height;
+  const skyTop = 0;
+  const skyBottom = Math.min(bgY, h);
+
+  if (skyBottom - skyTop > 20 && clouds.length < CLOUD_MAX_ON_SCREEN && Math.random() < CLOUD_SPAWN_CHANCE_PER_FRAME) {
+    const readyIdxs = [];
+    for (let i = 0; i < cloudImgs.length; i++) if (cloudImgs[i].ready) readyIdxs.push(i);
+    if (readyIdxs.length) {
+      const img = cloudImgs[readyIdxs[Math.floor(Math.random() * readyIdxs.length)]];
+      const cw = CLOUD_WIDTH_MIN + Math.random() * (CLOUD_WIDTH_MAX - CLOUD_WIDTH_MIN);
+      const ratio = (img.naturalHeight || 60) / (img.naturalWidth || 110);
+      const ch = cw * ratio;
+      const fromLeft = Math.random() < 0.5;
+      const speed = CLOUD_SPEED_MIN + Math.random() * (CLOUD_SPEED_MAX - CLOUD_SPEED_MIN);
+      const spawnY = skyTop + Math.random() * Math.max(10, (skyBottom - skyTop - ch));
+      clouds.push({
+        img,
+        x: fromLeft ? -cw : w + cw,
+        vx: fromLeft ? speed : -speed,
+        w: cw, h: ch,
+        // Облако "приклеено" к тому же слою параллакса, что и небо — держит фиксированное
+        // расстояние от верхней границы городской картинки, поэтому едет вместе с фоном
+        // вверх-вниз, а не отдельно от него, и двигается по экрану только по горизонтали
+        bgOffset: bgY - spawnY
+      });
+    }
+  }
+
+  for (let i = clouds.length - 1; i >= 0; i--) {
+    const c = clouds[i];
+    c.x += c.vx;
+    if (c.x < -c.w - 20 || c.x > w + c.w + 20) {
+      clouds.splice(i, 1);
+      continue;
+    }
+    const cy = bgY - c.bgOffset;
+    if (c.img.ready) {
+      ctx.drawImage(c.img, c.x, cy, c.w, c.h);
+    }
+  }
 }
 
 function drawCloud(cx, cy, scale) {
