@@ -46,13 +46,12 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 #screen-main .window-cities.sheet-page{flex:1;display:flex;flex-direction:column;min-height:0}
 .cities-scroll{flex:1;overflow-y:auto;min-height:0}
 
-/* Меню теперь встроено в белые окна на ВСЕХ экранах со списком (не только главном) — отдельная плашка внизу экрана больше не нужна */
 #screen-stats,#screen-ach,#screen-profile{padding-bottom:8px;overflow-y:hidden}
 
 /* ОКНА (карточки-секции) */
 .window{margin:8px 16px;border-radius:var(--radius-lg);position:relative;overflow:hidden}
 
-/* ПЛАШКА №1 — самая верхняя тонкая полоска (бренд + баланс). Часть "стопки окон": накрывает подложку снизу так же, как остальные окна, и умеет показывать картинку-фон. Если задан TOP_IMAGE — заголовок "CityUz" прячется, баланс остаётся всегда (это рабочие данные, а не украшение) */
+/* ПЛАШКА №1 — самая верхняя тонкая полоска (бренд + баланс) */
 .top-strip{margin:8px 16px 0;padding:8px 14px;min-height:44px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:var(--radius-lg) var(--radius-lg) 0 0;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;z-index:1}
 .top-strip-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 .top-strip::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.88));z-index:0}
@@ -64,8 +63,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .balance-badge .coin{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;filter:drop-shadow(0 1px 1px rgba(245,179,1,.4))}
 .balance-badge .amount{font-weight:800;font-size:14px;color:var(--color-text)}
 
-/* ОКНО 2 — заголовок-приветствие */
-/* СТРАНИЦА-ПОДЛОЖКА (та же ширина, что и окно городов — края идут вровень). Наезжает снизу на top-strip и умеет показывать картинку-фон. Если задан HERO_IMAGE — текст полностью прячется, остаётся чистое фото */
+/* СТРАНИЦА-ПОДЛОЖКА (баннер-приветствие) */
 .hero-page{margin:-14px 16px 0;background:linear-gradient(135deg,var(--color-primary-soft),var(--color-primary-dark));padding:22px 16px 44px;min-height:117px;display:flex;flex-direction:column;justify-content:center;color:#fff;position:relative;overflow:hidden;border-radius:var(--radius-lg) var(--radius-lg) 0 0;z-index:2}
 .hero-page-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 .hero-page::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(91,159,232,.72),rgba(53,122,189,.8));z-index:0}
@@ -74,12 +72,11 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .hero-page h2{font-size:16px;font-weight:800;margin-bottom:4px}
 .hero-page p{font-size:12px;opacity:.9}
 
-/* ОКНО 3 — список городов, "страница поверх страницы": наезжает на подложку сверху, края вровень с ней */
+/* ОКНО 3 — список городов */
 .window-cities{background:#fff;padding:14px 14px 16px;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.7)}
 .window-cities .section-title{padding:0 0 10px}
 .sheet-page{margin-top:-26px;position:relative;z-index:3}
 
-/* ИКОНОЧНЫЕ СЛОТЫ (сюда позже вставляются собственные картинки) */
 .icon-slot{display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.16);border:1.5px dashed rgba(255,255,255,.45);border-radius:var(--radius-md);color:#fff}
 
 /* CITIES */
@@ -103,7 +100,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .lock-icon{position:absolute;top:4px;right:4px;font-size:14px}
 .city-card.locked::after{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px}
 
-/* ВИТРИНА: 10-й город (Tashkent City) — крупная карточка в самом низу, надпись по центру */
+/* ВИТРИНА: 10-й город */
 .city-showcase-card{margin:10px 0 0;height:120px;position:relative;border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;box-shadow:var(--shadow-lg);transition:transform .18s var(--ease-out)}
 .city-showcase-card:active{transform:scale(.98)}
 .city-showcase-card .showcase-img{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:52px;background:linear-gradient(150deg,#5b7fae,#2f4d78 60%,#1a2b42)}
@@ -114,14 +111,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .city-showcase-card .showcase-sub-center{font-size:11px;color:rgba(255,255,255,.8);font-weight:600}
 .city-showcase-card.locked .showcase-img{filter:grayscale(.35);opacity:.85}
 
-/* PROGRESS */
-.xp-bar{margin:8px 16px;background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px}
-.xp-bar .label{font-size:11px;color:var(--color-text-soft);font-weight:600}
-.xp-bar .bar{flex:1;height:8px;background:var(--color-bg);border-radius:4px;overflow:hidden}
-.xp-bar .fill{height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-primary-light));border-radius:4px;transition:width .3s}
-.xp-bar .value{font-size:11px;font-weight:700;color:var(--color-text)}
-
-/* НИЖНЕЕ МЕНЮ — только встроенное в белые окна (никакой отдельной плашки, прибитой к низу экрана) */
+/* НИЖНЕЕ МЕНЮ */
 .nav-bar-inline{display:flex;justify-content:center;gap:10px;flex:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--color-divider)}
 .section-body .nav-bar-inline{margin:12px 16px 0;padding-bottom:16px}
 .nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 18px;cursor:pointer;color:var(--color-text-faint);font-size:11px;font-weight:600;border:none;background:none;transition:color .2s,transform .2s}
@@ -129,7 +119,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .nav-btn .icon{display:flex;align-items:center;justify-content:center;transition:transform .2s}
 .nav-btn.active .icon{transform:scale(1.12)}
 
-/* ШАПКА-ОКНО ОСТАЛЬНЫХ ЭКРАНОВ (Statistika / Sovrinlar / Profil) — тот же стиль, что и главный экран: синее окно сверху с крупным заголовком (можно вставить картинку), огромное белое окно снизу вбирает контент до самого низа, вровень с кнопками */
+/* ШАПКА-ОКНО ОСТАЛЬНЫХ ЭКРАНОВ */
 .section-hero{margin:8px 16px 0;background:linear-gradient(180deg,rgb(12,45,86),rgb(27,55,95));padding:22px 16px 40px;color:#fff;position:relative;overflow:hidden;border-radius:var(--radius-lg) var(--radius-lg) 0 0;flex:none}
 .section-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 .section-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,45,86,.25),rgba(27,55,95,.35));z-index:0}
@@ -137,33 +127,11 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .section-body{flex:1;min-height:0;margin:-26px 16px 0;padding:22px 0 0;background:#fff;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.7);border-radius:var(--radius-lg);position:relative;z-index:2;display:flex;flex-direction:column}
 .section-scroll{flex:1;min-height:0;overflow-y:auto}
 
-/* GAME SCREEN */
+/* Шапка для экрана бонуса */
 .game-header{padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
 .back-btn{background:#fff;border:none;color:var(--color-primary);cursor:pointer;font-weight:700;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
 .back-btn:active{transform:scale(.92)}
 .game-title{font-size:16px;font-weight:800;color:var(--color-text)}
-.stats-row{padding:8px 16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.stat-box{background:#fff;border-radius:var(--radius-md);padding:8px;text-align:center;box-shadow:var(--shadow-sm);border:1px solid rgba(255,255,255,.7)}
-.stat-box .label{font-size:10px;color:var(--color-text-soft);font-weight:600;margin-bottom:2px}
-.stat-box .value{font-size:15px;font-weight:800;color:var(--color-text)}
-.stat-box .value.gold{color:var(--color-gold)}
-.hearts{padding:0 16px;display:flex;gap:4px;align-items:center}
-.heart{font-size:20px}
-.wind-badge{margin:8px 16px;background:#fff;border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-soft);font-weight:600}
-.combo-badge{margin:0 16px 8px;background:#fff8e6;border:1px solid #ffe1a8;border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:6px;font-size:12px;color:#b8860b;font-weight:800;transition:opacity .2s}
-.game-canvas-wrap{margin:8px 16px;flex:1;position:relative;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#87ceeb,#b0e0f5);min-height:280px}
-.game-canvas-wrap canvas{display:block;width:100%;height:100%;touch-action:none}
-.build-btn{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#5fce63,var(--color-success) 50%,var(--color-success-dark));color:#fff;border:none;border-radius:var(--radius-full);padding:14px 60px;font-size:18px;font-weight:900;letter-spacing:1px;box-shadow:var(--shadow-glow-green),inset 0 1px 1px rgba(255,255,255,.4);cursor:pointer;transition:transform .15s var(--ease-out),box-shadow .15s var(--ease-out),opacity .15s}
-.build-btn:active{transform:translateX(-50%) scale(.95);box-shadow:0 4px 10px rgba(76,175,80,.35)}
-.build-btn:disabled{opacity:.45;filter:grayscale(.5);cursor:default;box-shadow:none}
-.result-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#fff;padding:20px 40px;border-radius:20px;text-align:center;display:none;z-index:10}
-.result-overlay.show{display:block;animation:pop .3s}
-@keyframes pop{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
-.result-text{font-size:32px;font-weight:900;margin-bottom:8px}
-.result-perfect{color:var(--color-success)}
-.result-good{color:#ffc107}
-.result-bad{color:#ff9800}
-.result-miss{color:#f44336}
 
 /* PROFILE */
 .profile-header{padding:20px 16px;display:flex;align-items:center;gap:14px;background:#fff;margin:8px 16px;border-radius:var(--radius-lg);box-shadow:var(--shadow-md);border:1px solid rgba(255,255,255,.7)}
@@ -211,7 +179,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .achievement .ach-desc{font-size:11px;color:var(--color-text-soft)}
 .achievement .ach-progress{font-size:11px;font-weight:700;color:var(--color-primary);margin-top:2px}
 
-/* BONUS (было "вывод") */
+/* BONUS */
 .bonus-hint{font-size:13px;text-align:center;color:var(--color-text-soft);font-weight:600;padding:8px 16px 16px}
 .bonus-submit{width:100%;background:var(--color-primary);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px}
 
@@ -244,31 +212,21 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .sk-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .sk-tile{height:78px}
 
-  /* ================= ПРАВКИ ВЁРСТКИ v2 ================= */
-
-/* Высота = реальная видимая высота окна Telegram (100vh на iPhone "врёт") */
+/* ================= ПРАВКИ ВЁРСТКИ v2 ================= */
 .app{height:var(--tg-viewport-stable-height,100dvh)}
-
-/* Одинаковый нижний отступ на ВСЕХ вкладках + запас под скругление экрана iPhone */
 #screen-main,#screen-stats,#screen-ach,#screen-profile{
   padding-bottom:calc(12px + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
   overflow-y:hidden;
 }
-
-/* ВЕРХ: плашка и баннер — ровные края, без "ступенек" */
-.top-strip{min-height:58px}                       /* высота верхней плашки — можешь менять */
-.top-strip.has-image .brand-row{display:none}     /* убираем лишнюю иконку поверх своей картинки */
+.top-strip{min-height:58px}
+.top-strip.has-image .brand-row{display:none}
 .hero-page{border-radius:0}
-
-/* ОКНО ГОРОДОВ: тянется на всю высоту, плитки сами растут — пустоты внизу нет */
 #screen-main .window-cities.sheet-page{margin-bottom:0;padding:14px 14px 0}
 .cities-scroll{display:flex;flex-direction:column}
 .cities-grid{flex:1 0 auto;grid-auto-rows:minmax(96px,1fr)}
 .city-card{display:flex}
 .icon-slot-city{height:auto;min-height:80px;flex:1}
 .city-showcase-card{flex:0 0 auto;height:clamp(120px,18vh,170px)}
-
-/* НИЖНЕЕ МЕНЮ: одинаковое на всех 4 вкладках */
 .nav-bar-inline,
 .section-body .nav-bar-inline{
   display:grid;grid-template-columns:repeat(4,1fr);gap:0;
@@ -279,36 +237,79 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .nav-btn{padding:6px 2px;white-space:nowrap;min-width:0}
 .nav-btn .icon svg{width:26px;height:26px}
 
-  /* ================= ПРАВКИ v3 ================= */
-
-/* Баланс — снова справа сверху */
-.top-strip{
-  justify-content:flex-end;
-  align-items:flex-start;
-  padding-top:8px;
-}
-
-/* Плавное переключение вкладок без "моргания":
-   рамка окна и нижнее меню стоят на месте, плавно появляется только содержимое */
-.screen,
-.screen.active,
-.screen.active.in{
-  opacity:1;
-  transform:none;
-  transition:none;
-}
-@keyframes tabContentIn{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:none}
-}
+/* ================= ПРАВКИ v3 ================= */
+.top-strip{justify-content:flex-end;align-items:flex-start;padding-top:8px}
+.screen,.screen.active,.screen.active.in{opacity:1;transform:none;transition:none}
+@keyframes tabContentIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .screen.active .cities-scroll,
 .screen.active .section-scroll,
-.screen.active .section-hero h2{
-  animation:tabContentIn .25s cubic-bezier(.16,1,.3,1) both;
-}
+.screen.active .section-hero h2{animation:tabContentIn .25s cubic-bezier(.16,1,.3,1) both}
 .nav-btn{transition:color .25s ease}
 .nav-btn .icon{transition:transform .25s ease}
-  
+
+/* ======================= ИГРА (v4) ======================= */
+#screen-game{padding:0;overflow:hidden;position:relative}
+.game-canvas-wrap{position:absolute;top:6px;left:6px;right:6px;bottom:calc(6px + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#87ceeb,#b0e0f5);box-shadow:var(--shadow-lg)}
+.game-canvas-wrap canvas{display:block;width:100%;height:100%;touch-action:none}
+
+/* Верхняя компактная панель поверх поля */
+.game-hud-top{position:absolute;top:10px;left:10px;right:10px;z-index:5;display:flex;align-items:center;gap:8px}
+.hud-back{flex:none;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.88);color:var(--color-primary);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.hud-back:active{transform:scale(.92)}
+.hud-pill{background:rgba(255,255,255,.85);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.12);color:var(--color-text)}
+.hud-title{flex:1;min-width:0;padding:5px 12px;text-align:center;line-height:1.2}
+.hud-city{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud-floors{font-size:11px;font-weight:700;color:var(--color-text-soft)}
+.hud-floors b{color:var(--color-text)}
+.hud-combo{flex:none;padding:9px 12px;font-size:13px;font-weight:900;opacity:.6;transition:opacity .2s,background .2s,transform .2s}
+.hud-combo.active{opacity:1;background:linear-gradient(135deg,#ffe07a,#f5b301);color:#4a2c00;transform:scale(1.05)}
+
+/* Правая колонка: выигрыш + результаты */
+.hud-right{position:absolute;right:10px;top:50%;z-index:4;display:flex;flex-direction:column;align-items:flex-end;gap:5px;pointer-events:none;transition:opacity .2s}
+.hud-right.dim{opacity:.3}
+.hud-win{min-width:76px;padding:6px 10px;border-radius:12px;background:linear-gradient(135deg,#ffe07a,#f5b301 55%,#e39a00);color:#3f2500;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.18);border:1.5px solid rgba(255,255,255,.7)}
+.hud-win-label{font-size:10px;font-weight:800;opacity:.75;text-transform:uppercase;letter-spacing:.5px}
+.hud-win-value{font-size:17px;font-weight:900}
+.hud-win.bump{animation:hudBump .35s var(--ease-out)}
+@keyframes hudBump{0%{transform:scale(1)}40%{transform:scale(1.15)}100%{transform:scale(1)}}
+.hud-results-title{margin-top:4px;font-size:10px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.45)}
+.hud-results{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.hud-chip{min-width:54px;text-align:center;padding:3px 8px;border-radius:8px;font-size:11px;font-weight:800;color:#fff;background:rgba(15,35,65,.55);border:1px solid rgba(255,255,255,.45)}
+.hud-chip:first-child{animation:chipIn .3s var(--ease-out)}
+.hud-chip.perfect{color:#ffe27a;border-color:#ffd54a}
+.hud-chip:nth-child(n+4){opacity:.7}
+@keyframes chipIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+
+/* Надпись результата каждого броска */
+.result-pop{position:absolute;left:0;right:0;top:30%;z-index:6;text-align:center;pointer-events:none;opacity:0}
+.result-pop.show{animation:resultPop .9s var(--ease-out) forwards}
+@keyframes resultPop{0%{opacity:0;transform:scale(.6)}15%{opacity:1;transform:scale(1.1)}30%{transform:scale(1)}70%{opacity:1;transform:translateY(-6px)}100%{opacity:0;transform:translateY(-24px)}}
+.rp-text{display:inline-block;font-size:30px;font-weight:900;letter-spacing:1px;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25),0 6px 16px rgba(0,0,0,.3)}
+.rp-perfect{color:#ffd54a}.rp-good{color:#9be15d}.rp-bad{color:#ffb74d}.rp-miss{color:#ff5a4f}
+
+/* Кнопка QURISH в стиле стройки */
+.build-btn{position:absolute;left:16px;right:16px;bottom:14px;z-index:5;border:3px solid #26282c;border-radius:16px;padding:17px 0 15px;overflow:hidden;background:linear-gradient(180deg,#ffdc55,#f5b301 55%,#e29c00);color:#3a2600;font-size:20px;font-weight:900;letter-spacing:3px;cursor:pointer;box-shadow:0 6px 0 #a86f00,0 12px 22px rgba(0,0,0,.25);transition:transform .08s,box-shadow .08s,filter .2s}
+.build-btn::before,.build-btn::after{content:'';position:absolute;left:0;right:0;height:6px;background:repeating-linear-gradient(-45deg,#26282c 0 8px,transparent 8px 16px)}
+.build-btn::before{top:0}
+.build-btn::after{bottom:0}
+.build-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #a86f00,0 6px 12px rgba(0,0,0,.25)}
+.build-btn:disabled{filter:saturate(.7) brightness(.95);cursor:default}
+
+/* Окно конца игры */
+.game-over{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(8,16,30,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.game-over.show{display:flex;animation:goFade .25s ease}
+@keyframes goFade{from{opacity:0}to{opacity:1}}
+.go-card{position:relative;width:100%;max-width:320px;padding:44px 18px 16px;border-radius:22px;background:linear-gradient(180deg,#30343f,#1b1e26);border:2px solid #e6b64a;color:#fff;text-align:center;box-shadow:0 20px 44px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);animation:goCard .45s var(--ease-out)}
+@keyframes goCard{from{transform:translateY(20px) scale(.92);opacity:0}to{transform:none;opacity:1}}
+.go-icon{position:absolute;top:-34px;left:50%;transform:translateX(-50%);width:68px;height:68px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe98f,#f5b301 60%,#c98300);display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 0 0 4px #1b1e26,0 0 26px rgba(245,179,1,.55)}
+.go-sub{font-size:13px;font-weight:600;opacity:.7}
+.go-title{font-size:22px;font-weight:900;margin:2px 0 10px}
+.go-amount{font-size:34px;font-weight:900;color:#ffd54a;text-shadow:0 0 18px rgba(255,213,74,.35)}
+.go-amount small{font-size:15px;font-weight:800;opacity:.85}
+.go-stats{font-size:12px;opacity:.7;margin:8px 0 18px;font-weight:600}
+.go-btn{display:block;width:100%;border:none;border-radius:14px;padding:14px;margin-top:8px;font-size:15px;font-weight:800;cursor:pointer;background:rgba(255,255,255,.1);color:#fff}
+.go-btn.primary{background:linear-gradient(180deg,#ffdc55,#f5b301);color:#3a2600;box-shadow:0 4px 0 #a86f00}
+.go-btn:active{transform:translateY(2px)}
 </style>
 </head>
 <body>
@@ -346,28 +347,21 @@ const BONUS_AMOUNT = 500; // монет за подписку на все кан
 
 // Картинка-фон для самой верхней плашки (бренд + баланс). Пусто — просто белая плашка.
 const TOP_IMAGE = 'https://i.postimg.cc/Yq3P2PVL/0cce5219-ad61-4b95-ac0c-4b4905e99d28.png';
-// Картинка-фон для баннера-приветствия "Kichik shaharlardan...". Пусто — просто градиент.
+// Картинка-фон для баннера-приветствия. Пусто — просто градиент.
 const HERO_IMAGE = 'https://i.postimg.cc/k5Ypmt2s/3f74eccc-cf57-43ca-aa0c-4f7dd0f0541f.png';
 // Картинки-фон для синих шапок остальных экранов. Пусто — просто градиент.
 const STATS_IMAGE = '';
 const ACH_IMAGE = '';
 const PROFILE_IMAGE = '';
-// Фон игры (кран/башня). Крупная картинка города (небо+здания+улица), которая медленно
-// проезжает вверх-вниз параллельно тому, как растёт башня (параллакс). Пусто — рисуется
-// простое небо кодом (запасной вариант, ничего не сломается, пока картинка не добавлена).
+
+// Фон игры (город). Медленно едет вниз, пока растёт башня (параллакс).
 const GAME_BG_IMAGE = 'https://i.postimg.cc/yxNmfwpD/50f918e9-4017-4ee2-b3b1-ca4446855348.png';
-// Доля высоты картинки (0 = самый верх, 1 = самый низ), где на фото находится "линия земли" —
-// площадка/бордюр, на который встанет башня. У этой картинки площадка примерно на 2/3 высоты вниз.
-// Если после проверки в Telegram площадка окажется выше/ниже реальной башни — подвинь это число.
+// Где на картинке фона "линия земли" (0 = верх картинки, 1 = низ)
 const GAME_BG_GROUND_FRACTION = 0.67;
-// Когда башня становится высокой и камера уезжает выше самой картинки города — дальше вверх
-// идёт уже просто повторяющийся фон неба (без домов), до GAME_SKY_MAX_TILES копий подряд,
-// нарисованных заранее друг над другом, чтобы никогда не было видно пустоты.
+// Повторяющееся небо выше картинки города
 const GAME_SKY_IMAGE = 'https://i.postimg.cc/RV1LdL0C/4562102c-594b-4e62-aebf-27f4500239b9.png';
 const GAME_SKY_MAX_TILES = 5;
-// Облака — появляются только в зоне неба (выше картинки города), возникают то слева, то
-// справа, на случайной высоте, и медленно летят в противоположную сторону, не перекрывая
-// домики (рисуются раньше башни, поэтому всегда позади неё).
+// Облака (появляются только в зоне неба)
 const CLOUD_IMAGES = [
   'https://i.postimg.cc/wjyJP5qL/499c4ba1-61fb-4268-b862-77713b604f96.png',
   'https://i.postimg.cc/13h5mD0G/499c4ba1-61fb-4268-b862-77713b604f96.png',
@@ -381,32 +375,7 @@ const CLOUD_SPEED_MAX = 0.55;
 const CLOUD_WIDTH_MIN = 60;
 const CLOUD_WIDTH_MAX = 110;
 
-// НИКАКОЙ картинки мачты/стрелы крана больше нет — только крюк (картинка ниже), закреплённый
-// в самом верху экрана, и 2 верёвки от него вниз к домику.
-// На сколько пикселей от самого верха экрана висит крюк в состоянии покоя (крюк ещё и сам
-// поднимается/опускается на CRANE_HOOK_BOB_AMPLITUDE — см. ниже и gameLoop)
-const CRANE_TOP_ANCHOR_Y = 6;
-// Длинные верёвки — крюк висит повыше (см. CRANE_TOP_ANCHOR_Y), а домик держится на длинном
-// тросе далеко под ним. ВАЖНО: должна быть больше, чем отступ низа картинки крюка
-// (CRANE_HOOK_HEIGHT*0.55, см. drawCrane) — иначе верёвка "выворачивается" вверх вместо вниз.
-const CRANE_ROPE_LENGTH = 85;
-// Амплитуда раскачивания домика влево-вправо от центра считается как половина ширины
-// домика (см. startGame) — крюк ходит не дальше половины своей же ширины в каждую сторону.
-// Начальная точка (спавн) — всегда угол 0, домик висит строго ровно. Дальше домик поворачивается
-// НА ВСТРЕЧУ ходу крюка: крюк едет влево — домик поворачивается по часовой стрелке, крюк едет
-// вправо — против часовой (как будто отстаёт/тормозит на повороте), максимум CRANE_TILT_MAX.
-const CRANE_TILT_MAX = Math.PI / 12; // 15°
-// На сколько крюк сам поднимается/опускается, пока качается (не только домик)
-const CRANE_HOOK_BOB_AMPLITUDE = 10;
-// На сколько сам домик чуть приподнимается/опускается на верёвке при раскачивании
-const CRANE_BLOCK_BOB_AMPLITUDE = 12;
-
-// Картинка самого крюка — висит прямо в самом верху экрана (вместо целой картинки крана)
-const CRANE_HOOK_IMAGE = 'https://i.postimg.cc/8kK6zf3Y/Bez-imeni.png';
-// Высота картинки крюка на экране
-const CRANE_HOOK_HEIGHT = 34;
-
-// Синяя шапка-окно с крупным заголовком (Statistika / Sovrinlar / Profil), с местом под картинку
+// Синяя шапка-окно с крупным заголовком (Statistika / Sovrinlar / Profil)
 function sectionHero(title, image) {
   return `
     <div class="section-hero">
@@ -417,7 +386,7 @@ function sectionHero(title, image) {
 }
 
 // ============================================================
-// SVG-ИКОНКИ (вместо части эмодзи — для чёткого/единого стиля)
+// SVG-ИКОНКИ
 // ============================================================
 const ICONS = {
   home: '<span class="icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1v-9"/></svg></span>',
@@ -427,25 +396,19 @@ const ICONS = {
   back: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>',
 };
 
-// Картинка фона игры грузится один раз и переиспользуется во всех заездах
-let gameBgImg = null;
-let gameBgReady = false;
+// Картинки фона/неба/облаков грузятся один раз
+let gameBgImg = null, gameBgReady = false;
 if (GAME_BG_IMAGE) {
   gameBgImg = new Image();
   gameBgImg.onload = () => { gameBgReady = true; };
   gameBgImg.src = GAME_BG_IMAGE;
 }
-
-// Картинка повторяющегося неба (выше города) — грузится один раз
-let gameSkyImg = null;
-let gameSkyReady = false;
+let gameSkyImg = null, gameSkyReady = false;
 if (GAME_SKY_IMAGE) {
   gameSkyImg = new Image();
   gameSkyImg.onload = () => { gameSkyReady = true; };
   gameSkyImg.src = GAME_SKY_IMAGE;
 }
-
-// Картинки облаков — грузятся один раз каждая
 const cloudImgs = CLOUD_IMAGES.map(url => {
   const img = new Image();
   img.ready = false;
@@ -453,16 +416,7 @@ const cloudImgs = CLOUD_IMAGES.map(url => {
   img.src = url;
   return img;
 });
-let clouds = []; // активные облака на экране прямо сейчас (см. updateClouds/drawClouds)
-
-// Картинка крюка — грузится один раз
-let craneHookImg = null;
-let craneHookImgReady = false;
-if (CRANE_HOOK_IMAGE) {
-  craneHookImg = new Image();
-  craneHookImg.onload = () => { craneHookImgReady = true; };
-  craneHookImg.src = CRANE_HOOK_IMAGE;
-}
+let clouds = [];
 
 let tg = window.Telegram?.WebApp;
 let user = null;
@@ -481,9 +435,7 @@ async function init() {
       initData = tg.initData || '';
     }
 
-    // ============================================================
     // ВРЕМЕННО: тестовые данные (БЕЗ API)
-    // ============================================================
     user = {
       user_id: tg?.initDataUnsafe?.user?.id || 123456789,
       first_name: tg?.initDataUnsafe?.user?.first_name || 'Игрок',
@@ -525,8 +477,6 @@ function render() {
   document.getElementById('app').innerHTML = `
     <!-- ГЛАВНЫЙ ЭКРАН -->
     <div class="screen active" id="screen-main">
-
-      <!-- ПЛАШКА №1 (самая верхняя, часть стопки окон, может нести картинку-фон). Если задан TOP_IMAGE — заголовок "CityUz" прячется, баланс остаётся всегда -->
       <div class="top-strip ${TOP_IMAGE ? 'has-image' : ''}">
         ${TOP_IMAGE ? `<img class="top-strip-img" src="${TOP_IMAGE}" alt="">` : ''}
         <div class="brand-row">
@@ -538,24 +488,18 @@ function render() {
         </div>
       </div>
 
-      <!-- СТРАНИЦА-ПОДЛОЖКА: заголовок-приветствие (накрывает top-strip снизу, сама накрывается окном городов), может нести картинку-фон. Если задан HERO_IMAGE — текст полностью прячется -->
       <div class="hero-page ${HERO_IMAGE ? 'has-image' : ''}">
         ${HERO_IMAGE ? `<img class="hero-page-img" src="${HERO_IMAGE}" alt="">` : `
         <h2>Kichik shaharlardan buyuk O'zbekistongacha!</h2>
         <p>Quring, rivojlantiring, g'alaba qozoning!</p>`}
       </div>
 
-      <!-- СТРАНИЦА ПОВЕРХ: окно Shaharlar тянется до конца и вбирает в себя меню -->
       <div class="window window-cities sheet-page">
         <div class="cities-scroll">
           <div class="section-title">Shaharlar (10 ta)</div>
           <div class="cities-grid" id="cities-grid"></div>
-
-          <!-- ВИТРИНА (слот иконки №10) -->
           <div id="city-showcase"></div>
         </div>
-
-        <!-- МЕНЮ ВНУТРИ ОКНА (только на главном экране, всегда прижато к низу окна) -->
         <div class="nav-bar nav-bar-inline">
           <button class="nav-btn active" onclick="showScreen('main')">${ICONS.home}Bosh sahifa</button>
           <button class="nav-btn" onclick="showScreen('stats')">${ICONS.stats}Statistika</button>
@@ -647,34 +591,48 @@ function render() {
       </div>
     </div>
 
-    <!-- ИГРА -->
+    <!-- ИГРА: поле на весь экран, вся информация поверх него -->
     <div class="screen" id="screen-game">
-      <div class="game-header">
-        <button class="back-btn" onclick="exitGame()">${ICONS.back}</button>
-        <div class="game-title" id="game-city">Shahar</div>
-        <div></div>
-      </div>
-      <div class="stats-row">
-        <div class="stat-box"><div class="label">Qavatlar</div><div class="value" id="stat-floors">0</div></div>
-        <div class="stat-box"><div class="label">Maqsad</div><div class="value" id="stat-goal">10</div></div>
-        <div class="stat-box"><div class="label">Mukofot</div><div class="value gold" id="stat-reward">0</div></div>
-      </div>
-      <div class="hearts" id="hearts">
-        <span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span>
-      </div>
-      <div class="wind-badge">💨 <span id="wind-text">Shamol: 0%</span></div>
-      <div class="combo-badge" id="combo-badge">🔥 <span id="combo-text">Bonus: x1.00</span></div>
       <div class="game-canvas-wrap" id="canvas-wrap">
         <canvas id="game-canvas"></canvas>
+
+        <div class="game-hud-top">
+          <button class="hud-back" onclick="exitGame()">${ICONS.back}</button>
+          <div class="hud-pill hud-title">
+            <div class="hud-city" id="game-city">Shahar</div>
+            <div class="hud-floors">Qavat: <b id="stat-floors">0</b> / <span id="stat-goal">10</span></div>
+          </div>
+          <div class="hud-pill hud-combo" id="combo-badge">🔥 <span id="combo-text">x1</span></div>
+        </div>
+
+        <div class="hud-right">
+          <div class="hud-win" id="hud-win">
+            <div class="hud-win-label">Yutuq</div>
+            <div class="hud-win-value">🪙 <span id="hud-earned">0</span></div>
+          </div>
+          <div class="hud-results-title">Natijalar</div>
+          <div class="hud-results" id="hud-results"></div>
+        </div>
+
+        <div class="result-pop" id="result-pop"><div class="rp-text" id="rp-text"></div></div>
+
         <button class="build-btn" id="build-btn" onclick="buildBlock()">QURISH</button>
-        <div class="result-overlay" id="result-overlay">
-          <div class="result-text" id="result-text">PERFECT</div>
-          <div style="font-size:14px;opacity:.8" id="result-reward">+0 tanga</div>
+
+        <div class="game-over" id="game-over">
+          <div class="go-card">
+            <div class="go-icon" id="go-icon">🏆</div>
+            <div class="go-sub" id="go-sub">Tabriklaymiz!</div>
+            <div class="go-title" id="go-title">Siz yutdingiz</div>
+            <div class="go-amount">🪙 <span id="go-amount-value">0</span> <small>tanga</small></div>
+            <div class="go-stats" id="go-stats"></div>
+            <button class="go-btn primary" onclick="restartGame()">Yana o'ynash</button>
+            <button class="go-btn" onclick="exitGame()">Bosh sahifa</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- БОНУС ЗА ПОДПИСКУ (было "вывод") -->
+    <!-- БОНУС ЗА ПОДПИСКУ -->
     <div class="screen" id="screen-sponsors">
       <div class="game-header">
         <button class="back-btn" onclick="showScreen('profile')">${ICONS.back}</button>
@@ -687,7 +645,6 @@ function render() {
         <button class="bonus-submit" onclick="checkSubscription()">Obunani tekshirish</button>
       </div>
     </div>
-
   `;
 
   renderCities();
@@ -737,7 +694,6 @@ function showScreen(name) {
 // ============================================================
 // ГОРОДА
 // ============================================================
-// ССЫЛКИ НА КАРТИНКИ ГОРОДОВ — вставляй сюда (поле image). Пусто — просто пустой градиентный квадрат.
 const CITIES = [
   {name: "Qo'ng'irot",    image: "https://i.postimg.cc/wMKkb616/c62743ba-343c-4f82-adf0-2f465f2f86cb.png", diff: "easy",    diffText: "Oson"},
   {name: "Chiroqchi",     image: "https://i.postimg.cc/ZRN8N1Vc/ba919b7d-9177-4e6c-8361-8acd8a58d2ba.png", diff: "easy",    diffText: "Oson"},
@@ -748,10 +704,9 @@ const CITIES = [
   {name: "Xiva",          image: "https://i.postimg.cc/dtV9HS0f/9439237e-06c6-4503-9af9-8608f5316ce2.png", diff: "hard",    diffText: "Qiyin"},
   {name: "Nukus",         image: "https://i.postimg.cc/wMKkb616/c62743ba-343c-4f82-adf0-2f465f2f86cb.png", diff: "hard",    diffText: "Qiyin"},
   {name: "Toshkent",      image: "https://i.postimg.cc/HLr9g8w2/c69bd280-f7db-49c4-8172-ab7d27be6362.png", diff: "hard",    diffText: "Juda qiyin"},
-  {name: "Tashkent City", image: "https://i.postimg.cc/sDhcSGHn/ebc3b672-a0d4-4f99-bf3e-eadc2ea733de.png", diff: "extreme", diffText: "Ekstremal"} // 10-й, витрина внизу
+  {name: "Tashkent City", image: "https://i.postimg.cc/sDhcSGHn/ebc3b672-a0d4-4f99-bf3e-eadc2ea733de.png", diff: "extreme", diffText: "Ekstremal"}
 ];
 
-// Рисует картинку внутри слота, если ссылка задана в CITIES[i].image, иначе — пусто (виден фон-градиент)
 function cityMedia(city) {
   return city.image ? `<img src="${city.image}" alt="${city.name}">` : '';
 }
@@ -763,7 +718,6 @@ function renderCities() {
 
   const unlocked = Math.min(user.level, 10);
 
-  // SLOTS: города №1–9 — обычная сетка
   grid.innerHTML = CITIES.slice(0, 9).map((city, i) => {
     const isLocked = i >= unlocked;
     return `
@@ -780,7 +734,6 @@ function renderCities() {
     `;
   }).join('');
 
-  // SLOT №10 — витрина «Tashkent City» (последний, самый крупный проект)
   if (showcase) {
     const i = 9;
     const city = CITIES[i];
@@ -836,58 +789,40 @@ function renderAchievements() {
 // ============================================================
 // ИГРА
 // ============================================================
-let canvas, ctx, animId;
-let crane = {speed: 2};
-// Кран стоит на месте, качается домик: pivotX — центр качания (центр экрана), craneSwingX —
-// текущее смещение домика от центра (маятник, обновляется каждый кадр в gameLoop)
-let pivotX = 0;
-let craneSwingX = 0;
-let craneSwingY = 0;
-let craneSwingAmplitude = 55;
-// Угол наклона домика — навстречу ходу крюка (см. CRANE_TILT_MAX и gameLoop)
-let craneTilt = 0;
-// Крюк сам чуть поднимается/опускается, пока качается (отдельно от домика)
-let craneHookBobY = 0;
-let block = {x: 50, y: 20, width: 150, height: 110};
-// Общий множитель размера домиков — единая точка, чтобы уменьшить/увеличить все домики
-// сразу (см. startGame, где считаются реальные block.width/block.height)
-const BLOCK_SCALE = 0.65;
-let tower = [];
-let gameActive = false;
-let lives = 3;
-let floors = 0;
-let goal = 10;
-let earned = 0;
-let currentCity = null;
-let comboCount = 0;
-let maxCombo = 0;
-let perfectCount = 0;
-let totalAttempts = 0;
-let particles = [];
-let frame = 0;
-// КАМЕРА/ПАРАЛЛАКС: worldOffset плавно тянется к worldOffsetTarget. Земля и башня едут
-// с этим значением (1x), картинка фона — медленнее (см. draw()), кран остаётся на месте.
-let worldOffset = 0;
-let worldOffsetTarget = 0;
 
-// ПАДЕНИЕ ЭТАЖА: домик не встаёт мгновенно, а падает на башню умеренно быстро (см. buildBlock
-// и updateFallingBlock). isDropping блокирует повторный тап, пока предыдущий не приземлился.
-let fallingBlock = null;
-let isDropping = false;
-let landingSquash = 0;
+// ---------- НАСТРОЙКИ ИГРЫ (эти числа можно смело менять) ----------
+const GAME_GROUND_OFFSET = 118;        // px от низа поля до земли (земля над кнопкой QURISH)
+const GAME_BG_HEIGHT_MULT = 1.6;       // высота картинки города относительно поля
+const GAME_BG_PARALLAX = 0.25;         // скорость фона: меньше число = город виден дольше (0.25 ≈ 10–15 этажей)
+const TOWER_TOP_SCREEN_FRACTION = 0.56;// на какой высоте поля держится верх башни (камера)
+const BLOCK_WIDTH_FRACTION = 0.30;     // ширина этажа от ширины поля
+const JIB_Y = 76;                      // высота стрелы крана от верха поля
+const DROP_GAP = 110;                  // расстояние от низа висящего домика до верха башни
+const SLING_HEIGHT = 22;               // длина строп от крюка до домика
+const GRAVITY = 2600;                  // сила падения домика (px/сек²)
+const RELEASE_VX_FACTOR = 0.35;        // насколько раскачка "бросает" домик вбок при отпускании
+const MAGNET_STRENGTH = 0.15;          // лёгкое притяжение к центру (0 = без помощи)
+const PENDULUM_G = 2600;               // "жёсткость" маятника (больше = быстрее качается)
+const PENDULUM_DAMPING = 1.4;          // затухание раскачки
+const PENDULUM_MAX_ANGLE = 0.32;       // максимальный наклон домика на тросе (~18°)
+const SPAWN_DELAY_MS = 320;            // пауза перед появлением следующего домика
+// Награды за один домик (умножаются на комбо-бонус)
+const REWARDS = {perfect: 200, good: 100, bad: 30};
+// Надписи при попадании (узбекский)
+const RESULT_LABELS = {perfect: 'MUKAMMAL!', good: 'YAXSHI!', bad: 'ARANG!', miss: 'YIQILDI!'};
+// Сложность городов: ширина домика и скорость крана
+const DIFF = {
+  easy:    {width: 1.00, speed: 1.5},
+  medium:  {width: 0.93, speed: 1.8},
+  hard:    {width: 0.86, speed: 2.0},
+  extreme: {width: 0.80, speed: 2.2},
+};
+// Виды этажей (рисуются кодом) и их высота относительно обычной
+const FLOOR_STYLES = ['plaster', 'brick', 'wood', 'round', 'panel', 'arch'];
+const FLOOR_HEIGHT_MULT = {plaster: 1, brick: 0.92, wood: 0.82, round: 0.95, panel: 0.88, arch: 1.05};
 
-// Фасадные материалы этажей (кирпич / камень) — чередуются, как на референсе:
-// терракотовый кирпич и светлый песочный камень, с белым карнизом сверху каждого этажа
-const BLOCK_PALETTE = [
-  {brickTop:'#d98a5a', brickMid:'#c1693f', brickDark:'#9c4f2e', mortar:'rgba(255,235,210,.55)', trim:'#f3ece0'},
-  {brickTop:'#ecd6a8', brickMid:'#dcc190', brickDark:'#b89968', mortar:'rgba(255,250,235,.6)',  trim:'#f6f1e4'},
-];
-
-// СВОИ КАРТИНКИ ДОМИКОВ (этажей) — вставляй сюда ссылки, они будут чередоваться по этажам
-// (индекс 0, 2, 4… — первая картинка; 1, 3, 5… — вторая, и т.д., можно добавить ещё элементов).
-// Размер этажа один и тот же весь заезд (block.width x block.height, см. startGame), картинка
-// сама аккуратно впишется без искажений (как background-size:cover — лишнее обрежется).
-// Пусто — рисуется запасной вариант кодом (кирпичная кладка выше, BLOCK_PALETTE).
+// СВОИ КАРТИНКИ ЭТАЖЕЙ — если вставить сюда ссылки, этажи будут выбираться из них
+// случайно вместо нарисованных кодом. Пусто — рисуются 6 видов домиков кодом.
 const FLOOR_IMAGES = [
   '',
   '',
@@ -901,31 +836,419 @@ const floorImgObjs = FLOOR_IMAGES.map(url => {
   return img;
 });
 
+// Размеры крюка
+const HOOK_BLOCK_H = 22;
+const HOOK_TOTAL = 36;
+
+// ---------- СОСТОЯНИЕ ----------
+let canvas, ctx, animId, lastTime = 0;
+let W = 0, H = 0, groundY = 0;
+let blockW = 100, baseH = 80;
+let crane = {x: 0, v: 0, phase: 0, omega: 1.5, amp: 100, theta: 0, thetaV: 0, cable: 100};
+let load = null;          // домик, висящий на крюке
+let holding = false;
+let spawnAt = 0;
+let tower = [];
+let fallingBlock = null;
+let gameActive = false;   // крутится ли анимация
+let playing = false;      // можно ли нажимать QURISH
+let finished = false;
+let isDropping = false;
+let floors = 0, goal = 10, earned = 0;
+let currentCity = null, currentCityIndex = 0;
+let comboCount = 0, maxCombo = 0, perfectCount = 0, totalAttempts = 0, accSum = 0;
+let particles = [], floatTexts = [], resultsHistory = [];
+let frame = 0;
+let worldOffset = 0, worldOffsetTarget = 0;
+let landingSquash = 0;
+let lastStyle = null;
+
+// Физика падения, если домик не удержался на краю
+const WOBBLE_DURATION_MS = 350;
+const WOBBLE_MAX_ANGLE = 0.16;
+const TOPPLE_MAX_DURATION_MS = 3000;
+const TOPPLE_GRAVITY = 6;
+const TOPPLE_SEED_ANGVEL = 0.6;
+const TOPPLE_MAX_TIP_ANGLE = 0.75;
+const TOPPLE_FALL_GRAVITY = 1500;
+
+function haptic(type) {
+  try {
+    const h = tg?.HapticFeedback;
+    if (!h) return;
+    if (type === 'success' || type === 'error' || type === 'warning') h.notificationOccurred(type);
+    else h.impactOccurred(type);
+  } catch (e) {}
+}
+
+function startGame(cityIndex) {
+  cancelAnimationFrame(animId);
+  currentCityIndex = cityIndex;
+  currentCity = CITIES[cityIndex];
+  floors = 0; earned = 0; tower = [];
+  comboCount = 0; maxCombo = 0; perfectCount = 0; totalAttempts = 0; accSum = 0;
+  particles = []; floatTexts = []; clouds = []; resultsHistory = [];
+  worldOffset = 0; worldOffsetTarget = 0;
+  fallingBlock = null; landingSquash = 0; lastStyle = null;
+  load = null; holding = false; spawnAt = 0;
+  isDropping = true; playing = false; finished = false; gameActive = true;
+  goal = 10 + cityIndex * 2;
+
+  document.getElementById('game-city').innerText = currentCity.name;
+  document.getElementById('game-over').classList.remove('show');
+  updateHud();
+  renderResults();
+  showScreen('game');
+
+  // ждём, пока экран реально отрисуется, чтобы узнать размеры поля
+  requestAnimationFrame(() => requestAnimationFrame(setupCanvas));
+}
+
+function setupCanvas() {
+  canvas = document.getElementById('game-canvas');
+  const wrap = document.getElementById('canvas-wrap');
+  W = wrap.clientWidth;
+  H = wrap.clientHeight;
+  const dpr = Math.min(window.devicePixelRatio || 1, 3); // чёткая картинка на iPhone
+  canvas.width = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  canvas.onpointerdown = () => buildBlock(); // можно тапать и по самому полю
+
+  groundY = H - GAME_GROUND_OFFSET;
+  const d = DIFF[currentCity.diff] || DIFF.easy;
+  blockW = Math.max(70, Math.min(150, W * BLOCK_WIDTH_FRACTION * d.width));
+  baseH = blockW * 0.8;
+
+  // ФУНДАМЕНТ — всегда первый, чуть шире этажей
+  const fw = blockW * 1.15, fh = baseH * 0.5;
+  tower.push({x: W / 2 - fw / 2, drawX: W / 2 - fw / 2, y: groundY - fh, width: fw, height: fh, style: 'foundation'});
+
+  crane.amp = W * 0.27;
+  crane.omega = d.speed;
+  crane.phase = 0; crane.theta = 0; crane.thetaV = 0;
+  crane.x = W / 2; crane.v = 0;
+  crane.cable = targetCable();
+
+  playing = true;
+  spawnLoad();
+  lastTime = performance.now();
+  animId = requestAnimationFrame(gameLoop);
+}
+
+function pickStyle() {
+  const readyImgs = floorImgObjs.map((img, i) => (img && img.ready) ? i : -1).filter(i => i >= 0);
+  if (readyImgs.length) return {style: 'img', imgIdx: readyImgs[Math.floor(Math.random() * readyImgs.length)]};
+  let s;
+  do { s = FLOOR_STYLES[Math.floor(Math.random() * FLOOR_STYLES.length)]; } while (s === lastStyle && FLOOR_STYLES.length > 1);
+  lastStyle = s;
+  return {style: s, imgIdx: -1};
+}
+
+function spawnLoad() {
+  if (!playing) return;
+  const p = pickStyle();
+  load = {
+    style: p.style, imgIdx: p.imgIdx,
+    width: blockW,
+    height: Math.round(baseH * (FLOOR_HEIGHT_MULT[p.style] || 1)),
+    alpha: 0
+  };
+  holding = true;
+  isDropping = false;
+  const btn = document.getElementById('build-btn');
+  if (btn) btn.disabled = false;
+}
+
+// Длина троса: кран опускает домик так, чтобы до верха башни всегда было DROP_GAP
+function targetCable() {
+  const top = tower[tower.length - 1];
+  const topScreen = top ? top.y + worldOffsetTarget : H * TOWER_TOP_SCREEN_FRACTION;
+  const lh = load ? load.height : baseH;
+  return Math.max(40, topScreen - DROP_GAP - lh - SLING_HEIGHT - HOOK_TOTAL - (JIB_Y + 8));
+}
+
+function pendLen() {
+  return crane.cable + ((holding && load) ? HOOK_TOTAL + SLING_HEIGHT + load.height / 2 : HOOK_TOTAL * 0.6);
+}
+
+// Кран: тележка ездит по стреле, а домик качается под ней как настоящий маятник —
+// отстаёт на разгоне и догоняет на торможении
+function updateCrane(dt) {
+  crane.phase += crane.omega * dt;
+  const s = Math.sin(crane.phase), c = Math.cos(crane.phase);
+  crane.x = W / 2 + crane.amp * s;
+  crane.v = crane.amp * crane.omega * c;
+  const a = -crane.amp * crane.omega * crane.omega * s;
+  const L = pendLen();
+  const acc = -(PENDULUM_G / L) * Math.sin(crane.theta) - (a / L) * Math.cos(crane.theta) - PENDULUM_DAMPING * crane.thetaV;
+  crane.thetaV += acc * dt;
+  crane.theta += crane.thetaV * dt;
+  if (Math.abs(crane.theta) > PENDULUM_MAX_ANGLE) {
+    crane.theta = Math.sign(crane.theta) * PENDULUM_MAX_ANGLE;
+    crane.thetaV *= -0.3;
+  }
+}
+
+function hookPos() {
+  const L = crane.cable;
+  return {x: crane.x + L * Math.sin(crane.theta), y: JIB_Y + 8 + L * Math.cos(crane.theta)};
+}
+
+function gameLoop(now) {
+  if (!gameActive) return;
+  const dt = Math.min(0.033, Math.max(0, (now - lastTime) / 1000));
+  lastTime = now;
+  frame++;
+
+  crane.cable += (targetCable() - crane.cable) * Math.min(1, dt * 4);
+  updateCrane(dt);
+  if (load && load.alpha < 1) load.alpha = Math.min(1, load.alpha + dt * 5);
+  updateFalling(dt, now);
+  if (!holding && !fallingBlock && spawnAt && now >= spawnAt) { spawnAt = 0; spawnLoad(); }
+  updateParticles(dt);
+  updateFloatTexts(dt);
+  landingSquash *= Math.exp(-dt * 12);
+  if (landingSquash < 0.01) landingSquash = 0;
+  tower.forEach(b => { if (b.drawX !== b.x) b.drawX += (b.x - b.drawX) * Math.min(1, dt * 14); });
+  worldOffset += (worldOffsetTarget - worldOffset) * Math.min(1, dt * 5);
+
+  draw();
+  dimHudIfCovered();
+  animId = requestAnimationFrame(gameLoop);
+}
+
+// Правая колонка становится полупрозрачной, когда за ней пролетает домик
+let hudRightEl = null, hudDim = false;
+function dimHudIfCovered() {
+  if (!hudRightEl || !hudRightEl.isConnected) hudRightEl = document.querySelector('.hud-right');
+  if (!hudRightEl) return;
+  let box = null;
+  if (holding && load) {
+    const hk = hookPos(), d = HOOK_TOTAL + SLING_HEIGHT + load.height / 2;
+    const cx = hk.x + d * Math.sin(crane.theta), cy = hk.y + d * Math.cos(crane.theta);
+    box = {l: cx - load.width / 2, r: cx + load.width / 2, t: cy - load.height / 2, b: cy + load.height / 2};
+  } else if (fallingBlock && fallingBlock.phase !== 'wobble' && fallingBlock.phase !== 'topple') {
+    const f = fallingBlock;
+    box = {l: f.x, r: f.x + f.w, t: f.y, b: f.y + f.h};
+  }
+  let cover = false;
+  if (box) {
+    const l = hudRightEl.offsetLeft, t = hudRightEl.offsetTop;
+    cover = box.r > l && box.l < l + hudRightEl.offsetWidth && box.b > t && box.t < t + hudRightEl.offsetHeight;
+  }
+  if (cover !== hudDim) { hudDim = cover; hudRightEl.classList.toggle('dim', cover); }
+}
+
+// Отпускаем домик: он сохраняет скорость раскачки и падает с ускорением (гравитация)
+function buildBlock() {
+  if (!playing || !holding || isDropping || !load) return;
+  isDropping = true;
+  holding = false;
+  const btn = document.getElementById('build-btn');
+  if (btn) btn.disabled = true;
+
+  const hk = hookPos();
+  const th = crane.theta;
+  const d = HOOK_TOTAL + SLING_HEIGHT + load.height / 2;
+  const cx = hk.x + d * Math.sin(th);
+  const cy = hk.y + d * Math.cos(th);
+  const Lp = crane.cable + d;
+  const vx = crane.v + Lp * crane.thetaV * Math.cos(th);
+  const vy = -Lp * crane.thetaV * Math.sin(th);
+
+  fallingBlock = {
+    phase: 'fall',
+    x: cx - load.width / 2, y: cy - load.height / 2,
+    w: load.width, h: load.height,
+    style: load.style, imgIdx: load.imgIdx,
+    vx: vx * RELEASE_VX_FACTOR, vy: Math.max(0, vy * 0.5),
+    rot: -th
+  };
+  load = null;
+  haptic('light');
+}
+
+function updateFalling(dt, now) {
+  const fb = fallingBlock;
+  if (!fb) return;
+
+  if (fb.phase === 'fall' || fb.phase === 'pass') {
+    fb.vy += GRAVITY * dt;
+    fb.x += fb.vx * dt;
+    fb.y += fb.vy * dt;
+    if (fb.phase === 'fall') {
+      fb.rot *= Math.exp(-dt * 9); // выравнивается в полёте
+      const top = tower[tower.length - 1];
+      const topY = top.y + worldOffset;
+      if (fb.y + fb.h >= topY) {
+        fb.y = topY - fb.h;
+        resolveContact(fb, top, topY, now);
+      }
+    } else {
+      fb.rot += fb.dir * 2.5 * dt;
+      if (fb.y > H + fb.h) { fallingBlock = null; gameOver(false); }
+    }
+  } else if (fb.phase === 'wobble') {
+    const t = Math.min(1, (now - fb.wobbleStart) / WOBBLE_DURATION_MS);
+    fb.rotation = Math.sin(t * Math.PI * 6) * WOBBLE_MAX_ANGLE * t;
+    if (t >= 1) {
+      fb.phase = 'topple'; fb.sub = 'tip'; fb.toppleStart = now;
+      fb.angle = 0; fb.angVel = TOPPLE_SEED_ANGVEL; fb.fallVel = 0; fb.rotation = 0;
+    }
+  } else if (fb.phase === 'topple') {
+    if (fb.sub === 'tip') {
+      fb.angVel += TOPPLE_GRAVITY * Math.sin(fb.angle + 0.08) * dt;
+      fb.angle += fb.angVel * dt;
+      if (fb.angle >= TOPPLE_MAX_TIP_ANGLE) { fb.angle = TOPPLE_MAX_TIP_ANGLE; fb.sub = 'fall'; }
+    } else {
+      fb.fallVel += TOPPLE_FALL_GRAVITY * dt;
+      fb.pivotDY += fb.fallVel * dt;
+      fb.pivotDX += fb.dir * 40 * dt;
+      fb.angle += fb.angVel * dt;
+    }
+    fb.rotation = fb.dir * fb.angle;
+    if (fb.pivotDY > H + fb.h || now - fb.toppleStart > TOPPLE_MAX_DURATION_MS) {
+      fallingBlock = null;
+      gameOver(false);
+    }
+  }
+}
+
+// Домик коснулся верха башни — решаем, устоял или нет
+function resolveContact(fb, top, topY, now) {
+  totalAttempts++;
+  const lastCenter = top.x + top.width / 2;
+  let cx = fb.x + fb.w / 2;
+  const rawDiff = Math.abs(cx - lastCenter);
+  const tol = top.width / 2;
+
+  // Совсем мимо — пролетает сбоку от башни
+  if (rawDiff >= (top.width + fb.w) / 2 - 1) {
+    fb.phase = 'pass';
+    fb.dir = cx >= lastCenter ? 1 : -1;
+    registerResult('miss', 0, 1);
+    return;
+  }
+
+  if (rawDiff < tol) cx += (lastCenter - cx) * MAGNET_STRENGTH;
+  const diff = Math.abs(cx - lastCenter);
+  const res = diff < tol * 0.15 ? 'perfect' : diff < tol * 0.5 ? 'good' : diff < tol ? 'bad' : 'miss';
+
+  if (res === 'miss') {
+    // Центр тяжести за краем — шатается и падает с башни
+    registerResult('miss', 0, 1);
+    fb.dir = cx >= lastCenter ? 1 : -1;
+    fb.phase = 'wobble';
+    fb.wobbleStart = now;
+    fb.pivotX = fb.dir > 0 ? top.x + top.width : top.x;
+    fb.pivotY = topY;
+    fb.restX = fb.x; fb.restY = fb.y;
+    fb.pivotDX = 0; fb.pivotDY = 0; fb.rotation = 0;
+    spawnBurst(cx, topY, 'rgba(120,100,80,.7)', 8);
+    return;
+  }
+
+  // Устоял
+  accSum += Math.max(0, 1 - diff / tol);
+  if (res === 'perfect') { comboCount++; perfectCount++; }
+  else if (res === 'good') comboCount++;
+  else comboCount = 0;
+  maxCombo = Math.max(maxCombo, comboCount);
+  const mult = getComboMult(comboCount);
+  const reward = Math.round(REWARDS[res] * mult);
+  earned += reward;
+  floors++;
+
+  const nb = {x: cx - fb.w / 2, drawX: fb.x, y: top.y - fb.h, width: fb.w, height: fb.h, style: fb.style, imgIdx: fb.imgIdx};
+  tower.push(nb);
+  fallingBlock = null;
+  landingSquash = 1;
+  worldOffsetTarget = Math.max(0, H * TOWER_TOP_SCREEN_FRACTION - nb.y);
+
+  spawnBurst(cx, topY, 'rgba(140,120,95,.8)', 10);
+  if (res === 'perfect') spawnBurst(cx, topY - fb.h / 2, '#f5b301', 16);
+  floatTexts.push({x: cx, y: topY - fb.h - 10, text: '+' + formatNum(reward), life: 1, color: res === 'perfect' ? '#ffd54a' : '#ffffff'});
+
+  registerResult(res, reward, mult);
+
+  if (floors >= goal) {
+    playing = false;
+    setTimeout(() => gameOver(true), 600);
+  } else {
+    spawnAt = now + SPAWN_DELAY_MS;
+  }
+}
+
+function registerResult(res, reward, mult) {
+  if (res === 'miss') {
+    comboCount = 0;
+    playing = false;       // одна попытка: промах = конец игры
+    haptic('error');
+  } else {
+    haptic(res === 'perfect' ? 'heavy' : 'medium');
+    resultsHistory.unshift({res, reward});
+    resultsHistory = resultsHistory.slice(0, 5);
+    renderResults();
+    const win = document.getElementById('hud-win');
+    if (win) { win.classList.remove('bump'); void win.offsetWidth; win.classList.add('bump'); }
+  }
+  showResultPop(res, mult);
+  updateHud();
+}
+
+function fmtMult(m) { return Number.isInteger(m) ? String(m) : m.toFixed(1); }
+
+function showResultPop(res, mult) {
+  const pop = document.getElementById('result-pop');
+  const t = document.getElementById('rp-text');
+  if (!pop || !t) return;
+  t.className = 'rp-text rp-' + res;
+  t.innerText = RESULT_LABELS[res] + (res !== 'miss' && mult > 1 ? ' x' + fmtMult(mult) : '');
+  pop.classList.remove('show');
+  void pop.offsetWidth;
+  pop.classList.add('show');
+}
+
+function updateHud() {
+  const f = document.getElementById('stat-floors'); if (f) f.innerText = floors;
+  const g = document.getElementById('stat-goal'); if (g) g.innerText = goal;
+  const e = document.getElementById('hud-earned'); if (e) e.innerText = formatNum(earned);
+  const mult = getComboMult(comboCount);
+  const ct = document.getElementById('combo-text'); if (ct) ct.innerText = 'x' + fmtMult(mult);
+  const cb = document.getElementById('combo-badge'); if (cb) cb.classList.toggle('active', mult > 1);
+}
+
+function renderResults() {
+  const el = document.getElementById('hud-results');
+  if (!el) return;
+  el.innerHTML = resultsHistory.map(r => `<div class="hud-chip ${r.res}">+${formatNum(r.reward)}</div>`).join('');
+}
+
+// Комбо-бонус за серию точных попаданий подряд
+function getComboMult(combo) {
+  if (combo >= 10) return 3;
+  if (combo >= 5) return 2;
+  if (combo >= 3) return 1.5;
+  return 1;
+}
+
+// ---------- ЧАСТИЦЫ И ВСПЛЫВАЮЩИЕ ЦИФРЫ ----------
 function spawnBurst(x, y, colorHex, count) {
   for (let i = 0; i < count; i++) {
     const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5;
     const speed = 2 + Math.random() * 3;
-    particles.push({
-      x, y,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - 2,
-      life: 1,
-      color: colorHex,
-      size: 2 + Math.random() * 2.5,
-    });
+    particles.push({x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 2, life: 1, color: colorHex, size: 2 + Math.random() * 2.5});
   }
 }
-
-function updateParticles() {
-  particles.forEach(p => {
-    p.x += p.vx;
-    p.y += p.vy;
-    p.vy += 0.15;
-    p.life -= 0.025;
-  });
+function updateParticles(dt) {
+  const k = dt * 60;
+  particles.forEach(p => { p.x += p.vx * k; p.y += p.vy * k; p.vy += 0.15 * k; p.life -= 0.025 * k; });
   particles = particles.filter(p => p.life > 0);
 }
-
 function drawParticles() {
   particles.forEach(p => {
     ctx.globalAlpha = Math.max(p.life, 0);
@@ -936,453 +1259,114 @@ function drawParticles() {
   });
   ctx.globalAlpha = 1;
 }
-
-function startGame(cityIndex) {
-  currentCity = CITIES[cityIndex];
-  lives = 3;
-  floors = 0;
-  earned = 0;
-  tower = [];
-  comboCount = 0;
-  maxCombo = 0;
-  perfectCount = 0;
-  totalAttempts = 0;
-  particles = [];
-  frame = 0;
-  worldOffset = 0;
-  worldOffsetTarget = 0;
-  fallingBlock = null;
-  isDropping = false;
-  landingSquash = 0;
-  gameActive = true;
-  // Сброс качания — новая игра всегда начинается с домика, висящего РОВНО по центру
-  // (угол наклона = 0, точка спавна), а не с остатком раскачивания от прошлой игры
-  craneSwingX = 0;
-  craneSwingY = 0;
-  craneTilt = 0;
-  craneHookBobY = 0;
-
-  const diffMap = {easy: 1, medium: 1.5, hard: 2, extreme: 2.5};
-  const diffMult = diffMap[currentCity.diff] || 1;
-  crane.speed = 1.5 * diffMult;
-  // Домики уже (мишень поменьше — сложнее целиться) и повыше (похожи на настоящую
-  // 3-этажку с двумя подъездами в ряд, см. окна в drawBlock) — сложность влияет
-  // только на ширину и скорость крана, высота всегда одна и та же.
-  // BLOCK_SCALE уменьшает все размеры домиков разом — чтобы на маленьких телефонных
-  // экранах помещалось нормально (было слишком крупно), а не только на широких.
-  block.width = (130 - (diffMult * 18)) * BLOCK_SCALE;
-  block.height = 150 * BLOCK_SCALE;
-  // Крюк качается не дальше половины ширины домика в каждую сторону от центра
-  craneSwingAmplitude = block.width / 2;
-
-  goal = 10 + (cityIndex * 2);
-
-  document.getElementById('game-city').innerText = currentCity.name;
-  document.getElementById('stat-goal').innerText = goal;
-  document.getElementById('stat-floors').innerText = 0;
-  document.getElementById('stat-reward').innerText = 0;
-  updateComboBadge();
-  const startBuildBtn = document.getElementById('build-btn');
-  if (startBuildBtn) startBuildBtn.disabled = false;
-
-  showScreen('game');
-
-  setTimeout(() => {
-    canvas = document.getElementById('game-canvas');
-    const wrap = document.getElementById('canvas-wrap');
-    canvas.width = wrap.clientWidth;
-    canvas.height = wrap.clientHeight;
-    ctx = canvas.getContext('2d');
-
-    // Крюк висит по центру в самом верху экрана, домик — на верёвках ниже него
-    pivotX = canvas.width / 2;
-    block.y = CRANE_TOP_ANCHOR_Y + CRANE_ROPE_LENGTH;
-
-    // Стартовый (нулевой) этаж — тех же размеров, что и игровые домики, стоит ровно на
-    // линии площадки (groundY = canvas.height - 40, см. draw())
-    tower.push({
-      x: canvas.width / 2 - block.width / 2,
-      y: (canvas.height - 40) - block.height,
-      width: block.width,
-      height: block.height
-    });
-
-    gameLoop();
-  }, 100);
+function updateFloatTexts(dt) {
+  floatTexts.forEach(t => { t.y -= 38 * dt; t.life -= dt * 0.9; });
+  floatTexts = floatTexts.filter(t => t.life > 0);
+}
+function drawFloatTexts() {
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '900 20px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+  floatTexts.forEach(t => {
+    ctx.globalAlpha = Math.min(1, t.life * 1.5);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = 'rgba(30,20,0,.55)';
+    ctx.strokeText(t.text, t.x, t.y);
+    ctx.fillStyle = t.color;
+    ctx.fillText(t.text, t.x, t.y);
+  });
+  ctx.globalAlpha = 1;
 }
 
-function gameLoop() {
-  if (!gameActive) return;
-  frame++;
-
-  // Точка спавна — угол 0 (домик висит ровно). Дальше: крюк едет влево-вправо по синусоиде,
-  // домик поворачивается НАВСТРЕЧУ его ходу (влево едет — по часовой, вправо едет — против
-  // часовой, отсюда знак "минус").
-  if (!isDropping) {
-    const swingPhase = frame * crane.speed * 0.02;
-    craneSwingX = Math.sin(swingPhase) * craneSwingAmplitude;
-    craneTilt = -Math.sin(swingPhase) * CRANE_TILT_MAX;
-    craneHookBobY = Math.sin(swingPhase * 2) * CRANE_HOOK_BOB_AMPLITUDE;
-    // ВАЖНО: домик поднимается/опускается СТРОГО вместе с крюком (та же самая величина
-    // craneHookBobY), а не по своей отдельной формуле, как было раньше. Верёвка между ними
-    // жёсткая и имеет фиксированную длину (CRANE_ROPE_LENGTH) — если бы крюк и домик
-    // двигались по вертикали по-разным формулам (с разной амплитудой/частотой), расстояние
-    // между ними каждый кадр менялось бы, и верёвка визуально "растягивалась/сжималась",
-    // из-за чего и казалось, что она болтается сама по себе. Теперь оно неизменно.
-    craneSwingY = craneHookBobY;
-  }
-
-  updateParticles();
-  updateFallingBlock();
-  landingSquash *= 0.82;
-  if (landingSquash < 0.01) landingSquash = 0;
-
-  draw();
-  animId = requestAnimationFrame(gameLoop);
-}
-
-// Падение домика — ТРИ ФАЗЫ, как в реальной физике:
-//   1) 'drop'   — домик падает вниз на верхушку башни почти мгновенно (быстрый щелчок, а не
-//                 медленное планирование). Считаем по РЕАЛЬНОМУ времени (performance.now()),
-//                 а не по кадрам, чтобы на телефонах с частотой экрана 90/120 Гц оно не
-//                 превращалось в мгновенный телепорт без всякого движения вообще.
-//   2) 'wobble' — и только если центр тяжести оказался за краем опоры (не PERFECT/GOOD) —
-//                 домик коротко шатается/дрожит на грани равновесия (нарастающая амплитуда)...
-//   3) 'topple' — ...а затем наклоняется (вращается вокруг того самого края, на который
-//                 опёрся, как дверь на петле) и срывается вниз мимо башни. Если же центр
-//                 тяжести был над опорой — фаз 2 и 3 нет, домик просто остаётся стоять.
-const FALL_DURATION_MS = 400;     // нормальная скорость падения на верхушку башни (была почти мгновенной)
-const WOBBLE_DURATION_MS = 350;   // короткое шатание/тряска перед тем, как не удержаться
-const WOBBLE_MAX_ANGLE = 0.16;    // ~9° — амплитуда шатания на пике
-// 'topple' считается настоящей физикой (интегрируем угловую скорость/ускорение по
-// реальному времени), а не заготовленной кривой — чем сильнее домик уже накренился, тем
-// быстрее клонится дальше, как настоящая падающая стена. Сначала потрясся (wobble), а затем
-// где-то за секунду резко наклоняется и падает вниз — ВСЕГДА до конца, пока реально не
-// уйдёт за нижний край экрана (см. flewOffScreen ниже), а не пропадает/тает по таймеру.
-const TOPPLE_MAX_DURATION_MS = 3000; // общий потолок по времени — просто страховка на случай зависания, обычно домик уходит за экран раньше и всё заканчивается по flewOffScreen
-const TOPPLE_GRAVITY = 2.2;          // "сила тяжести" для углового ускорения — крен вокруг края идёт быстрее, чем раньше
-const TOPPLE_SEED_ANGVEL = 0.3;      // лёгкий стартовый толчок, дальше падает уже сама физика
-const TOPPLE_MAX_TIP_ANGLE = 0.75;   // ~43° — до этого угла домик ещё наклоняется вокруг края опоры
-const TOPPLE_FALL_GRAVITY = 1500;    // px/сек² — ускорение свободного падения, когда оторвался от края (быстро долетает до низа экрана)
-
-function updateFallingBlock() {
-  if (!fallingBlock) return;
-
-  if (fallingBlock.phase === 'drop') {
-    const elapsed = performance.now() - fallingBlock.startTime;
-    fallingBlock.t = Math.min(1, elapsed / FALL_DURATION_MS);
-    // ease-out: движение видно сразу же, к концу чуть притормаживает перед ударом
-    const eased = 1 - Math.pow(1 - fallingBlock.t, 2);
-    fallingBlock.y = fallingBlock.startY + (fallingBlock.targetScreenY - fallingBlock.startY) * eased;
-    // Магнит виден прямо во время полёта — x плавно едет от точки отпускания (releaseX)
-    // к итоговой, чуть подтянутой к центру точке (landX), а не прыгает туда мгновенно
-    fallingBlock.x = fallingBlock.releaseX + (fallingBlock.landX - fallingBlock.releaseX) * eased;
-
-    if (fallingBlock.t >= 1) {
-      if (fallingBlock.willLand) {
-        // Центр тяжести над опорой — устоял, встаёт в башню целиком
-        tower.push({
-          x: fallingBlock.landX,
-          y: fallingBlock.landWorldY,
-          width: fallingBlock.width,
-          height: fallingBlock.height
-        });
-        worldOffsetTarget += fallingBlock.height;
-        landingSquash = 1;
-        spawnBurst(fallingBlock.landX + fallingBlock.width / 2, fallingBlock.targetScreenY + fallingBlock.height, 'rgba(130,110,85,.75)', 10);
-        finishFallingBlock();
-      } else {
-        // Коснулся верхушки башни, но центр тяжести за краем — короткий стук от касания,
-        // и переходим в фазу шатания (fallingBlock НЕ обнуляем)
-        landingSquash = 0.6;
-        spawnBurst(fallingBlock.landX + fallingBlock.width / 2, fallingBlock.targetScreenY + fallingBlock.height, 'rgba(120,100,80,.7)', 8);
-
-        fallingBlock.phase = 'wobble';
-        fallingBlock.wobbleStartTime = performance.now();
-        fallingBlock.pivotX = fallingBlock.dir >= 0 ? fallingBlock.pivotRight : fallingBlock.pivotLeft;
-        fallingBlock.pivotY = fallingBlock.targetScreenY + fallingBlock.height;
-        fallingBlock.restX = fallingBlock.landX;
-        fallingBlock.restY = fallingBlock.targetScreenY;
-        fallingBlock.rotation = 0;
-        fallingBlock.pivotDX = 0;
-        fallingBlock.pivotDY = 0;
-      }
-    }
-  } else if (fallingBlock.phase === 'wobble') {
-    const elapsed = performance.now() - fallingBlock.wobbleStartTime;
-    const t = Math.min(1, elapsed / WOBBLE_DURATION_MS);
-    // Дрожь нарастает по амплитуде (t) и делает ровно 3 полных колебания, так что к концу
-    // (sin 6π = 0) она сама гасится точно в нейтральном положении — без рывка перед наклоном
-    fallingBlock.rotation = Math.sin(t * Math.PI * 6) * WOBBLE_MAX_ANGLE * t;
-    fallingBlock.t = t;
-
-    if (t >= 1) {
-      fallingBlock.phase = 'topple';
-      fallingBlock.subPhase = 'tip'; // сначала наклоняется вокруг края опоры, потом 'fall' — срывается и летит
-      fallingBlock.toppleStartTime = performance.now();
-      fallingBlock.lastPhysicsTime = performance.now();
-      fallingBlock.angle = 0;
-      fallingBlock.angVel = TOPPLE_SEED_ANGVEL; // лёгкий стартовый толчок — дальше уже сама физика
-      fallingBlock.fallVel = 0;
-      fallingBlock.rotation = 0;
-      fallingBlock.pivotDX = 0;
-      fallingBlock.pivotDY = 0;
-      fallingBlock.t = 0;
-    }
-  } else if (fallingBlock.phase === 'topple') {
-    const now = performance.now();
-    const dt = Math.min(0.045, (now - fallingBlock.lastPhysicsTime) / 1000); // капаем dt — от лагов не дёргается
-    fallingBlock.lastPhysicsTime = now;
-    const dir = fallingBlock.dir;
-
-    if (fallingBlock.subPhase === 'tip') {
-      // Настоящая физика: угловое ускорение растёт вместе с углом наклона (как у настоящей
-      // падающей стены) — чем сильнее накренился, тем быстрее клонится дальше сам по себе
-      const angAccel = TOPPLE_GRAVITY * Math.sin(fallingBlock.angle + 0.08);
-      fallingBlock.angVel += angAccel * dt;
-      fallingBlock.angle += fallingBlock.angVel * dt;
-      if (fallingBlock.angle >= TOPPLE_MAX_TIP_ANGLE) {
-        fallingBlock.angle = TOPPLE_MAX_TIP_ANGLE;
-        fallingBlock.subPhase = 'fall';
-      }
-    } else {
-      // Сорвался с края опоры — дальше просто летит вниз мимо башни, довращиваясь по
-      // инерции с той скоростью, что накопил при наклоне (без дополнительного сценария)
-      fallingBlock.fallVel += TOPPLE_FALL_GRAVITY * dt;
-      fallingBlock.pivotDY += fallingBlock.fallVel * dt;
-      fallingBlock.pivotDX += dir * 40 * dt;
-      fallingBlock.angle += fallingBlock.angVel * dt;
-    }
-
-    fallingBlock.rotation = dir * fallingBlock.angle;
-    fallingBlock.t = Math.min(1, (now - fallingBlock.toppleStartTime) / TOPPLE_MAX_DURATION_MS);
-
-    const flewOffScreen = fallingBlock.pivotDY > (canvas.height + fallingBlock.height);
-    if (fallingBlock.t >= 1 || flewOffScreen) {
-      finishFallingBlock();
-    }
-  }
-}
-
-function finishFallingBlock() {
-  fallingBlock = null;
-  isDropping = false;
-  const buildBtn = document.getElementById('build-btn');
-  if (buildBtn) buildBtn.disabled = false;
-
-  document.getElementById('stat-floors').innerText = floors;
-  document.getElementById('stat-reward').innerText = formatNum(earned);
-  updateHearts();
-
-  if (lives <= 0 || floors >= goal) {
-    endGame();
-  }
-}
-
+// ---------- ОТРИСОВКА КАДРА ----------
 function draw() {
   if (!ctx) return;
-  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  drawBackground();
 
-  // Камера плавно подъезжает к цели — чем больше этажей построено, тем больше сдвиг
-  worldOffset += (worldOffsetTarget - worldOffset) * 0.14;
-  const groundY = h - 40;
+  // Башня едет вместе с камерой
+  ctx.save();
+  ctx.translate(0, worldOffset);
+  ctx.fillStyle = 'rgba(0,30,20,.16)';
+  ctx.fillRect(0, groundY - 2, W, 2);
+  tower.forEach((b, i) => {
+    const sy = b.y + worldOffset;
+    if (sy > H + 10 || sy + b.height < -10) return; // за экраном не рисуем
+    const bb = {x: b.drawX, y: b.y, width: b.width, height: b.height};
+    if (i === tower.length - 1 && i > 0 && landingSquash > 0.01) {
+      const cx = bb.x + bb.width / 2, cy = bb.y + bb.height;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1 + landingSquash * 0.1, 1 - landingSquash * 0.18);
+      ctx.translate(-cx, -cy);
+      drawFloor(bb, b.style, b.imgIdx);
+      ctx.restore();
+    } else {
+      drawFloor(bb, b.style, b.imgIdx);
+    }
+  });
+  ctx.restore();
 
-  // --- НЕБО (неподвижная база — если картинка фона не долистала верх, снизу видно небо) ---
-  const sky = ctx.createLinearGradient(0, 0, 0, h);
+  drawFallingBlock();
+  drawCrane();
+  drawParticles();
+  drawFloatTexts();
+}
+
+function drawBackground() {
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
   sky.addColorStop(0, '#a9def0');
   sky.addColorStop(0.6, '#cdeaf7');
   sky.addColorStop(1, '#e8f6fb');
   ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, w, h);
+  ctx.fillRect(0, 0, W, H);
 
   if (gameBgReady && gameBgImg) {
-    // --- ФОН-КАРТИНКА ГОРОДА: едет параллельно игре, но медленнее башни (параллакс) ---
-    // GAME_BG_GROUND_FRACTION — на какой высоте картинки (0 = верх, 1 = низ) находится
-    // "линия земли" (площадка под барьерами), чтобы она совпала с тем местом, где реально
-    // стоит башня в игре. Если после проверки в Telegram площадка на фото окажется чуть выше
-    // или ниже башни — поправь это число (строка с const GAME_BG_GROUND_FRACTION).
-    const bgH = h * 1.6;
-    const bgParallax = worldOffset * 0.4;
-    const bgY = (groundY - GAME_BG_GROUND_FRACTION * bgH) + bgParallax;
-    // Картинка города рисуется только ОДИН раз (у земли). Дальше вверх, там, где картинка
-    // города уже закончилась, идёт просто повторяющийся фон неба (GAME_SKY_IMAGE) —
-    // до GAME_SKY_MAX_TILES копий подряд, нарисованных заранее друг над другом, чтобы даже
-    // при очень высокой башне сверху никогда не было видно пустоты.
-    ctx.drawImage(gameBgImg, 0, bgY, w, bgH);
+    const bgH = H * GAME_BG_HEIGHT_MULT;
+    const bgY = (groundY - GAME_BG_GROUND_FRACTION * bgH) + worldOffset * GAME_BG_PARALLAX;
+    if (bgY < H) ctx.drawImage(gameBgImg, 0, bgY, W, bgH);
     if (gameSkyReady && gameSkyImg) {
       for (let i = 1; i <= GAME_SKY_MAX_TILES; i++) {
-        ctx.drawImage(gameSkyImg, 0, bgY - i * bgH, w, bgH);
+        const ty = bgY - i * bgH;
+        if (ty > H || ty + bgH < 0) continue;
+        ctx.drawImage(gameSkyImg, 0, ty, W, bgH);
       }
     }
-
-    // Облака — появляются в зоне неба (выше картинки города), рисуются здесь, ДО башни,
-    // поэтому всегда позади неё и никогда не перекрывают домики (см. updateClouds)
     drawClouds(bgY);
   } else {
-    // мягкое солнце
-    const sunGrad = ctx.createRadialGradient(w - 46, 34, 2, w - 46, 34, 42);
+    const sunGrad = ctx.createRadialGradient(W - 46, 110, 2, W - 46, 110, 42);
     sunGrad.addColorStop(0, 'rgba(255,244,200,.95)');
     sunGrad.addColorStop(1, 'rgba(255,244,200,0)');
     ctx.fillStyle = sunGrad;
-    ctx.beginPath(); ctx.arc(w - 46, 34, 42, 0, Math.PI*2); ctx.fill();
-
-    // облака — тоже едут медленнее башни, для того же эффекта параллакса
-    const cloudParallax = worldOffset * 0.4;
-    drawCloud(50 + Math.sin(frame/160)*6, 36 + cloudParallax, 1);
-    drawCloud(w - 130 + Math.cos(frame/190)*6, 58 + cloudParallax, 0.8);
+    ctx.beginPath(); ctx.arc(W - 46, 110, 42, 0, Math.PI * 2); ctx.fill();
+    const cp = worldOffset * GAME_BG_PARALLAX;
+    drawCloud(50 + Math.sin(frame / 160) * 6, 130 + cp, 1);
+    drawCloud(W - 130 + Math.cos(frame / 190) * 6, 170 + cp, 0.8);
+    ctx.fillStyle = '#8fd06a';
+    ctx.fillRect(0, groundY + worldOffset, W, H);
   }
-
-  // --- МИР (земля + башня): едет вместе с камерой на полной скорости ---
-  ctx.save();
-  ctx.translate(0, worldOffset);
-
-  if (gameBgReady && gameBgImg) {
-    // Картинка фона уже сама рисует площадку/тротуар — просто лёгкий контактный контур под башней,
-    // чтобы блоки не выглядели подвешенными в воздухе
-    ctx.fillStyle = 'rgba(0,30,20,.16)';
-    ctx.fillRect(0, groundY - 2, w, 2);
-  } else {
-    // Запасной вариант без картинки: своя нарисованная травка-газон
-    ctx.fillStyle = 'rgba(0,40,20,.10)';
-    ctx.fillRect(0, groundY - 3, w, 3);
-    const groundGrad = ctx.createLinearGradient(0, groundY, 0, groundY + 400);
-    groundGrad.addColorStop(0, '#9ed976');
-    groundGrad.addColorStop(1, '#7cc158');
-    ctx.fillStyle = groundGrad;
-    ctx.fillRect(0, groundY, w, 400);
-    ctx.strokeStyle = 'rgba(255,255,255,.35)';
-    ctx.lineWidth = 2;
-    for (let gx = -((frame*0.3)%18); gx < w; gx += 18) {
-      ctx.beginPath(); ctx.moveTo(gx, groundY + 6); ctx.lineTo(gx + 9, groundY + 6); ctx.stroke();
-    }
-  }
-
-  tower.forEach((b, i) => {
-    // Верхний (только что приземлившийся) этаж на секунду "сплющивается" от удара и пружинит назад
-    if (i === tower.length - 1 && landingSquash > 0.01) {
-      const cx = b.x + b.width / 2, cy = b.y + b.height;
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.scale(1 + landingSquash * 0.12, 1 - landingSquash * 0.22);
-      ctx.translate(-cx, -cy);
-      drawBlock(b, i);
-      ctx.restore();
-    } else {
-      drawBlock(b, i);
-    }
-  });
-
-  ctx.restore();
-
-  // --- КРАН (всегда на фиксированном месте наверху экрана, не едет с камерой) ---
-  drawCrane();
-
-  // --- ДОМИК: либо падает на башню, либо ждёт на крюке (качается маятником) ---
-  const hookX = pivotX + craneSwingX;
-  const topBlock = tower[tower.length - 1];
-  const shadowY = topBlock.y + worldOffset;
-  // тень-подсказка на верхушке текущей башни (место посадки) — актуальна, пока домик реально
-  // летит ТУДА (фаза 'drop', см. updateFallingBlock); когда он уже шатается/наклоняется/падает
-  // мимо (фазы 'wobble'/'topple') — смысла в ней больше нет, убираем
-  const isTeetering = fallingBlock && (fallingBlock.phase === 'wobble' || fallingBlock.phase === 'topple');
-  if (!isTeetering) {
-    const shadowX = fallingBlock ? (fallingBlock.x + fallingBlock.width / 2) : hookX;
-    ctx.fillStyle = 'rgba(20,40,60,.14)';
-    ctx.beginPath();
-    ctx.ellipse(shadowX, shadowY - 2, block.width * 0.42, 5, 0, 0, Math.PI*2);
-    ctx.fill();
-  }
-
-  if (fallingBlock) {
-    if (isTeetering) {
-      // Не удержался на краю — сначала коснулся башни (это было ещё в фазе 'drop'), потом
-      // шатается на грани равновесия ('wobble'), а затем наклоняется вокруг того самого края,
-      // на который опёрся (как дверь на петле), и срывается вниз, довращиваясь ('topple').
-      // Домик рисуется в своей "точке покоя" (restX/restY), а всё движение — это поворот+снос
-      // холста вокруг pivotX/pivotY, поэтому ничего не дёргается и не исчезает кусками —
-      // падает/шатается весь целиком. Никакого угасания прозрачности тут больше нет — раньше
-      // домик становился невидимым (через globalAlpha) ещё ДО того, как реально долетал до
-      // низа экрана, и это выглядело так, будто он просто "пропадает" в воздухе. Теперь он
-      // остаётся полностью непрозрачным всё время и правда падает вниз, пока физически не
-      // уйдёт за нижний край экрана (см. flewOffScreen в updateFallingBlock).
-      ctx.save();
-      ctx.translate(fallingBlock.pivotX + (fallingBlock.pivotDX || 0), fallingBlock.pivotY + (fallingBlock.pivotDY || 0));
-      ctx.rotate(fallingBlock.rotation || 0);
-      ctx.translate(-fallingBlock.pivotX, -fallingBlock.pivotY);
-      const restBlock = {x: fallingBlock.restX, y: fallingBlock.restY, width: fallingBlock.width, height: fallingBlock.height};
-      drawBlock(restBlock, tower.length, false);
-      drawRopeRoof(restBlock); // верёвка-крыша рисуется тут же, внутри того же поворота — крутится вместе с домиком
-      ctx.restore();
-    } else {
-      const dropBlock = {x: fallingBlock.x, y: fallingBlock.y, width: fallingBlock.width, height: fallingBlock.height};
-      drawBlock(dropBlock, tower.length, false);
-      drawRopeRoof(dropBlock);
-    }
-  } else {
-    // Домик на верёвках не просто едет влево-вправо — он качается ОДНОЙ дугой вместе с
-    // верёвкой (craneTilt — общий угол, см. gameLoop и drawCrane): накренён на краях
-    // качания, ровно висит по центру, и верёвки повёрнуты на тот же угол, что и он сам
-    const bx = hookX - block.width / 2;
-    const by = block.y + craneSwingY;
-    const carried = {x: bx, y: by, width: block.width, height: block.height};
-    ctx.save();
-    ctx.translate(bx + block.width / 2, by);
-    ctx.rotate(craneTilt);
-    ctx.translate(-(bx + block.width / 2), -by);
-    drawBlock(carried, tower.length, true);
-    // Верёвку тут отдельно не рисуем — пока домик на крюке, её рисует drawCrane() (она там
-    // приклеена сразу к обоим концам: к крюку и к этим же самым углам домика)
-    ctx.restore();
-  }
-
-  // --- ЧАСТИЦЫ (эффект PERFECT/GOOD/приземления) ---
-  drawParticles();
 }
 
-// Облака-картинки: спавнятся то слева, то справа, на случайной высоте в полоске неба, которая
-// сейчас реально видна на экране (то есть уже за пределами картинки города), и летят по прямой
-// в противоположную сторону. Рисуются раньше башни (см. draw()) — поэтому всегда позади неё и
-// никогда не перекрывают домики.
 function drawClouds(bgY) {
-  const w = canvas.width, h = canvas.height;
-  const skyTop = 0;
-  const skyBottom = Math.min(bgY, h);
-
-  if (skyBottom - skyTop > 20 && clouds.length < CLOUD_MAX_ON_SCREEN && Math.random() < CLOUD_SPAWN_CHANCE_PER_FRAME) {
+  const skyBottom = Math.min(bgY, H);
+  if (skyBottom > 20 && clouds.length < CLOUD_MAX_ON_SCREEN && Math.random() < CLOUD_SPAWN_CHANCE_PER_FRAME) {
     const readyIdxs = [];
     for (let i = 0; i < cloudImgs.length; i++) if (cloudImgs[i].ready) readyIdxs.push(i);
     if (readyIdxs.length) {
       const img = cloudImgs[readyIdxs[Math.floor(Math.random() * readyIdxs.length)]];
       const cw = CLOUD_WIDTH_MIN + Math.random() * (CLOUD_WIDTH_MAX - CLOUD_WIDTH_MIN);
-      const ratio = (img.naturalHeight || 60) / (img.naturalWidth || 110);
-      const ch = cw * ratio;
+      const ch = cw * ((img.naturalHeight || 60) / (img.naturalWidth || 110));
       const fromLeft = Math.random() < 0.5;
       const speed = CLOUD_SPEED_MIN + Math.random() * (CLOUD_SPEED_MAX - CLOUD_SPEED_MIN);
-      const spawnY = skyTop + Math.random() * Math.max(10, (skyBottom - skyTop - ch));
-      clouds.push({
-        img,
-        x: fromLeft ? -cw : w + cw,
-        vx: fromLeft ? speed : -speed,
-        w: cw, h: ch,
-        // Облако "приклеено" к тому же слою параллакса, что и небо — держит фиксированное
-        // расстояние от верхней границы городской картинки, поэтому едет вместе с фоном
-        // вверх-вниз, а не отдельно от него, и двигается по экрану только по горизонтали
-        bgOffset: bgY - spawnY
-      });
+      const spawnY = Math.random() * Math.max(10, skyBottom - ch);
+      clouds.push({img, x: fromLeft ? -cw : W + cw, vx: fromLeft ? speed : -speed, w: cw, h: ch, bgOffset: bgY - spawnY});
     }
   }
-
   for (let i = clouds.length - 1; i >= 0; i--) {
     const c = clouds[i];
     c.x += c.vx;
-    if (c.x < -c.w - 20 || c.x > w + c.w + 20) {
-      clouds.splice(i, 1);
-      continue;
-    }
-    const cy = bgY - c.bgOffset;
-    if (c.img.ready) {
-      ctx.drawImage(c.img, c.x, cy, c.w, c.h);
-    }
+    if (c.x < -c.w - 20 || c.x > W + c.w + 20) { clouds.splice(i, 1); continue; }
+    if (c.img.ready) ctx.drawImage(c.img, c.x, bgY - c.bgOffset, c.w, c.h);
   }
 }
 
@@ -1390,170 +1374,163 @@ function drawCloud(cx, cy, scale) {
   ctx.save();
   ctx.translate(cx, cy);
   ctx.scale(scale, scale);
-  ctx.fillStyle = 'rgba(20,60,90,.06)';
-  ctx.beginPath();
-  ctx.ellipse(0, 10, 40, 10, 0, 0, Math.PI*2);
-  ctx.fill();
   ctx.fillStyle = '#ffffff';
   ctx.beginPath();
-  ctx.arc(0, 0, 16, 0, Math.PI*2);
-  ctx.arc(20, -4, 20, 0, Math.PI*2);
-  ctx.arc(42, 0, 15, 0, Math.PI*2);
-  ctx.arc(20, 8, 18, 0, Math.PI*2);
+  ctx.arc(0, 0, 16, 0, Math.PI * 2);
+  ctx.arc(20, -4, 20, 0, Math.PI * 2);
+  ctx.arc(42, 0, 15, 0, Math.PI * 2);
+  ctx.arc(20, 8, 18, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
 }
 
-function drawBlock(b, index, isCarried) {
-  // Если для этого этажа задана своя картинка домика (и она уже загрузилась) — рисуем её
-  const floorImg = floorImgObjs.length ? floorImgObjs[index % floorImgObjs.length] : null;
-  if (floorImg && floorImg.ready) {
-    drawBlockImage(b, floorImg, isCarried);
-    return;
-  }
-
-  const pal = BLOCK_PALETTE[index % BLOCK_PALETTE.length];
-  const r = 3;
-
-  // тень контакта с этажом снизу
-  ctx.fillStyle = 'rgba(20,15,10,.18)';
-  ctx.fillRect(b.x + 2, b.y + b.height - 2, b.width - 4, 4);
-
+function drawFallingBlock() {
+  const fb = fallingBlock;
+  if (!fb) return;
+  const b = {x: 0, y: 0, width: fb.w, height: fb.h};
   ctx.save();
-  roundRect(b.x, b.y, b.width, b.height, r);
-  ctx.clip();
-
-  // кирпичная/каменная кладка — объёмный градиент по высоте
-  const grad = ctx.createLinearGradient(b.x, b.y, b.x, b.y + b.height);
-  grad.addColorStop(0, pal.brickTop);
-  grad.addColorStop(0.55, pal.brickMid);
-  grad.addColorStop(1, pal.brickDark);
-  ctx.fillStyle = grad;
-  ctx.fillRect(b.x, b.y, b.width, b.height);
-
-  // ряды кладки со смещением через ряд (мортир — швы между кирпичами)
-  const courseH = Math.max(5, b.height / 8);
-  const brickW = Math.max(10, b.width / 4);
-  ctx.strokeStyle = pal.mortar;
-  ctx.lineWidth = 1;
-  let row = 0;
-  for (let cy = b.y; cy < b.y + b.height; cy += courseH) {
-    ctx.beginPath(); ctx.moveTo(b.x, cy); ctx.lineTo(b.x + b.width, cy); ctx.stroke();
-    const offset = (row % 2 === 0) ? 0 : brickW / 2;
-    for (let cx = b.x - brickW + offset; cx < b.x + b.width; cx += brickW) {
-      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, Math.min(cy + courseH, b.y + b.height)); ctx.stroke();
-    }
-    row++;
-  }
-
-  // боковой свет/тень для объёма (светлее слева, темнее справа)
-  const sideShade = ctx.createLinearGradient(b.x, 0, b.x + b.width, 0);
-  sideShade.addColorStop(0, 'rgba(255,255,255,.12)');
-  sideShade.addColorStop(0.7, 'rgba(0,0,0,0)');
-  sideShade.addColorStop(1, 'rgba(0,0,0,.2)');
-  ctx.fillStyle = sideShade;
-  ctx.fillRect(b.x, b.y, b.width, b.height);
-
-  ctx.restore();
-
-  // белый карниз сверху этажа (как на референсе — граница между этажами)
-  const trimH = Math.max(3, Math.min(7, b.height * 0.16));
-  ctx.fillStyle = pal.trim;
-  roundRect(b.x - 1, b.y, b.width + 2, trimH, 2);
-  ctx.fill();
-
-  // окна: сетка 2×3 — как у настоящей 3-этажки с двумя подъездами/квартирами в ряд
-  // (каждый этаж башни выглядит отдельным маленьким домом, а не одной плоской полосой)
-  const winCols = 2;
-  const winRows = 3;
-  const winGapX = Math.max(5, b.width * 0.08);
-  const winGapY = Math.max(4, b.height * 0.04);
-  const winW = (b.width - winGapX * (winCols + 1)) / winCols;
-  const winH = (b.height * 0.86 - winGapY * (winRows + 1)) / winRows;
-  const gridTop = b.y + b.height * 0.09;
-  for (let row = 0; row < winRows; row++) {
-    for (let col = 0; col < winCols; col++) {
-      const wx = b.x + winGapX + col * (winW + winGapX);
-      const winY = gridTop + winGapY + row * (winH + winGapY);
-      ctx.fillStyle = pal.trim;
-      roundRect(wx - 2, winY - 2, winW + 4, winH + 4, 2);
-      ctx.fill();
-
-      const glass = ctx.createLinearGradient(wx, winY, wx, winY + winH);
-      glass.addColorStop(0, isCarried ? '#bfe6f7' : '#8fd3ee');
-      glass.addColorStop(1, isCarried ? '#7bb9d6' : '#3f8fb8');
-      ctx.fillStyle = glass;
-      ctx.fillRect(wx, winY, winW, winH);
-
-      ctx.strokeStyle = pal.trim;
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.moveTo(wx + winW / 2, winY); ctx.lineTo(wx + winW / 2, winY + winH);
-      ctx.moveTo(wx, winY + winH / 2); ctx.lineTo(wx + winW, winY + winH / 2);
-      ctx.stroke();
-
-      ctx.fillStyle = 'rgba(255,255,255,.35)';
-      ctx.fillRect(wx + 2, winY + 2, Math.max(2, winW * 0.22), winH * 0.35);
-    }
-  }
-
-  // общий контур этажа
-  ctx.strokeStyle = pal.brickDark;
-  ctx.lineWidth = 1.2;
-  roundRect(b.x, b.y, b.width, b.height, r);
-  ctx.stroke();
-
-  if (isCarried) {
-    // блик выделения на несомом блоке (видно, что он "активный")
-    ctx.strokeStyle = 'rgba(255,255,255,.85)';
-    ctx.lineWidth = 2;
-    roundRect(b.x - 1, b.y - 1, b.width + 2, b.height + 2, r + 1);
-    ctx.stroke();
-  }
-}
-
-// Рисует свою картинку домика на месте этажа — вписывает без искажений пропорций (лишнее
-// обрезается по краям, как CSS object-fit:cover), с той же скруглённой рамкой, что и у кирпича
-function drawBlockImage(b, img, isCarried) {
-  const r = 3;
-
-  ctx.fillStyle = 'rgba(20,15,10,.18)';
-  ctx.fillRect(b.x + 2, b.y + b.height - 2, b.width - 4, 4);
-
-  ctx.save();
-  roundRect(b.x, b.y, b.width, b.height, r);
-  ctx.clip();
-
-  const ir = (img.naturalWidth || 1) / (img.naturalHeight || 1);
-  const br = b.width / b.height;
-  let dw, dh, dx, dy;
-  if (ir > br) {
-    dh = b.height;
-    dw = dh * ir;
-    dx = b.x - (dw - b.width) / 2;
-    dy = b.y;
+  if (fb.phase === 'fall' || fb.phase === 'pass') {
+    const cx = fb.x + fb.w / 2, cy = fb.y + fb.h / 2;
+    ctx.translate(cx, cy);
+    ctx.rotate(fb.rot);
+    b.x = -fb.w / 2; b.y = -fb.h / 2;
   } else {
-    dw = b.width;
-    dh = dw / ir;
-    dx = b.x;
-    dy = b.y - (dh - b.height) / 2;
+    ctx.translate(fb.pivotX + fb.pivotDX, fb.pivotY + fb.pivotDY);
+    ctx.rotate(fb.rotation || 0);
+    ctx.translate(-fb.pivotX, -fb.pivotY);
+    b.x = fb.restX; b.y = fb.restY;
   }
-  ctx.drawImage(img, dx, dy, dw, dh);
+  drawFloor(b, fb.style, fb.imgIdx);
   ctx.restore();
-
-  ctx.strokeStyle = 'rgba(0,0,0,.25)';
-  ctx.lineWidth = 1.2;
-  roundRect(b.x, b.y, b.width, b.height, r);
-  ctx.stroke();
-
-  if (isCarried) {
-    ctx.strokeStyle = 'rgba(255,255,255,.85)';
-    ctx.lineWidth = 2;
-    roundRect(b.x - 1, b.y - 1, b.width + 2, b.height + 2, r + 1);
-    ctx.stroke();
-  }
 }
 
+// ---------- БАШЕННЫЙ КРАН ----------
+function drawCrane() {
+  const jy = JIB_Y;
+  // оттяжки стрелы — уходят вверх к оголовку крана
+  ctx.strokeStyle = 'rgba(55,60,70,.5)';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(W * 0.2, jy - 16); ctx.lineTo(W * 0.06, -40);
+  ctx.moveTo(W * 0.62, jy - 16); ctx.lineTo(W * 0.06, -40);
+  ctx.stroke();
+
+  drawJib(jy);
+  drawCab(W * 0.06, jy);
+
+  // тележка на стреле
+  const tx = crane.x;
+  ctx.fillStyle = '#3b4250';
+  roundRect(tx - 15, jy - 2, 30, 10, 2);
+  ctx.fill();
+  ctx.fillStyle = '#1e232b';
+  [tx - 9, tx + 9].forEach(wx => { ctx.beginPath(); ctx.arc(wx, jy - 2, 2.6, 0, Math.PI * 2); ctx.fill(); });
+
+  // двойной трос до крюка
+  const hk = hookPos();
+  const px = Math.cos(crane.theta) * 3, py = -Math.sin(crane.theta) * 3;
+  ctx.strokeStyle = '#2b3037';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(tx - 3, jy + 8); ctx.lineTo(hk.x - px, hk.y - py);
+  ctx.moveTo(tx + 3, jy + 8); ctx.lineTo(hk.x + px, hk.y + py);
+  ctx.stroke();
+
+  // крюк + домик на стропах (всё поворачивается вместе с тросом)
+  ctx.save();
+  ctx.translate(hk.x, hk.y);
+  ctx.rotate(-crane.theta);
+  drawHookBlock();
+  if (holding && load) {
+    const ly = HOOK_TOTAL + SLING_HEIGHT;
+    ctx.globalAlpha = load.alpha;
+    ctx.strokeStyle = '#2b3037';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(0, HOOK_TOTAL - 4); ctx.lineTo(-load.width / 2 + 5, ly);
+    ctx.moveTo(0, HOOK_TOTAL - 4); ctx.lineTo(load.width / 2 - 5, ly);
+    ctx.stroke();
+    drawFloor({x: -load.width / 2, y: ly, width: load.width, height: load.height}, load.style, load.imgIdx);
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+}
+
+function drawJib(jy) {
+  const top = jy - 18, bot = jy - 4, x0 = -20, x1 = W + 20, step = 16;
+  ctx.fillStyle = 'rgba(0,0,0,.08)';
+  ctx.fillRect(x0, bot + 4, x1 - x0, 3);
+  // решётка
+  ctx.strokeStyle = '#d99a00';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  let up = true;
+  for (let x = x0; x < x1; x += step) {
+    ctx.moveTo(x, up ? bot : top); ctx.lineTo(x + step, up ? top : bot);
+    ctx.moveTo(x, top); ctx.lineTo(x, bot);
+    up = !up;
+  }
+  ctx.stroke();
+  // верхний и нижний пояс
+  const chord = ctx.createLinearGradient(0, top, 0, bot + 4);
+  chord.addColorStop(0, '#ffd43b');
+  chord.addColorStop(1, '#e6a300');
+  ctx.fillStyle = chord;
+  ctx.fillRect(x0, top - 2, x1 - x0, 4);
+  ctx.fillRect(x0, bot, x1 - x0, 4);
+  ctx.strokeStyle = 'rgba(90,60,0,.5)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x0, top - 2, x1 - x0, 4);
+  ctx.strokeRect(x0, bot, x1 - x0, 4);
+}
+
+function drawCab(x, jy) {
+  ctx.fillStyle = '#f2b400';
+  roundRect(x - 16, jy, 32, 26, 4);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(80,55,0,.6)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.fillStyle = '#9fd8f0';
+  roundRect(x - 11, jy + 5, 22, 11, 2);
+  ctx.fill();
+}
+
+function drawHookBlock() {
+  // жёлто-чёрная обойма крюка
+  ctx.save();
+  roundRect(-10, 0, 20, HOOK_BLOCK_H, 3);
+  ctx.clip();
+  ctx.fillStyle = '#f5b800';
+  ctx.fillRect(-10, 0, 20, HOOK_BLOCK_H);
+  ctx.fillStyle = '#22252b';
+  for (let i = -3; i < 5; i++) {
+    const sx = i * 9;
+    ctx.beginPath();
+    ctx.moveTo(sx, 0); ctx.lineTo(sx + 4.5, 0);
+    ctx.lineTo(sx + 4.5 - HOOK_BLOCK_H, HOOK_BLOCK_H); ctx.lineTo(sx - HOOK_BLOCK_H, HOOK_BLOCK_H);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+  ctx.strokeStyle = '#22252b';
+  ctx.lineWidth = 1.2;
+  roundRect(-10, 0, 20, HOOK_BLOCK_H, 3);
+  ctx.stroke();
+  ctx.fillStyle = '#5a6069';
+  ctx.beginPath(); ctx.arc(0, 5, 3, 0, Math.PI * 2); ctx.fill();
+  // сам крюк
+  ctx.strokeStyle = '#4b515a';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(0, HOOK_BLOCK_H);
+  ctx.lineTo(0, HOOK_BLOCK_H + 7);
+  ctx.arc(-4.5, HOOK_BLOCK_H + 7, 4.5, 0, Math.PI * 0.85);
+  ctx.stroke();
+  ctx.lineCap = 'butt';
+}
+
+// ---------- ДОМИКИ (фундамент + 6 видов этажей) ----------
 function roundRect(x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -1563,206 +1540,325 @@ function roundRect(x, y, w, h, r) {
   ctx.arcTo(x, y, x + w, y, r);
   ctx.closePath();
 }
-
-function drawCrane() {
-  // Никакой мачты/стрелы крана — только крюк, закреплённый в самом верху экрана (ходит
-  // влево-вправо вместе с раскачиванием и сам плавно поднимается/опускается).
-  const hookX = pivotX + craneSwingX;
-  const anchorY = CRANE_TOP_ANCHOR_Y + craneHookBobY;
-  const ropeStartY = anchorY + CRANE_HOOK_HEIGHT * 0.55; // где у крюка реально держится трос
-
-  // Верёвка приклеена ОБОИМИ концами: пока домик реально висит на крюке (fallingBlock ещё
-  // не создан) — верхний конец приклеен к самому крюку (hookX/ropeStartY, те же величины,
-  // что рисуют сам крюк чуть ниже), а нижний — к верхним углам домика, довёрнутым на тот же
-  // craneTilt, что и сам домик в draw(). Все величины (craneSwingX/Y, craneTilt) берутся
-  // из ОДНИХ и тех же переменных в этом же кадре, что и у самого домика — поэтому верёвка
-  // никогда не "отстаёт"/не шатается отдельно, она жёстко привязана к обеим точкам сразу.
-  // Как только домик отпущен и падает/шатается/срывается — он уже физически не на крюке,
-  // и эта часть не рисуется (верёвка в этот момент просто нарисована на самом домике, см.
-  // drawRopeRoof в draw()).
-  if (!fallingBlock) {
-    const hookY = block.y + craneSwingY;
-    const ropeSpread = block.width / 2 - 3;
-    const cosT = Math.cos(craneTilt), sinT = Math.sin(craneTilt);
-    const leftX = hookX - ropeSpread * cosT, leftY = hookY - ropeSpread * sinT;
-    const rightX = hookX + ropeSpread * cosT, rightY = hookY + ropeSpread * sinT;
-    ctx.strokeStyle = '#3a4048';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(hookX, ropeStartY);
-    ctx.lineTo(leftX, leftY);
-    ctx.moveTo(hookX, ropeStartY);
-    ctx.lineTo(rightX, rightY);
-    ctx.stroke();
+function vgrad(y0, y1, stops) {
+  const g = ctx.createLinearGradient(0, y0, 0, y1);
+  stops.forEach((c, i) => g.addColorStop(i / (stops.length - 1), c));
+  return g;
+}
+function brickPattern(x, y, w, h, mortar, rows) {
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+  const ch = h / rows, bw = w / 5;
+  ctx.strokeStyle = mortar;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let r = 0; r < rows; r++) {
+    const yy = y + r * ch;
+    ctx.moveTo(x, yy); ctx.lineTo(x + w, yy);
+    const off = r % 2 ? bw / 2 : 0;
+    for (let bx = x - bw + off; bx < x + w; bx += bw) { ctx.moveTo(bx, yy); ctx.lineTo(bx, yy + ch); }
   }
-
-  // сам крюк — картинка (если задана), закреплён в самом верху экрана; иначе простая дуга кодом
-  if (craneHookImgReady && craneHookImg) {
-    const hir = (craneHookImg.naturalWidth || 1) / (craneHookImg.naturalHeight || 1);
-    const hookW = CRANE_HOOK_HEIGHT * hir;
-    ctx.drawImage(craneHookImg, hookX - hookW / 2, anchorY - CRANE_HOOK_HEIGHT * 0.3, hookW, CRANE_HOOK_HEIGHT);
-  } else {
-    ctx.strokeStyle = '#3a4048';
-    ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.restore();
+}
+function cornice(x, y, w, h, color) {
+  const t = Math.max(3, Math.min(7, h * 0.08));
+  ctx.fillStyle = color;
+  roundRect(x - 2, y, w + 4, t, 2);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.12)';
+  ctx.fillRect(x, y + t, w, 1.5);
+}
+function sideShade(x, y, w, h) {
+  const g = ctx.createLinearGradient(x, 0, x + w, 0);
+  g.addColorStop(0, 'rgba(255,255,255,.10)');
+  g.addColorStop(0.65, 'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(0,0,0,.16)');
+  ctx.fillStyle = g;
+  ctx.fillRect(x, y, w, h);
+}
+function drawWindow(x, y, w, h, o = {}) {
+  const frame = o.frame || '#fff8ec';
+  ctx.fillStyle = frame;
+  roundRect(x - 2, y - 2, w + 4, h + 4, 2);
+  ctx.fill();
+  const g = ctx.createLinearGradient(0, y, 0, y + h);
+  g.addColorStop(0, o.glassTop || '#bfe8fa');
+  g.addColorStop(1, o.glassBottom || '#4b93c4');
+  ctx.fillStyle = g;
+  ctx.fillRect(x, y, w, h);
+  if (o.curtain) {
+    ctx.fillStyle = o.curtain;
     ctx.beginPath();
-    ctx.arc(hookX, anchorY + 3, 4, 0.2, Math.PI - 0.2);
+    ctx.moveTo(x, y); ctx.lineTo(x + w * 0.38, y);
+    ctx.quadraticCurveTo(x + w * 0.12, y + h * 0.5, x, y + h * 0.75);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.strokeStyle = frame;
+  ctx.lineWidth = Math.max(1, w * 0.08);
+  ctx.beginPath();
+  ctx.moveTo(x + w / 2, y); ctx.lineTo(x + w / 2, y + h);
+  if (o.cross !== false) { ctx.moveTo(x, y + h * 0.45); ctx.lineTo(x + w, y + h * 0.45); }
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.4)';
+  ctx.fillRect(x + w * 0.1, y + h * 0.08, w * 0.16, h * 0.3);
+}
+function drawShutters(x, y, w, h, color) {
+  const sw = w * 0.34;
+  [x - sw - 2, x + w + 2].forEach(sx => {
+    ctx.fillStyle = color;
+    ctx.fillRect(sx, y - 2, sw, h + 4);
+    ctx.strokeStyle = 'rgba(0,0,0,.25)';
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    for (let i = 1; i < 5; i++) { const ly = y - 2 + (h + 4) * i / 5; ctx.moveTo(sx, ly); ctx.lineTo(sx + sw, ly); }
     ctx.stroke();
+  });
+}
+function drawFlowerBox(x, y, w) {
+  ctx.fillStyle = '#8a5a2b';
+  ctx.fillRect(x, y, w, 5);
+  const colors = ['#e84a5f', '#ff8fb1', '#ffd166'];
+  for (let i = 0; i < 5; i++) {
+    const fx = x + w * (i + 0.5) / 5;
+    ctx.fillStyle = '#4c9a2a';
+    ctx.beginPath(); ctx.arc(fx, y - 1, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = colors[i % 3];
+    ctx.beginPath(); ctx.arc(fx, y - 3, 1.8, 0, Math.PI * 2); ctx.fill();
   }
 }
-
-// Верёвка над домиком, статичная "крыша из верёвки" — просто 2 коротких отрезка от верхних
-// углов домика к точке над его центром. НИКАК не зависит от крюка/свинга крана — только от
-// координат самого домика (b.x/b.y/b.width), поэтому её нужно рисовать ВНУТРИ того же
-// ctx.save()/rotate()/translate(), что и сам домик (или вообще без трансформации, если
-// домик в этот момент рисуется без поворота) — тогда верёвка физически "прибита" к домику
-// и крутится/двигается вместе с ним, а не отдельно.
-const ROPE_ROOF_HEIGHT = 20;
-function drawRopeRoof(b) {
-  const topY = b.y - ROPE_ROOF_HEIGHT;
-  const cx = b.x + b.width / 2;
-  ctx.strokeStyle = '#3a4048';
-  ctx.lineWidth = 2;
+function drawDoor(x, y, w, h, color) {
+  ctx.fillStyle = '#f5ecd9';
+  roundRect(x - 2, y - 2, w + 4, h + 2, 3);
+  ctx.fill();
+  ctx.fillStyle = color;
+  roundRect(x, y, w, h, 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.25)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x + w * 0.18, y + h * 0.12, w * 0.64, h * 0.3);
+  ctx.strokeRect(x + w * 0.18, y + h * 0.52, w * 0.64, h * 0.36);
+  ctx.fillStyle = '#f3c34a';
+  ctx.beginPath(); ctx.arc(x + w * 0.8, y + h * 0.55, 1.6, 0, Math.PI * 2); ctx.fill();
+}
+function archPath(x, y, w, h) {
+  const ah = w * 0.6;
   ctx.beginPath();
-  ctx.moveTo(b.x + 4, b.y);
-  ctx.lineTo(cx, topY);
-  ctx.moveTo(b.x + b.width - 4, b.y);
-  ctx.lineTo(cx, topY);
+  ctx.moveTo(x, y + h);
+  ctx.lineTo(x, y + ah);
+  ctx.quadraticCurveTo(x, y + ah * 0.2, x + w / 2, y);
+  ctx.quadraticCurveTo(x + w, y + ah * 0.2, x + w, y + ah);
+  ctx.lineTo(x + w, y + h);
+  ctx.closePath();
+}
+
+const FLOOR_PAINTERS = {
+  // Фундамент: бетон, каменная кладка, ступеньки у входа
+  foundation(x, y, w, h) {
+    ctx.fillStyle = vgrad(y, y + h, ['#b9c0c8', '#8f98a2', '#6f7883']);
+    roundRect(x, y, w, h, 3); ctx.fill();
+    ctx.save(); roundRect(x, y, w, h, 3); ctx.clip();
+    ctx.strokeStyle = 'rgba(35,40,48,.35)';
+    ctx.lineWidth = 1;
+    const rows = 3, rh = h / rows, pat = [0.18, 0.24, 0.15, 0.21, 0.2];
+    ctx.beginPath();
+    for (let r = 0; r < rows; r++) {
+      const yy = y + r * rh;
+      ctx.moveTo(x, yy); ctx.lineTo(x + w, yy);
+      let sx = x + (r % 2 ? w * 0.1 : 0), k = r;
+      while (sx < x + w) { ctx.moveTo(sx, yy); ctx.lineTo(sx, yy + rh); sx += w * pat[k % pat.length]; k++; }
+    }
+    ctx.stroke();
+    ctx.restore();
+    for (let i = 0; i < 3; i++) {
+      const sw = w * 0.34 - i * w * 0.07, sh = h * 0.16;
+      ctx.fillStyle = i % 2 ? '#cfd4da' : '#dde1e5';
+      ctx.fillRect(x + w / 2 - sw / 2, y + h - (i + 1) * sh, sw, sh);
+    }
+    ctx.fillStyle = '#3a4048';
+    [0.18, 0.82].forEach(f => { roundRect(x + w * f - 7, y + h * 0.42, 14, 7, 2); ctx.fill(); });
+    ctx.fillStyle = '#e3e6ea';
+    roundRect(x - 3, y - 3, w + 6, 7, 2); ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,.12)';
+    ctx.fillRect(x - 3, y + 3, w + 6, 1.5);
+  },
+  // Кирпичный дом, 4 окна
+  brick(x, y, w, h) {
+    ctx.fillStyle = vgrad(y, y + h, ['#d98a5a', '#c1693f', '#9c4f2e']);
+    ctx.fillRect(x, y, w, h);
+    brickPattern(x, y, w, h, 'rgba(255,235,210,.45)', 9);
+    cornice(x, y, w, h, '#f3ece0');
+    const ww = w * 0.24, wh = h * 0.26;
+    [[0.3, 0.2], [0.7, 0.2], [0.3, 0.6], [0.7, 0.6]].forEach(([fx, fy]) =>
+      drawWindow(x + w * fx - ww / 2, y + h * fy, ww, wh, {frame: '#f6efe2'}));
+  },
+  // Жёлтая штукатурка, зелёные ставни, цветы, дверь
+  plaster(x, y, w, h) {
+    ctx.fillStyle = vgrad(y, y + h, ['#f7c95b', '#eeac3e', '#d8902b']);
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = 'rgba(160,90,20,.25)';
+    ctx.fillRect(x, y + h * 0.5, w, 1.5);
+    cornice(x, y, w, h, '#fff1d2');
+    const ww = w * 0.17, wh = h * 0.26;
+    [0.27, 0.73].forEach(fx => {
+      const wx = x + w * fx - ww / 2, wy = y + h * 0.14;
+      drawShutters(wx, wy, ww, wh, '#5f9a3a');
+      drawWindow(wx, wy, ww, wh, {frame: '#fff6e0', curtain: 'rgba(255,255,255,.7)'});
+    });
+    drawFlowerBox(x + w * 0.27 - ww / 2 - 2, y + h * 0.14 + wh + 5, ww + 4);
+    const wx2 = x + w * 0.27 - ww / 2, wy2 = y + h * 0.6;
+    drawShutters(wx2, wy2, ww, wh * 0.95, '#5f9a3a');
+    drawWindow(wx2, wy2, ww, wh * 0.95, {frame: '#fff6e0'});
+    const dw = w * 0.19, dh = h * 0.38;
+    drawDoor(x + w * 0.73 - dw / 2, y + h - dh - 2, dw, dh, '#a3431f');
+  },
+  // Деревянный сруб из брёвен
+  wood(x, y, w, h) {
+    const n = 6, lh = h / n;
+    for (let i = 0; i < n; i++) {
+      const ly = y + i * lh;
+      ctx.fillStyle = vgrad(ly, ly + lh, ['#dcae76', '#b97a3f', '#8e5528']);
+      roundRect(x, ly + 0.5, w, lh - 1, lh / 2);
+      ctx.fill();
+      [x + lh * 0.5, x + w - lh * 0.5].forEach(ex => {
+        ctx.fillStyle = '#e8c38f';
+        ctx.beginPath(); ctx.arc(ex, ly + lh / 2, lh * 0.42, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(120,70,30,.6)';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath(); ctx.arc(ex, ly + lh / 2, lh * 0.22, 0, Math.PI * 2); ctx.stroke();
+      });
+    }
+    const ww = w * 0.3, wh = h * 0.36, wx = x + w * 0.42 - ww / 2, wy = y + h * 0.26;
+    ctx.fillStyle = '#6b3d1b';
+    ctx.fillRect(wx - 4, wy - 4, ww + 8, wh + 8);
+    drawWindow(wx, wy, ww, wh, {frame: '#fff4e0', curtain: 'rgba(214,120,160,.75)'});
+    const px = x + w * 0.76, py = y + h * 0.62;
+    ctx.fillStyle = '#b5562f'; ctx.fillRect(px - 5, py, 10, 8);
+    ctx.fillStyle = '#4c9a2a'; ctx.beginPath(); ctx.arc(px, py - 3, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#e84a5f'; ctx.beginPath(); ctx.arc(px + 2, py - 5, 2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#6b3d1b';
+    ctx.fillRect(x, y, w, 3);
+  },
+  // Красный кирпич с большим круглым окном
+  round(x, y, w, h) {
+    ctx.fillStyle = vgrad(y, y + h, ['#bf5a3f', '#a4472f', '#823524']);
+    ctx.fillRect(x, y, w, h);
+    brickPattern(x, y, w, h, 'rgba(255,220,200,.35)', 10);
+    cornice(x, y, w, h, '#f3ece0');
+    const r = Math.min(w, h) * 0.3, cx = x + w / 2, cy = y + h * 0.54;
+    ctx.fillStyle = '#f3ece0';
+    ctx.beginPath(); ctx.arc(cx, cy, r + 5, 0, Math.PI * 2); ctx.fill();
+    const g = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.3, r * 0.1, cx, cy, r);
+    g.addColorStop(0, '#cdeefb'); g.addColorStop(1, '#3f86b8');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#f3ece0';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(cx - r, cy); ctx.lineTo(cx + r, cy);
+    ctx.moveTo(cx, cy - r); ctx.lineTo(cx, cy + r);
+    ctx.stroke();
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(cx, cy, r * 0.45, 0, Math.PI * 2); ctx.stroke();
+  },
+  // Современная панелька с балкончиками
+  panel(x, y, w, h) {
+    ctx.fillStyle = vgrad(y, y + h, ['#a9c1d4', '#86a2ba', '#6a869f']);
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(255,255,255,.35)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y + h * 0.5); ctx.lineTo(x + w, y + h * 0.5);
+    [0.34, 0.67].forEach(f => { ctx.moveTo(x + w * f, y); ctx.lineTo(x + w * f, y + h); });
+    ctx.stroke();
+    cornice(x, y, w, h, '#e7eef4');
+    const ww = w * 0.2, wh = h * 0.24;
+    [0.17, 0.5, 0.83].forEach(fx => [0.14, 0.6].forEach(fy => {
+      const wx = x + w * fx - ww / 2, wy = y + h * fy;
+      drawWindow(wx, wy, ww, wh, {frame: '#eef4f8', glassTop: '#d7f0fb', glassBottom: '#5a8fb3', cross: false});
+      ctx.strokeStyle = '#eef4f8';
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(wx - 3, wy + wh + 2, ww + 6, 5);
+    }));
+  },
+  // Узбекский стиль: песочный камень, голубые изразцы, арочные окна
+  arch(x, y, w, h) {
+    ctx.fillStyle = vgrad(y, y + h, ['#f2dfb6', '#e3c893', '#c8a86c']);
+    ctx.fillRect(x, y, w, h);
+    const bh = h * 0.13;
+    ctx.fillStyle = '#1d7fa8';
+    ctx.fillRect(x, y, w, bh);
+    ctx.fillStyle = '#8fdcef';
+    const n = Math.max(4, Math.round(w / 12)), dw = w / n;
+    for (let i = 0; i < n; i++) {
+      const dx = x + dw * (i + 0.5), dy = y + bh / 2;
+      ctx.beginPath();
+      ctx.moveTo(dx, dy - bh * 0.35); ctx.lineTo(dx + dw * 0.3, dy);
+      ctx.lineTo(dx, dy + bh * 0.35); ctx.lineTo(dx - dw * 0.3, dy);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.fillStyle = '#f6ead0';
+    ctx.fillRect(x, y + bh, w, 2);
+    const ww = w * 0.22, wh = h * 0.52;
+    [0.28, 0.72].forEach(fx => {
+      const wx = x + w * fx - ww / 2, wy = y + h * 0.3;
+      ctx.fillStyle = '#c99a3e';
+      archPath(wx - 3, wy - 3, ww + 6, wh + 5); ctx.fill();
+      const g = ctx.createLinearGradient(0, wy, 0, wy + wh);
+      g.addColorStop(0, '#3a78a8'); g.addColorStop(1, '#16395e');
+      ctx.fillStyle = g;
+      archPath(wx, wy, ww, wh); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,230,160,.8)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(wx + ww / 2, wy + ww * 0.3); ctx.lineTo(wx + ww / 2, wy + wh); ctx.stroke();
+    });
+    ctx.fillStyle = 'rgba(120,85,40,.25)';
+    ctx.fillRect(x, y + h * 0.92, w, h * 0.08);
+  },
+};
+
+function drawFloor(b, style, imgIdx) {
+  if (style === 'img') {
+    const img = floorImgObjs[imgIdx];
+    if (img && img.ready) { drawBlockImage(b, img); return; }
+    style = 'brick';
+  }
+  const paint = FLOOR_PAINTERS[style] || FLOOR_PAINTERS.brick;
+  ctx.fillStyle = 'rgba(20,15,10,.22)';
+  ctx.fillRect(b.x + 3, b.y + b.height - 2, b.width - 6, 4);
+  paint(b.x, b.y, b.width, b.height);
+  sideShade(b.x, b.y, b.width, b.height);
+  ctx.strokeStyle = 'rgba(40,25,10,.35)';
+  ctx.lineWidth = 1.2;
+  roundRect(b.x, b.y, b.width, b.height, 3);
   ctx.stroke();
 }
 
-const MAGNET_STRENGTH = 0.4; // домик по умолчанию сам подтягивается к центру этажа снизу
+// Своя картинка этажа — вписывается без искажений (как object-fit:cover)
+function drawBlockImage(b, img) {
+  ctx.save();
+  roundRect(b.x, b.y, b.width, b.height, 3);
+  ctx.clip();
+  const ir = (img.naturalWidth || 1) / (img.naturalHeight || 1);
+  const br = b.width / b.height;
+  let dw, dh, dx, dy;
+  if (ir > br) { dh = b.height; dw = dh * ir; dx = b.x - (dw - b.width) / 2; dy = b.y; }
+  else { dw = b.width; dh = dw / ir; dx = b.x; dy = b.y - (dh - b.height) / 2; }
+  ctx.drawImage(img, dx, dy, dw, dh);
+  ctx.restore();
+}
 
-function buildBlock() {
-  if (!gameActive || isDropping) return;
-
-  totalAttempts++;
-  const lastBlock = tower[tower.length - 1];
-  const lastCenter = lastBlock.x + lastBlock.width / 2;
-  const tolerance = lastBlock.width / 2;
-  const rawBlockCenter = pivotX + craneSwingX;
-  const rawDiff = Math.abs(rawBlockCenter - lastCenter);
-  // Магнит: если бросок был не совсем мимо (в пределах допуска), точка приземления сама
-  // чуть подтягивается к центру нижнего этажа во время полёта — прощает мелкую неточность,
-  // но никак не спасает, если кинуть прямо далеко в сторону (это уже не магнит, а промах)
-  const magnetActive = rawDiff < tolerance;
-  const blockCenter = magnetActive ? rawBlockCenter + (lastCenter - rawBlockCenter) * MAGNET_STRENGTH : rawBlockCenter;
-  const diff = Math.abs(blockCenter - lastCenter);
-  const releaseLeft = rawBlockCenter - block.width / 2; // откуда домик визуально стартует (без магнита)
-  const newLeft = blockCenter - block.width / 2;          // где он в итоге реально окажется (с магнитом)
-
-  let result, reward, color;
-  if (diff < tolerance * 0.15) {
-    result = 'PERFECT';
-    reward = 200;
-    color = 'perfect';
-    comboCount++;
-    perfectCount++;
-  } else if (diff < tolerance * 0.5) {
-    result = 'GOOD';
-    reward = 100;
-    color = 'good';
-    comboCount++;
-  } else if (diff < tolerance) {
-    // Домик сел ближе к краю, чем хотелось бы, но опора всё ещё под ним — стоит, просто
-    // без награды за меткость и без комбо (шанс упасть теперь ниже — падает только настоящий MISS)
-    result = 'BAD';
-    reward = 30;
-    color = 'bad';
-    comboCount = 0;
-  } else {
-    result = 'MISS';
-    reward = 0;
-    color = 'miss';
-    lives--;
-    comboCount = 0;
-  }
-
-  // РЕАЛЬНАЯ ФИЗИКА: падает целиком (ничего не срезается и не исчезает по кусочкам) только
-  // настоящий MISS — центр тяжести реально за краем опоры. PERFECT/GOOD/BAD — опора под
-  // центром тяжести есть, домик остаётся стоять целиком, как есть (порог падения снижен).
-  const willLand = (result !== 'MISS');
-
-  maxCombo = Math.max(maxCombo, comboCount);
-
-  if (result === 'PERFECT') {
-    spawnBurst(blockCenter, block.y + craneSwingY + block.height / 2, '#f5b301', 16);
-  } else if (result === 'GOOD') {
-    spawnBurst(blockCenter, block.y + craneSwingY + block.height / 2, '#6ab2f2', 8);
-  }
-
-  const mult = getComboMult(comboCount);
-  updateComboBadge();
-
-  reward = Math.round(reward * mult);
-  earned += reward;
-  floors++;
-
-  const overlay = document.getElementById('result-overlay');
-  const text = document.getElementById('result-text');
-  const rew = document.getElementById('result-reward');
-  text.className = 'result-text result-' + color;
-  text.innerText = result + (mult > 1 && willLand ? ` x${mult.toFixed(2)}` : '');
-  rew.innerText = '+' + formatNum(reward) + ' tanga';
-  overlay.classList.add('show');
-  setTimeout(() => overlay.classList.remove('show'), 600);
-
-  // Домик не встаёт/не исчезает сразу — отпускается с крюка и падает (см. updateFallingBlock).
-  // Он ВСЕГДА сначала летит вниз и касается верхушки башни (фаза 'drop') — и только если
-  // не удержался, дальше наклоняется и падает уже оттуда (фаза 'topple'), а не мимо башни
-  // сразу с крюка. Пока всё это происходит — новый тап не проходит (isDropping, плюс кнопка
-  // QURISH визуально гаснет), а стата/камера/проверка на победу обновятся только в самом конце.
+// ---------- КОНЕЦ ИГРЫ ----------
+function gameOver(win) {
+  if (finished) return;
+  finished = true;
+  playing = false;
   isDropping = true;
-  const buildBtn = document.getElementById('build-btn');
-  if (buildBtn) buildBtn.disabled = true;
+  const btn = document.getElementById('build-btn');
+  if (btn) btn.disabled = true;
+  if (earned > 0) haptic('success');
 
-  const dir = (blockCenter >= lastCenter) ? 1 : -1; // в какую сторону перевешивает, если не удержится
-  fallingBlock = {
-    phase: 'drop',
-    x: releaseLeft,
-    releaseX: releaseLeft, // откуда стартует визуально (место отпускания, без магнита)
-    landX: newLeft,        // куда в итоге притянется за время полёта (с магнитом, если он сработал)
-    y: block.y + craneSwingY,
-    startY: block.y + craneSwingY,
-    targetScreenY: (lastBlock.y - block.height) + worldOffset,
-    landWorldY: lastBlock.y - block.height,
-    width: block.width,
-    height: block.height,
-    t: 0,
-    startTime: performance.now(),
-    willLand: willLand,
-    dir: dir,
-    pivotLeft: lastBlock.x,
-    pivotRight: lastBlock.x + lastBlock.width
-  };
-}
-
-function updateHearts() {
-  const el = document.getElementById('hearts');
-  el.innerHTML = Array(3).fill(0).map((_, i) =>
-    `<span class="heart">${i < lives ? '❤️' : '🖤'}</span>`
-  ).join('');
-}
-
-// Текущий бонусный множитель по серии удачных попаданий подряд (комбо) — показывается
-// живьём на экране (x1.00 / x1.50 / x2.00 / x3.00), а не только на миг во всплывающем тексте.
-function getComboMult(combo) {
-  if (combo >= 10) return 3;
-  if (combo >= 5) return 2;
-  if (combo >= 3) return 1.5;
-  return 1;
-}
-function updateComboBadge() {
-  const el = document.getElementById('combo-text');
-  if (!el) return;
-  el.innerText = 'Bonus: x' + getComboMult(comboCount).toFixed(2);
-}
-
-async function endGame() {
-  gameActive = false;
-  cancelAnimationFrame(animId);
-
-  const accuracy = totalAttempts > 0 ? (perfectCount / totalAttempts) * 100 : 0;
-
+  const accuracy = totalAttempts > 0 ? (accSum / totalAttempts) * 100 : 0;
   user.balance += earned;
   user.total_games += 1;
   user.total_floors += floors;
@@ -1771,6 +1867,36 @@ async function endGame() {
   user.best_accuracy = Math.max(user.best_accuracy, accuracy);
   user.best_combo = Math.max(user.best_combo, maxCombo);
 
+  showGameOverModal(win, accuracy);
+  saveGame(accuracy);
+}
+
+function showGameOverModal(win, accuracy) {
+  const has = earned > 0;
+  document.getElementById('go-icon').innerText = win ? '🏆' : (has ? '🎉' : '😔');
+  document.getElementById('go-sub').innerText = has ? 'Tabriklaymiz!' : 'Afsus...';
+  document.getElementById('go-title').innerText = win ? 'Shahar qurildi!' : (has ? 'Siz yutdingiz' : 'Bu safar omad kelmadi');
+  document.getElementById('go-stats').innerText = `🏢 ${floors} qavat  ·  🎯 ${Math.round(accuracy)}%  ·  🔥 ${maxCombo} ketma-ket`;
+  const amountEl = document.getElementById('go-amount-value');
+  amountEl.innerText = '0';
+  setTimeout(() => {
+    document.getElementById('game-over').classList.add('show');
+    countUp(amountEl, earned, 900);
+  }, 250);
+}
+
+function countUp(el, target, ms) {
+  const start = performance.now();
+  function step(t) {
+    const k = Math.min(1, (t - start) / ms);
+    const e = 1 - Math.pow(1 - k, 3);
+    el.innerText = formatNum(Math.round(target * e));
+    if (k < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+async function saveGame(accuracy) {
   try {
     const res = await fetch(`${API_URL}/api/save_game`, {
       method: 'POST',
@@ -1785,23 +1911,19 @@ async function endGame() {
       })
     });
     const data = await res.json();
-    if (data.user) {
-      user = data.user;
-    }
+    if (data.user) user = data.user;
   } catch (e) {
     console.error('Save error:', e);
   }
+}
 
-  setTimeout(() => {
-    toast(`🏗 ${floors} qavat | 🎯 ${Math.round(accuracy)}% | 🔥 x${maxCombo} | 🪙 +${formatNum(earned)} tanga`);
-    setTimeout(() => {
-      exitGame();
-    }, 2500);
-  }, 700);
+function restartGame() {
+  startGame(currentCityIndex);
 }
 
 function exitGame() {
   gameActive = false;
+  playing = false;
   cancelAnimationFrame(animId);
   render();
   showScreen('main');
