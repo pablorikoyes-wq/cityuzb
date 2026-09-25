@@ -278,6 +278,37 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .window-cities .nav-bar-inline{margin:10px 0 0}
 .nav-btn{padding:6px 2px;white-space:nowrap;min-width:0}
 .nav-btn .icon svg{width:26px;height:26px}
+
+  /* ================= ПРАВКИ v3 ================= */
+
+/* Баланс — снова справа сверху */
+.top-strip{
+  justify-content:flex-end;
+  align-items:flex-start;
+  padding-top:8px;
+}
+
+/* Плавное переключение вкладок без "моргания":
+   рамка окна и нижнее меню стоят на месте, плавно появляется только содержимое */
+.screen,
+.screen.active,
+.screen.active.in{
+  opacity:1;
+  transform:none;
+  transition:none;
+}
+@keyframes tabContentIn{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:none}
+}
+.screen.active .cities-scroll,
+.screen.active .section-scroll,
+.screen.active .section-hero h2{
+  animation:tabContentIn .25s cubic-bezier(.16,1,.3,1) both;
+}
+.nav-btn{transition:color .25s ease}
+.nav-btn .icon{transition:transform .25s ease}
+  
 </style>
 </head>
 <body>
