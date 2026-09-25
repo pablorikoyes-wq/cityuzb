@@ -243,6 +243,41 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .sk-bar{height:14px;width:45%;margin:0 0 14px;border-radius:var(--radius-sm)}
 .sk-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .sk-tile{height:78px}
+
+  /* ================= ПРАВКИ ВЁРСТКИ v2 ================= */
+
+/* Высота = реальная видимая высота окна Telegram (100vh на iPhone "врёт") */
+.app{height:var(--tg-viewport-stable-height,100dvh)}
+
+/* Одинаковый нижний отступ на ВСЕХ вкладках + запас под скругление экрана iPhone */
+#screen-main,#screen-stats,#screen-ach,#screen-profile{
+  padding-bottom:calc(12px + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  overflow-y:hidden;
+}
+
+/* ВЕРХ: плашка и баннер — ровные края, без "ступенек" */
+.top-strip{min-height:58px}                       /* высота верхней плашки — можешь менять */
+.top-strip.has-image .brand-row{display:none}     /* убираем лишнюю иконку поверх своей картинки */
+.hero-page{border-radius:0}
+
+/* ОКНО ГОРОДОВ: тянется на всю высоту, плитки сами растут — пустоты внизу нет */
+#screen-main .window-cities.sheet-page{margin-bottom:0;padding:14px 14px 0}
+.cities-scroll{display:flex;flex-direction:column}
+.cities-grid{flex:1 0 auto;grid-auto-rows:minmax(96px,1fr)}
+.city-card{display:flex}
+.icon-slot-city{height:auto;min-height:80px;flex:1}
+.city-showcase-card{flex:0 0 auto;height:clamp(120px,18vh,170px)}
+
+/* НИЖНЕЕ МЕНЮ: одинаковое на всех 4 вкладках */
+.nav-bar-inline,
+.section-body .nav-bar-inline{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+  margin:10px 14px 0;padding:10px 0 12px;
+  border-top:1px solid var(--color-divider);flex:none;
+}
+.window-cities .nav-bar-inline{margin:10px 0 0}
+.nav-btn{padding:6px 2px;white-space:nowrap;min-width:0}
+.nav-btn .icon svg{width:26px;height:26px}
 </style>
 </head>
 <body>
