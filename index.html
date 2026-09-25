@@ -343,33 +343,74 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 /* ================= ВЫВОД СРЕДСТВ ================= */
 .withdraw-open-btn{position:relative;z-index:1;flex:none;border:none;border-radius:12px;padding:11px 14px;background:#fff;color:var(--color-primary-dark);font-size:13px;font-weight:800;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.15)}
 .withdraw-open-btn:active{transform:scale(.96)}
-#screen-withdraw,#screen-withdraw-sponsors,#screen-withdraw-done{padding-bottom:0;overflow:hidden}
-.wd-scroll{flex:1;min-height:0;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+.screen.wd-screen{position:absolute;inset:0;z-index:10;height:100%;padding:0;overflow:hidden;background:
+  radial-gradient(circle at 1px 1px,rgba(74,144,226,.08) 1px,transparent 0) 0 0/22px 22px,linear-gradient(180deg,#eef3fa,var(--color-bg))}
+.wd-screen .game-header{flex:none;padding-top:calc(14px + var(--tg-content-safe-area-inset-top, 0px))}
+.wd-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:16px}
+.wd-footer{flex:none;padding:12px 16px calc(14px + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));background:linear-gradient(180deg,rgba(232,238,245,0),#e8eef5 30%);}
 .wd-balance{margin:4px 16px 10px;padding:18px 16px;border-radius:var(--radius-lg);color:#fff;background:linear-gradient(135deg,var(--color-primary-light),var(--color-primary) 50%,var(--color-primary-dark));box-shadow:var(--shadow-glow-blue)}
 .wd-balance-label{font-size:12px;opacity:.85;font-weight:600}
 .wd-balance-value{font-size:28px;font-weight:900;margin:2px 0 6px}
 .wd-balance-value small{font-size:15px;font-weight:800;opacity:.9}
 .wd-balance-min{font-size:12px;font-weight:700;background:rgba(255,255,255,.18);display:inline-block;padding:4px 10px;border-radius:999px}
 .wd-card{margin:10px 16px;padding:14px;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-md)}
-.wd-label{display:block;font-size:13px;font-weight:800;color:var(--color-text);margin-bottom:8px}
+.wd-label{display:block;font-size:14px;font-weight:800;color:var(--color-text);margin-bottom:8px}
+.wd-sublabel{font-size:12px;font-weight:800;color:var(--color-text-soft);margin:12px 0 7px;text-transform:uppercase;letter-spacing:.4px}
 .wd-input-row{display:flex;align-items:center;gap:8px;border:2px solid #e3eaf3;border-radius:12px;padding:0 12px;background:var(--color-bg-soft);transition:border-color .2s}
 .wd-input-row:focus-within{border-color:var(--color-primary)}
 .wd-input-row.bad{border-color:#f25454}
 .wd-input{flex:1;min-width:0;border:none;background:none;outline:none;padding:13px 0;font-size:18px;font-weight:800;color:var(--color-text);letter-spacing:.5px}
+.wd-input-text{font-size:16px;letter-spacing:0}
 .wd-suffix{font-size:14px;font-weight:800;color:var(--color-text-soft)}
 .wd-all{margin-top:8px;border:none;background:var(--color-primary-bg);color:var(--color-primary);font-weight:800;font-size:12px;padding:6px 12px;border-radius:999px;cursor:pointer}
-.wd-methods{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.wd-methods{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .wd-method{border:2px solid #e3eaf3;background:#fff;border-radius:12px;padding:11px 6px;font-size:13px;font-weight:800;color:var(--color-text-soft);cursor:pointer}
 .wd-method.active{border-color:var(--color-primary);background:var(--color-primary-bg);color:var(--color-primary-dark)}
+.pv-logo{position:relative;width:40px;height:40px;border-radius:11px;background:#fff;border:1px solid #e6ecf3;display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden}
+.pv-logo img{width:78%;height:78%;object-fit:contain}
+.pv-logo span{display:none;color:#fff;font-size:12px;font-weight:900;letter-spacing:-.2px}
+.pv-logo.fallback{background:var(--c);border-color:transparent}
+.pv-logo.fallback img{display:none}
+.pv-logo.fallback span{display:block}
+.pv-logo.small{width:28px;height:28px;border-radius:8px}
+.pv-logo.small span{font-size:9px}
+.wd-select{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border:2px solid #e3eaf3;border-radius:12px;background:#fff;cursor:pointer;text-align:left;min-height:62px}
+.wd-select:active{background:var(--color-bg-soft)}
+.wd-select.empty{border-style:dashed;border-color:#c9d6e6}
+.wd-select-icon{width:40px;height:40px;border-radius:11px;background:var(--color-primary-bg);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+.wd-select-text{flex:1;font-size:15px;font-weight:800;color:var(--color-text)}
+.wd-select.empty .wd-select-text{color:var(--color-text-soft)}
+.wd-select-chev{font-size:24px;line-height:1;color:var(--color-text-faint);transform:rotate(90deg)}
+.wd-picker{position:absolute;inset:0;z-index:30;display:flex;align-items:flex-end;background:rgba(10,20,35,0);pointer-events:none;transition:background .25s}
+.wd-picker.show{background:rgba(10,20,35,.45);pointer-events:auto}
+.wd-sheet{width:100%;max-height:78%;display:flex;flex-direction:column;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.18);transform:translateY(105%);transition:transform .3s var(--ease-out);padding-bottom:calc(10px + var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))}
+.wd-picker.show .wd-sheet{transform:none}
+.wd-sheet-grab{width:40px;height:5px;border-radius:3px;background:#d6dee8;margin:8px auto 2px}
+.wd-sheet-head{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 10px;border-bottom:1px solid var(--color-divider)}
+.wd-sheet-title{font-size:17px;font-weight:900;color:var(--color-text)}
+.wd-sheet-close{width:32px;height:32px;border:none;border-radius:50%;background:var(--color-bg-soft);color:var(--color-text-soft);font-size:14px;font-weight:900;cursor:pointer}
+.wd-sheet-list{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 8px}
+.wd-pick-row{display:flex;align-items:center;gap:12px;width:100%;padding:10px;border:none;background:none;border-radius:12px;cursor:pointer;text-align:left}
+.wd-pick-row:active{background:var(--color-bg-soft)}
+.wd-pick-row.active{background:var(--color-primary-bg)}
+.wd-pick-name{flex:1;font-size:15px;font-weight:700;color:var(--color-text)}
+.wd-pick-check{font-size:16px;font-weight:900;color:var(--color-primary);opacity:0}
+.wd-pick-row.active .wd-pick-check{opacity:1}
 .wd-hint{margin-top:6px;font-size:11px;color:var(--color-text-soft);font-weight:600}
-.wd-error{margin-top:6px;font-size:12px;font-weight:800;color:#e53935;min-height:0}
+.wd-error{margin-top:6px;font-size:12px;font-weight:800;color:#e53935}
 .wd-error:empty{display:none}
-.wd-submit{display:block;width:calc(100% - 32px);margin:14px 16px 0;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:900;color:#3a2600;cursor:pointer;background:linear-gradient(180deg,#ffdc55,#f5b301);box-shadow:0 5px 0 #a86f00,0 10px 18px rgba(0,0,0,.12)}
+.wd-submit{display:block;width:100%;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:900;color:#3a2600;cursor:pointer;background:linear-gradient(180deg,#ffdc55,#f5b301);box-shadow:0 5px 0 #a86f00,0 10px 18px rgba(0,0,0,.12)}
 .wd-submit:active{transform:translateY(3px);box-shadow:0 2px 0 #a86f00}
-.bonus-submit:disabled{opacity:.6}
-.wd-summary{margin:4px 16px 6px;padding:12px 14px;background:#fff;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);font-size:13px;font-weight:700;color:var(--color-text);line-height:1.7}
-.wd-summary span{color:var(--color-text-soft);font-weight:600}
-.wd-done{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:40px}
+.wd-submit:disabled{opacity:.6}
+.wd-summary{margin:4px 16px 6px;padding:4px 14px;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-md)}
+.wd-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--color-divider)}
+.wd-row:last-child{border-bottom:none}
+.wd-row-k{font-size:12px;font-weight:700;color:var(--color-text-soft);flex:none}
+.wd-row-v{font-size:14px;font-weight:800;color:var(--color-text);text-align:right;display:flex;align-items:center;gap:6px;justify-content:flex-end;min-width:0;word-break:break-word}
+.wd-row-v.big{font-size:16px;letter-spacing:.5px}
+.wd-edit{display:block;margin:4px auto 0;border:none;background:none;color:var(--color-primary);font-size:13px;font-weight:800;padding:8px;cursor:pointer}
+.wd-step-title{margin:14px 16px 0;font-size:16px;font-weight:900;color:var(--color-text);text-align:center}
+.wd-done{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:48px}
 .wd-done .wd-summary{align-self:stretch;text-align:left}
 .wd-done-icon{font-size:56px;margin-bottom:8px}
 .wd-done-title{font-size:20px;font-weight:900;color:var(--color-text);margin-bottom:12px}
@@ -520,7 +561,7 @@ async function init() {
     channels = [
       {url: "https://t.me/+y21STJee1WphZjNi", name: "ISH HAMMAGA"},
       {url: "https://telegram.me/+9hB_bnX7QGI5ZTIy", name: "💎Strategiya Markazi💎"},
-      {url: "https://t.me/+OetsLzD4YZ00NDdi", name: "PhotoStock To'lovlari"}
+      {url: "https://t.me/+OetsLzD4YZ00NDdi", name: "Isbot To'lovlari"}
     ];
 
     // Подгружаем сохранённый прогресс поверх стартовых данных
@@ -758,8 +799,8 @@ function render() {
     </div>
 
 
-    <!-- ВЫВОД СРЕДСТВ: шаг 1 — сумма и реквизиты -->
-    <div class="screen" id="screen-withdraw">
+    <!-- ВЫВОД СРЕДСТВ: шаг 1 — сумма, получатель, способ -->
+    <div class="screen wd-screen" id="screen-withdraw">
       <div class="game-header">
         <button class="back-btn" onclick="showScreen('profile')">${ICONS.back}</button>
         <div class="game-title">Pul yechish</div>
@@ -783,41 +824,64 @@ function render() {
         </div>
 
         <div class="wd-card">
-          <div class="wd-label">Qabul qilish usuli</div>
-          <div class="wd-methods">
-            <button class="wd-method active" id="wd-m-card" onclick="setWdMethod('card')">💳 Karta raqami</button>
-            <button class="wd-method" id="wd-m-phone" onclick="setWdMethod('phone')">📱 Telefon raqami</button>
-          </div>
+          <label class="wd-label" for="wd-name">Qabul qiluvchi</label>
           <div class="wd-input-row">
-            <input class="wd-input" id="wd-details" inputmode="numeric" placeholder="8600 0000 0000 0000" oninput="onWdDetailsInput(this)">
+            <input class="wd-input wd-input-text" id="wd-name" autocomplete="name" autocapitalize="words" placeholder="Ism Familiya" oninput="setWdError('name','')">
           </div>
-          <div class="wd-hint" id="wd-details-hint">Uzcard yoki Humo kartasining 16 xonali raqami</div>
-          <div class="wd-error" id="wd-details-error"></div>
+          <div class="wd-hint">Karta yoki hisob egasining ismi va familiyasi</div>
+          <div class="wd-error" id="wd-name-error"></div>
         </div>
 
-        <button class="wd-submit" onclick="wdNext()">Pulni yechish</button>
+        <div class="wd-card">
+          <div class="wd-label">Qabul qilish usuli</div>
+          <div class="wd-methods">
+            <button class="wd-method active" id="wd-m-card" onclick="setWdMethod('card')">💳 Karta orqali</button>
+            <button class="wd-method" id="wd-m-phone" onclick="setWdMethod('phone')">📱 Telefon orqali</button>
+          </div>
+          <div class="wd-sublabel" id="wd-provider-label">To'lov tizimi</div>
+          <button class="wd-select empty" id="wd-select" onclick="openPicker()"></button>
+          <div class="wd-error" id="wd-provider-error"></div>
+          <div class="wd-sublabel" id="wd-details-label">Karta raqami</div>
+          <div class="wd-input-row">
+            <input class="wd-input" id="wd-details" inputmode="numeric" placeholder="0000 0000 0000 0000" oninput="onWdDetailsInput(this)">
+          </div>
+          <div class="wd-hint" id="wd-details-hint"></div>
+          <div class="wd-error" id="wd-details-error"></div>
+        </div>
+      </div>
+      <div class="wd-footer"><button class="wd-submit" onclick="wdNext()">Davom etish</button></div>
+
+      <div class="wd-picker" id="wd-picker" onclick="if (event.target === this) closePicker()">
+        <div class="wd-sheet">
+          <div class="wd-sheet-grab"></div>
+          <div class="wd-sheet-head">
+            <div class="wd-sheet-title" id="wd-picker-title"></div>
+            <button class="wd-sheet-close" onclick="closePicker()">✕</button>
+          </div>
+          <div class="wd-sheet-list" id="wd-picker-list"></div>
+        </div>
       </div>
     </div>
 
-    <!-- ВЫВОД СРЕДСТВ: шаг 2 — подписка на спонсоров -->
-    <div class="screen" id="screen-withdraw-sponsors">
+    <!-- ВЫВОД СРЕДСТВ: шаг 2 — проверка данных и подписка на спонсоров -->
+    <div class="screen wd-screen" id="screen-withdraw-sponsors">
       <div class="game-header">
         <button class="back-btn" onclick="showScreen('withdraw')">${ICONS.back}</button>
-        <div class="game-title">Oxirgi qadam</div>
+        <div class="game-title">Ma'lumotlarni tekshiring</div>
         <div style="width:34px"></div>
       </div>
       <div class="wd-scroll">
         <div class="wd-summary" id="wd-summary"></div>
+        <button class="wd-edit" onclick="showScreen('withdraw')">✏️ Ma'lumotlarni o'zgartirish</button>
+        <div class="wd-step-title">Oxirgi qadam</div>
         <div class="bonus-hint">Pulni yechish uchun homiy kanallarga obuna bo'ling va "Obunani tekshirish" tugmasini bosing</div>
         <div id="wd-sponsors-list"></div>
-        <div style="padding:16px">
-          <button class="bonus-submit" id="wd-check-btn" onclick="wdCheckAndSubmit()">Obunani tekshirish</button>
-        </div>
       </div>
+      <div class="wd-footer"><button class="wd-submit" id="wd-check-btn" onclick="wdCheckAndSubmit()">Obunani tekshirish</button></div>
     </div>
 
     <!-- ВЫВОД СРЕДСТВ: шаг 3 — заявка принята -->
-    <div class="screen" id="screen-withdraw-done">
+    <div class="screen wd-screen" id="screen-withdraw-done">
       <div class="wd-scroll wd-done">
         <div class="wd-done-icon">✅</div>
         <div class="wd-done-title">So'rovingiz qabul qilindi!</div>
@@ -828,8 +892,8 @@ function render() {
         <div class="wd-warning">
           ⚠️ Shu 3 ish kuni davomida homiy kanallarga <b>obuna bo'lib turishingiz shart</b>. Obunani bekor qilsangiz, so'rov rad etiladi.
         </div>
-        <button class="wd-submit" onclick="render(); showScreen('main')">Bosh sahifa</button>
       </div>
+      <div class="wd-footer"><button class="wd-submit" onclick="render(); showScreen('main')">Bosh sahifa</button></div>
     </div>
 
     <!-- БОНУС ЗА ПОДПИСКУ -->
@@ -2317,21 +2381,63 @@ async function checkSubscription() {
 
 // ============================================================
 // ВЫВОД СРЕДСТВ
-// Порядок: сумма и реквизиты -> проверка подписки на спонсоров -> заявка на сервер.
+// Порядок: сумма, получатель, способ -> проверка данных + подписка на спонсоров -> заявка на сервер.
 // Сообщение "заявка принята" показывается ТОЛЬКО если сервер подтвердил заявку.
 // Сервер обязан сам проверить баланс игрока (баланс на телефоне можно подделать).
 // ============================================================
 const WITHDRAW_MIN = 100000;           // минимальная сумма вывода, so'm
+
+// Платёжные системы и банки.
+// Логотип берётся с официального сайта (domain) через сервис иконок Google.
+// Если хочешь свой файл логотипа — вставь ссылку в logo, он будет главнее.
+// Если логотип не загрузился — показывается цветной значок с буквами (short, color).
+// mask — первые цифры, которые показываются подсказкой в поле номера карты.
+const CARD_SYSTEMS = [
+  {id: 'uzcard',     name: 'Uzcard',     short: 'UZ',  color: '#1f5fae', domain: 'uzcard.uz',       mask: '8600', len: [16], logo: ''},
+  {id: 'humo',       name: 'Humo',       short: 'HU',  color: '#0d9a8a', domain: 'humocard.uz',     mask: '9860', len: [16], logo: ''},
+  {id: 'visa',       name: 'Visa',       short: 'VI',  color: '#1a2a8c', domain: 'visa.com',        mask: '4000', len: [16], logo: ''},
+  {id: 'mastercard', name: 'Mastercard', short: 'MC',  color: '#e0661b', domain: 'mastercard.com',  mask: '5100', len: [16], logo: ''},
+  {id: 'unionpay',   name: 'UnionPay',   short: 'UP',  color: '#c2272d', domain: 'unionpayintl.com', mask: '6200', len: [16, 17, 18, 19], logo: ''},
+  {id: 'mir',        name: 'Mir',        short: 'MIR', color: '#2f8f3a', domain: 'mironline.ru',    mask: '2200', len: [16], logo: ''},
+];
+const BANKS = [
+  {id: 'uzum',    name: 'Uzum Bank',         short: 'UZ',  color: '#7b2cf5', domain: 'uzumbank.uz',   logo: ''},
+  {id: 'tbc',     name: 'TBC Bank',          short: 'TBC', color: '#00a3e0', domain: 'tbcbank.uz',    logo: ''},
+  {id: 'kapital', name: 'Kapitalbank',       short: 'KB',  color: '#d71f28', domain: 'kapitalbank.uz', logo: ''},
+  {id: 'anor',    name: 'Anorbank',          short: 'AN',  color: '#c21f4c', domain: 'anorbank.uz',   logo: ''},
+  {id: 'hamkor',  name: 'Hamkorbank',        short: 'HB',  color: '#0a8a3e', domain: 'hamkorbank.uz', logo: ''},
+  {id: 'ipoteka', name: 'Ipoteka Bank',      short: 'IB',  color: '#2a9d8f', domain: 'ipotekabank.uz', logo: ''},
+  {id: 'nbu',     name: 'Milliy bank (NBU)', short: 'NBU', color: '#1c3f94', domain: 'nbu.uz',        logo: ''},
+  {id: 'xalq',    name: 'Xalq banki',        short: 'XB',  color: '#1d6fb8', domain: 'xb.uz',         logo: ''},
+  {id: 'agro',    name: 'Agrobank',          short: 'AG',  color: '#3c9a2d', domain: 'agrobank.uz',   logo: ''},
+  {id: 'sqb',     name: 'SQB',               short: 'SQB', color: '#0b4ea2', domain: 'sqb.uz',        logo: ''},
+  {id: 'asaka',   name: 'Asakabank',         short: 'AS',  color: '#123f7a', domain: 'asakabank.uz',  logo: ''},
+  {id: 'aloqa',   name: 'Aloqabank',         short: 'AL',  color: '#0077c8', domain: 'aloqabank.uz',  logo: ''},
+  {id: 'infin',   name: 'InFinBank',         short: 'IF',  color: '#e3a21a', domain: 'infinbank.com', logo: ''},
+  {id: 'ofb',     name: 'Orient Finans',     short: 'OF',  color: '#e2571e', domain: 'ofb.uz',        logo: ''},
+  {id: 'davr',    name: 'Davr Bank',         short: 'DB',  color: '#8a1f6b', domain: 'davrbank.uz',   logo: ''},
+];
+
 let wdMethod = 'card';
-let wdPending = null;                  // {amount, method, details}
+let wdProvider = null;                 // выбранная система или банк
+let wdPending = null;                  // {amount, name, method, provider, details}
+
+function logoUrl(pv) { return pv.logo || `https://www.google.com/s2/favicons?domain=${pv.domain}&sz=128`; }
+function pvLogo(pv, small) {
+  return `<div class="pv-logo${small ? ' small' : ''}" style="--c:${pv.color}"><img src="${logoUrl(pv)}" alt="" onerror="this.parentNode.classList.add('fallback')"><span>${pv.short}</span></div>`;
+}
+function providerList() { return wdMethod === 'card' ? CARD_SYSTEMS : BANKS; }
+function findProvider(method, id) { return (method === 'card' ? CARD_SYSTEMS : BANKS).find(p => p.id === id); }
 
 function openWithdraw() {
   wdPending = null;
   showScreen('withdraw');
-  const a = document.getElementById('wd-amount'); if (a) a.value = '';
-  const d = document.getElementById('wd-details'); if (d) d.value = '';
+  ['wd-amount', 'wd-name', 'wd-details'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const n = document.getElementById('wd-name');
+  const tgUser = tg?.initDataUnsafe?.user;
+  if (n && tgUser && tgUser.first_name && tgUser.last_name) n.value = tgUser.first_name + ' ' + tgUser.last_name;
   setWdMethod('card');
-  setWdError('amount', ''); setWdError('details', '');
+  ['amount', 'name', 'provider', 'details'].forEach(f => setWdError(f, ''));
 }
 
 function digits(v) { return (v || '').replace(/\D/g, ''); }
@@ -2350,22 +2456,64 @@ function wdFillAll() {
 
 function setWdMethod(m) {
   wdMethod = m;
+  wdProvider = null;
   document.getElementById('wd-m-card')?.classList.toggle('active', m === 'card');
   document.getElementById('wd-m-phone')?.classList.toggle('active', m === 'phone');
+  document.getElementById('wd-provider-label').innerText = m === 'card' ? "To'lov tizimi" : 'Bankni tanlang';
+  document.getElementById('wd-details-label').innerText = m === 'card' ? 'Karta raqami' : 'Telefon raqami';
+  renderProviders();
   const inp = document.getElementById('wd-details');
-  const hint = document.getElementById('wd-details-hint');
-  if (!inp) return;
   inp.value = '';
   inp.inputMode = m === 'card' ? 'numeric' : 'tel';
-  inp.placeholder = m === 'card' ? '8600 0000 0000 0000' : '+998 90 123 45 67';
-  hint.innerText = m === 'card' ? 'Uzcard yoki Humo kartasining 16 xonali raqami' : "O'zbekiston telefon raqami (+998)";
-  setWdError('details', '');
+  inp.placeholder = m === 'card' ? '0000 0000 0000 0000' : '+998 90 123 45 67';
+  closePicker();
+  document.getElementById('wd-details-hint').innerText = m === 'card'
+    ? "Kartangiz old tomonidagi 16 xonali raqam" : "Bankka ulangan telefon raqamingiz (+998)";
+  setWdError('provider', ''); setWdError('details', '');
+}
+
+// Кнопка выбора (показывает выбранную систему/банк)
+function renderProviders() {
+  const btn = document.getElementById('wd-select');
+  if (!btn) return;
+  const pv = wdProvider ? findProvider(wdMethod, wdProvider) : null;
+  const ph = wdMethod === 'card' ? "To'lov tizimini tanlang" : 'Bankni tanlang';
+  btn.classList.toggle('empty', !pv);
+  btn.innerHTML = (pv ? `${pvLogo(pv)}<span class="wd-select-text">${pv.name}</span>`
+                      : `<span class="wd-select-icon">${wdMethod === 'card' ? '💳' : '🏦'}</span><span class="wd-select-text">${ph}</span>`)
+    + '<span class="wd-select-chev">›</span>';
+}
+
+// Нижний список выбора
+function openPicker() {
+  const sheet = document.getElementById('wd-picker');
+  document.getElementById('wd-picker-title').innerText = wdMethod === 'card' ? "To'lov tizimini tanlang" : 'Bankni tanlang';
+  document.getElementById('wd-picker-list').innerHTML = providerList().map(pv => `
+    <button class="wd-pick-row ${wdProvider === pv.id ? 'active' : ''}" onclick="selectProvider('${pv.id}')">
+      ${pvLogo(pv)}<span class="wd-pick-name">${pv.name}</span><span class="wd-pick-check">✓</span>
+    </button>`).join('');
+  sheet.classList.add('show');
+  haptic('light');
+}
+function closePicker() { document.getElementById('wd-picker')?.classList.remove('show'); }
+
+function selectProvider(id) {
+  wdProvider = id;
+  renderProviders();
+  closePicker();
+  setWdError('provider', '');
+  // подсказка в поле номера карты под выбранную систему: 9860 0000 0000 0000
+  if (wdMethod === 'card') {
+    const pv = findProvider('card', id);
+    document.getElementById('wd-details').placeholder = pv.mask + ' 0000 0000 0000';
+  }
+  haptic('light');
 }
 
 function onWdDetailsInput(el) {
   let n = digits(el.value);
   if (wdMethod === 'card') {
-    n = n.slice(0, 16);
+    n = n.slice(0, 19);
     el.value = n.replace(/(\d{4})(?=\d)/g, '$1 ');
   } else {
     if (n.startsWith('998')) n = n.slice(3);
@@ -2378,19 +2526,17 @@ function onWdDetailsInput(el) {
 
 function setWdError(field, msg) {
   const e = document.getElementById('wd-' + field + '-error');
-  const input = document.getElementById(field === 'amount' ? 'wd-amount' : 'wd-details');
   if (e) e.innerText = msg;
-  if (input) input.parentElement.classList.toggle('bad', !!msg);
+  const input = {amount: 'wd-amount', name: 'wd-name', details: 'wd-details'}[field];
+  if (input) document.getElementById(input)?.parentElement.classList.toggle('bad', !!msg);
 }
 
-function maskDetails(method, d) {
-  return method === 'card'
-    ? d.slice(0, 4) + ' **** **** ' + d.slice(-4)
-    : '+998 ' + d.slice(0, 2) + ' *** ** ' + d.slice(-2);
-}
+function fmtCard(d) { return d.replace(/(\d{4})(?=\d)/g, '$1 '); }
+function fmtPhone(d) { return `+998 ${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5, 7)} ${d.slice(7, 9)}`; }
 
 function wdNext() {
   const amount = parseInt(digits(document.getElementById('wd-amount').value) || '0', 10);
+  const name = (document.getElementById('wd-name').value || '').trim().replace(/\s+/g, ' ');
   let details = digits(document.getElementById('wd-details').value);
   if (wdMethod === 'phone' && details.startsWith('998')) details = details.slice(3);
   let ok = true;
@@ -2400,23 +2546,37 @@ function wdNext() {
   } else if (amount > user.balance) {
     setWdError('amount', `Balansingizda yetarli mablag' yo'q (${formatNum(user.balance)} so'm)`); ok = false;
   }
-  if (wdMethod === 'card' && details.length !== 16) {
-    setWdError('details', 'Karta raqami 16 ta raqamdan iborat bo\'lishi kerak'); ok = false;
+  if (name.split(' ').length < 2 || name.length < 5 || /[0-9]/.test(name)) {
+    setWdError('name', "Ism va familiyani to'liq kiriting"); ok = false;
   }
-  if (wdMethod === 'phone' && details.length !== 9) {
+  const pv = wdProvider ? findProvider(wdMethod, wdProvider) : null;
+  if (!pv) {
+    setWdError('provider', wdMethod === 'card' ? "To'lov tizimini tanlang" : 'Bankni tanlang'); ok = false;
+  }
+  if (wdMethod === 'card') {
+    const lens = pv ? pv.len : [16];
+    if (!lens.includes(details.length)) { setWdError('details', `Karta raqami ${lens[0]} ta raqamdan iborat bo'lishi kerak`); ok = false; }
+  } else if (details.length !== 9) {
     setWdError('details', "Telefon raqamini to'liq kiriting: +998 XX XXX XX XX"); ok = false;
   }
   if (!ok) { haptic('error'); return; }
 
-  wdPending = {amount, method: wdMethod, details};
+  wdPending = {amount, name, method: wdMethod, provider: pv.id, details};
   document.getElementById('wd-summary').innerHTML = wdSummaryHtml(wdPending);
   showScreen('withdraw-sponsors');
 }
 
 function wdSummaryHtml(p) {
-  return `<span>Summa:</span> ${formatNum(p.amount)} so'm<br>
-    <span>${p.method === 'card' ? 'Karta' : 'Telefon'}:</span> ${maskDetails(p.method, p.details)}`;
+  const pv = findProvider(p.method, p.provider);
+  return `
+    <div class="wd-row"><div class="wd-row-k">Summa</div><div class="wd-row-v big">${formatNum(p.amount)} so'm</div></div>
+    <div class="wd-row"><div class="wd-row-k">Qabul qiluvchi</div><div class="wd-row-v">${escapeHtml(p.name)}</div></div>
+    <div class="wd-row"><div class="wd-row-k">Usul</div><div class="wd-row-v">${p.method === 'card' ? '💳 Karta orqali' : '📱 Telefon orqali'}</div></div>
+    <div class="wd-row"><div class="wd-row-k">${p.method === 'card' ? "To'lov tizimi" : 'Bank'}</div><div class="wd-row-v">${pv ? pvLogo(pv, true) + pv.name : ''}</div></div>
+    <div class="wd-row"><div class="wd-row-k">${p.method === 'card' ? 'Karta raqami' : 'Telefon'}</div><div class="wd-row-v big">${p.method === 'card' ? fmtCard(p.details) : fmtPhone(p.details)}</div></div>`;
 }
+
+function escapeHtml(t) { return t.replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c])); }
 
 function renderWithdrawSponsors() {
   const list = document.getElementById('wd-sponsors-list');
@@ -2452,7 +2612,9 @@ async function wdCheckAndSubmit() {
       body: JSON.stringify({
         init_data: initData,
         amount: wdPending.amount,
+        recipient_name: wdPending.name,
         method: wdPending.method,                      // 'card' или 'phone'
+        provider: wdPending.provider,                  // uzcard/humo/visa/... или банк: uzum/tbc/...
         details: wdPending.method === 'phone' ? '998' + wdPending.details : wdPending.details
       })
     });
