@@ -2635,7 +2635,6 @@ async function saveGame(accuracy) {
       })
     });
     const data = await res.json();
-    if (data.user) user = data.user;
   } catch (e) {
     console.error('Save error:', e);
   }
