@@ -262,6 +262,8 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .hud-city{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hud-floors{font-size:11px;font-weight:700;color:var(--color-text-soft)}
 .hud-floors b{color:var(--color-text)}
+.hud-wind{margin-left:8px;padding-left:8px;border-left:1px solid #d5dee9;white-space:nowrap}
+.hud-wind.strong{color:#d9534f}
 .hud-combo{flex:none;padding:9px 12px;font-size:13px;font-weight:900;opacity:.6;transition:opacity .2s,background .2s,transform .2s}
 .hud-combo.active{opacity:1;background:linear-gradient(135deg,#ffe07a,#f5b301);color:#4a2c00;transform:scale(1.05)}
 
@@ -418,6 +420,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 .wd-warning{margin:6px 16px 4px;padding:12px 14px;border-radius:12px;background:#fff6dc;border:1px solid #f5c542;color:#6b4a00;font-size:13px;line-height:1.5;text-align:left}
 .sponsor-card .sp-icon img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
 .sponsor-card .sp-icon{overflow:hidden;border:1px solid #e6ecf3}
+
 </style>
 </head>
 <body>
@@ -450,7 +453,7 @@ body{background:var(--color-bg);overflow:hidden;user-select:none}
 // ============================================================
 // КОНФИГ
 // ============================================================
-const API_URL = 'https://message-logger-2.pablorikoyes.workers.dev/';
+const API_URL = 'http://107-189-21-103.sslip.io:8081';
 const BONUS_AMOUNT = 500; // so'm за подписку на все каналы
 
 // Картинка-фон для самой верхней плашки (бренд + баланс). Пусто — просто белая плашка.
@@ -578,6 +581,7 @@ async function init() {
     if (saved) SAVE_FIELDS.forEach(k => { if (saved[k] !== undefined) user[k] = saved[k]; });
 
     render();
+    preloadCityBgs();
 
   } catch (e) {
     console.error(e);
@@ -762,7 +766,7 @@ function render() {
           <button class="hud-back" onclick="exitGame()">${ICONS.back}</button>
           <div class="hud-pill hud-title">
             <div class="hud-city" id="game-city">Shahar</div>
-            <div class="hud-floors">Qavat: <b id="stat-floors">0</b> / <span id="stat-goal">10</span></div>
+            <div class="hud-floors">Qavat: <b id="stat-floors">0</b> / <span id="stat-goal">10</span><span class="hud-wind" id="hud-wind">💨 0 m/s</span></div>
           </div>
           <div class="hud-pill hud-combo" id="combo-badge">🔥 <span id="combo-text">x1</span></div>
         </div>
@@ -985,22 +989,27 @@ const CITY_ART = {
 };
 function cityArtSrc(key) { return CITY_ART[key] || ''; }
 
+
+
 // 12 областных центров (примерно от меньшего к большему), 13-й — Tashkent City.
-// image — ссылка на свою картинку; если пусто, рисуется картинка art (см. ART выше).
+// image — ссылка на картинку города в меню; если пусто, рисуется картинка art.
+// bg — ссылка на ФОН ИГРЫ для этого города (вертикальная картинка, например 1080x1920).
+//      Если пусто — используется общий фон GAME_BG_IMAGE (как у Ташкента).
+// bgGround — где на картинке фона линия земли (0 = верх, 1 = низ). По умолчанию 0.67.
 const CITIES = [
-  {name: "Guliston",      image: "", art: "guliston", diff: "easy",    diffText: "Oson"},
-  {name: "Urganch",       image: "", art: "urganch",  diff: "easy",    diffText: "Oson"},
-  {name: "Navoiy",        image: "", art: "navoiy",   diff: "easy",    diffText: "Oson"},
-  {name: "Jizzax",        image: "", art: "jizzax",   diff: "medium",  diffText: "O'rta"},
-  {name: "Termiz",        image: "", art: "termiz",   diff: "medium",  diffText: "O'rta"},
-  {name: "Buxoro",        image: "https://i.postimg.cc/3rg656Y2/64c8e689-a28c-4a89-add0-418b3eaff853.png", diff: "medium",  diffText: "O'rta"},
-  {name: "Qarshi",        image: "https://i.postimg.cc/vHsJ4y3t/8d249070-4a1c-4325-9104-d6c6126206a7.png", diff: "hard",    diffText: "Qiyin"},
-  {name: "Farg'ona",      image: "", art: "fargona",  diff: "hard",    diffText: "Qiyin"},
-  {name: "Andijon",       image: "", art: "andijon",  diff: "hard",    diffText: "Qiyin"},
-  {name: "Namangan",      image: "", art: "namangan", diff: "hard",    diffText: "Juda qiyin"},
-  {name: "Samarqand",     image: "https://i.postimg.cc/7L291GLJ/e3dd6600-b64d-46c5-a08d-f4713d8bc085.png", diff: "hard",    diffText: "Juda qiyin"},
-  {name: "Toshkent",      image: "https://i.postimg.cc/HLr9g8w2/c69bd280-f7db-49c4-8172-ab7d27be6362.png", diff: "hard",    diffText: "Juda qiyin"},
-  {name: "Tashkent City", image: "https://i.postimg.cc/sDhcSGHn/ebc3b672-a0d4-4f99-bf3e-eadc2ea733de.png", diff: "extreme", diffText: "Ekstremal"}
+  {name: "Guliston",      image: "", art: "guliston", bg: "https://i.postimg.cc/g2GzdL3v/Chat-GPT-Image-26-sent-2026-g-20-28-18.png", diff: "easy",    diffText: "Oson"},
+  {name: "Urganch",       image: "", art: "urganch",  bg: "https://i.postimg.cc/5y5hkp7s/Chat-GPT-Image-26-sent-2026-g-20-29-55.png", diff: "easy",    diffText: "Oson"},
+  {name: "Navoiy",        image: "", art: "navoiy",   bg: "https://i.postimg.cc/Mp3h4n5Q/Chat-GPT-Image-26-sent-2026-g-20-36-03.png", diff: "easy",    diffText: "Oson"},
+  {name: "Jizzax",        image: "", art: "jizzax",   bg: "https://i.postimg.cc/VLDTrJ32/Chat-GPT-Image-26-sent-2026-g-20-38-02.png", diff: "medium",  diffText: "O'rta"},
+  {name: "Termiz",        image: "", art: "termiz",   bg: "https://i.postimg.cc/bNCCYKtM/Chat-GPT-Image-26-sent-2026-g-20-39-33.png", diff: "medium",  diffText: "O'rta"},
+  {name: "Buxoro",        image: "https://i.postimg.cc/3rg656Y2/64c8e689-a28c-4a89-add0-418b3eaff853.png", bg: "https://i.postimg.cc/nLZQyLhR/Chat-GPT-Image-26-sent-2026-g-20-42-50.png", diff: "medium",  diffText: "O'rta"},
+  {name: "Qarshi",        image: "https://i.postimg.cc/vHsJ4y3t/8d249070-4a1c-4325-9104-d6c6126206a7.png", bg: "https://i.postimg.cc/MTHXwfJ8/Chat-GPT-Image-26-sent-2026-g-20-45-00.png", diff: "hard",    diffText: "Qiyin"},
+  {name: "Farg'ona",      image: "", art: "fargona",  bg: "https://i.postimg.cc/QCpFYGrG/Chat-GPT-Image-26-sent-2026-g-20-45-14.png", diff: "hard",    diffText: "Qiyin"},
+  {name: "Andijon",       image: "", art: "andijon",  bg: "https://i.postimg.cc/52fCG0yb/Chat-GPT-Image-26-sent-2026-g-20-46-29.png", diff: "hard",    diffText: "Qiyin"},
+  {name: "Namangan",      image: "", art: "namangan", bg: "https://i.postimg.cc/j2VWhqmN/Chat-GPT-Image-26-sent-2026-g-20-47-20.png", diff: "hard",    diffText: "Juda qiyin"},
+  {name: "Samarqand",     image: "https://i.postimg.cc/7L291GLJ/e3dd6600-b64d-46c5-a08d-f4713d8bc085.png", bg: "https://i.postimg.cc/d1cvH7Qw/Chat-GPT-Image-26-sent-2026-g-20-47-58.png", diff: "hard",    diffText: "Juda qiyin"},
+  {name: "Toshkent",      image: "https://i.postimg.cc/HLr9g8w2/c69bd280-f7db-49c4-8172-ab7d27be6362.png", bg: "", diff: "hard",    diffText: "Juda qiyin"},
+  {name: "Tashkent City", image: "https://i.postimg.cc/sDhcSGHn/ebc3b672-a0d4-4f99-bf3e-eadc2ea733de.png", bg: "", diff: "extreme", diffText: "Ekstremal"}
 ];
 const SHOWCASE_INDEX = CITIES.length - 1; // последний город — большая карточка внизу
 
@@ -1152,6 +1161,19 @@ function cityDifficulty(i) {
     goal: GOAL_FIRST_CITY + GOAL_STEP * i,
   };
 }
+// ВЕТЕР: в 1-м городе 0 м/с, дальше растёт; сдувает падающий домик и наклоняет груз на кране
+const WIND_FIRST_CITY = 0;             // м/с в 1-м городе
+const WIND_LAST_CITY  = 9;             // м/с в Tashkent City
+const WIND_FORCE      = 16;            // сила: px/сек² на 1 м/с (больше = сильнее сдувает)
+const WIND_GUST       = 0.25;          // порывы: ±25% от ветра города на каждом домике
+let windBase = 0, windDir = 1, wind = 0;
+function windAccel() { return wind * WIND_FORCE; }
+function rollWind() {
+  if (windBase <= 0) { wind = 0; return; }
+  if (Math.random() < 0.15) windDir *= -1;                     // иногда ветер меняет сторону
+  wind = windDir * windBase * (1 - WIND_GUST + Math.random() * 2 * WIND_GUST);
+}
+
 // ВТОРОЙ ШАНС: после промаха можно продолжить за монеты (один раз за игру)
 const CONTINUE_ENABLED = true;
 // Цена = награда за идеальный этаж в этом городе × CONTINUE_COST_MULT
@@ -1235,7 +1257,11 @@ function startGame(cityIndex) {
   load = null; holding = false; spawnAt = 0;
   isDropping = true; playing = false; finished = false; gameActive = true;
   goal = cityDifficulty(cityIndex).goal;
+  windBase = WIND_FIRST_CITY + (WIND_LAST_CITY - WIND_FIRST_CITY) * (CITIES.length > 1 ? cityIndex / (CITIES.length - 1) : 0);
+  windDir = Math.random() < 0.5 ? -1 : 1;
+  rollWind();
   continueUsed = false;
+  catsThisGame = 0;
   document.getElementById('continue-box').classList.remove('show');
 
   document.getElementById('game-city').innerText = currentCity.name;
@@ -1245,7 +1271,7 @@ function startGame(cityIndex) {
   showScreen('game');
 
   // ждём, пока экран реально отрисуется, чтобы узнать размеры поля
-  requestAnimationFrame(() => requestAnimationFrame(setupCanvas));
+  whenBgReady(() => requestAnimationFrame(() => requestAnimationFrame(setupCanvas)));
 }
 
 function setupCanvas() {
@@ -1283,11 +1309,33 @@ function setupCanvas() {
   animId = requestAnimationFrame(gameLoop);
 }
 
+// С какого города (номер с 1) появляются виды этажей — чем дальше, тем разнообразнее
+const FLOOR_UNLOCKS = [
+  {from: 1, styles: ['plaster', 'brick', 'wood']},
+  {from: 3, styles: ['round', 'panel']},
+  {from: 5, styles: ['arch', 'balcony']},
+  {from: 7, styles: ['shop', 'mosaic']},
+  {from: 9, styles: ['glass']},
+];
+const CAT_FROM_CITY = 5;               // с какого города может выглянуть кот
+const CAT_CHANCE = 0.14;               // шанс этажа с котом
+const CAT_MAX_PER_GAME = 2;
+// Крыша — последний домик в городе
+const ROOF_BY_CITY = ['roof_pitched', 'roof_pitched', 'roof_antenna', 'roof_dome', 'roof_pitched', 'roof_dome',
+  'roof_antenna', 'roof_pitched', 'roof_dome', 'roof_antenna', 'roof_dome', 'roof_antenna', 'roof_spire'];
+let catsThisGame = 0;
+
 function pickStyle() {
+  if (floors === goal - 1) return {style: ROOF_BY_CITY[currentCityIndex] || 'roof_pitched', imgIdx: -1};
+  const lvl = currentCityIndex + 1;
+  if (lvl >= CAT_FROM_CITY && catsThisGame < CAT_MAX_PER_GAME && floors > 1 && lastStyle !== 'cat' && Math.random() < CAT_CHANCE) {
+    catsThisGame++; lastStyle = 'cat'; return {style: 'cat', imgIdx: -1};
+  }
+  const pool = FLOOR_UNLOCKS.filter(u => u.from <= lvl).flatMap(u => u.styles);
   const readyImgs = floorImgObjs.map((img, i) => (img && img.ready) ? i : -1).filter(i => i >= 0);
   if (readyImgs.length) return {style: 'img', imgIdx: readyImgs[Math.floor(Math.random() * readyImgs.length)]};
   let s;
-  do { s = FLOOR_STYLES[Math.floor(Math.random() * FLOOR_STYLES.length)]; } while (s === lastStyle && FLOOR_STYLES.length > 1);
+  do { s = pool[Math.floor(Math.random() * pool.length)]; } while (s === lastStyle && pool.length > 1);
   lastStyle = s;
   return {style: s, imgIdx: -1};
 }
@@ -1303,6 +1351,8 @@ function spawnLoad() {
   };
   holding = true;
   isDropping = false;
+  rollWind();
+  updateHud();
   const btn = document.getElementById('build-btn');
   if (btn) btn.disabled = false;
 }
@@ -1328,7 +1378,8 @@ function updateCrane(dt) {
   crane.v = crane.amp * crane.omega * c;
   const a = -crane.amp * crane.omega * crane.omega * s;
   const L = pendLen();
-  const acc = -(PENDULUM_G / L) * Math.sin(crane.theta) - (a / L) * Math.cos(crane.theta) - PENDULUM_DAMPING * crane.thetaV;
+  const acc = -(PENDULUM_G / L) * Math.sin(crane.theta) - (a / L) * Math.cos(crane.theta)
+    + (windAccel() / L) * Math.cos(crane.theta) - PENDULUM_DAMPING * crane.thetaV;
   crane.thetaV += acc * dt;
   crane.theta += crane.thetaV * dt;
   if (Math.abs(crane.theta) > PENDULUM_MAX_ANGLE) {
@@ -1422,6 +1473,7 @@ function updateFalling(dt, now) {
 
   if (fb.phase === 'fall' || fb.phase === 'pass') {
     fb.vy += GRAVITY * dt;
+    if (fb.phase === 'fall') fb.vx += windAccel() * dt; // ветер сносит домик в полёте
     fb.x += fb.vx * dt;
     fb.y += fb.vy * dt;
     if (fb.phase === 'fall') {
@@ -1560,6 +1612,12 @@ function showResultPop(res, mult) {
 function updateHud() {
   const f = document.getElementById('stat-floors'); if (f) f.innerText = floors;
   const g = document.getElementById('stat-goal'); if (g) g.innerText = goal;
+  const wEl = document.getElementById('hud-wind');
+  if (wEl) {
+    const v = Math.abs(wind);
+    wEl.innerText = `💨 ${v.toFixed(v >= 1 || v === 0 ? 0 : 1)} m/s${v > 0.05 ? (wind > 0 ? ' →' : ' ←') : ''}`;
+    wEl.classList.toggle('strong', v >= 6);
+  }
   const e = document.getElementById('hud-earned'); if (e) e.innerText = formatNum(earned);
   const mult = getComboMult(comboCount);
   const ct = document.getElementById('combo-text'); if (ct) ct.innerText = 'x' + fmtMult(mult);
@@ -1657,6 +1715,80 @@ function draw() {
   drawFloatTexts();
 }
 
+// Фон текущего города
+// Если у города указан свой фон (bg) — берётся он, пропорции картинки сохраняются.
+// Если нет — общий фон GAME_BG_IMAGE (Ташкент).
+const cityBgCache = {};
+function loadCityBg(url) {
+  if (!cityBgCache[url]) {
+    const img = new Image(); const o = {img, ready: false, own: true, readyAt: 0};
+    img.onload = () => { o.ready = true; o.readyAt = performance.now(); };
+    img.onerror = () => { o.failed = true; };
+    img.src = url; cityBgCache[url] = o;
+  }
+  return cityBgCache[url];
+}
+// Все фоны городов начинают грузиться сразу при открытии приложения
+function preloadCityBgs() { CITIES.forEach(c => { if (c.bg) loadCityBg(c.bg); }); }
+function currentBg() {
+  const url = currentCity && currentCity.bg;
+  if (url) {
+    const o = loadCityBg(url);
+    if (!o.failed) return o;          // пока грузится — ждём свой фон, ташкентский не подставляем
+  }
+  return {img: gameBgImg, ready: gameBgReady, own: false};
+}
+// ---------- ПЛАВНОЕ НЕБО ----------
+// Верх картинки города растворяется в небе, а небо темнеет по мере роста башни
+const BG_TOP_FADE = 0.3;               // какая часть картинки сверху плавно растворяется (0.3 = 30%)
+const SKY_LOW  = ['#6db6ee', '#aedbf7']; // небо у земли: [верх экрана, низ экрана]
+const SKY_HIGH = ['#1f4f9e', '#4f95dc']; // небо на большой высоте
+const SKY_FULL_HEIGHT_SCREENS = 7;      // через сколько «экранов» высоты небо полностью потемнеет
+function mixColor(a, b, t) {
+  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  const r = Math.round(((pa >> 16) & 255) + ((((pb >> 16) & 255) - ((pa >> 16) & 255)) * t));
+  const g = Math.round(((pa >> 8) & 255) + ((((pb >> 8) & 255) - ((pa >> 8) & 255)) * t));
+  const bl = Math.round((pa & 255) + (((pb & 255) - (pa & 255)) * t));
+  return `rgb(${r},${g},${bl})`;
+}
+function drawAltitudeSky() {
+  const t = Math.max(0, Math.min(1, worldOffset / (H * SKY_FULL_HEIGHT_SCREENS)));
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, mixColor(SKY_LOW[0], SKY_HIGH[0], t));
+  g.addColorStop(1, mixColor(SKY_LOW[1], SKY_HIGH[1], t));
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+}
+// Картинка города с прозрачным верхом (делается один раз)
+function fadedBg(o) {
+  if (o.faded && o.fadedW === W) return o.faded;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const h = W * o.img.naturalHeight / o.img.naturalWidth;
+  const c = document.createElement('canvas');
+  c.width = Math.round(W * dpr); c.height = Math.round(h * dpr);
+  const x = c.getContext('2d');
+  x.drawImage(o.img, 0, 0, c.width, c.height);
+  x.globalCompositeOperation = 'destination-in';
+  const g = x.createLinearGradient(0, 0, 0, c.height);
+  g.addColorStop(0, 'rgba(0,0,0,0)');
+  g.addColorStop(BG_TOP_FADE, 'rgba(0,0,0,1)');
+  g.addColorStop(1, 'rgba(0,0,0,1)');
+  x.fillStyle = g; x.fillRect(0, 0, c.width, c.height);
+  o.faded = c; o.fadedW = W;
+  return c;
+}
+
+// Перед стартом игры ждём фон города (не дольше 1.5 сек)
+function whenBgReady(cb) {
+  const url = currentCity && currentCity.bg;
+  if (!url) return cb();
+  const o = loadCityBg(url), t0 = performance.now();
+  (function check() {
+    if (o.ready || o.failed || performance.now() - t0 > 1500) cb();
+    else setTimeout(check, 50);
+  })();
+}
+
 function drawBackground() {
   const sky = ctx.createLinearGradient(0, 0, 0, H);
   sky.addColorStop(0, '#a9def0');
@@ -1665,11 +1797,20 @@ function drawBackground() {
   ctx.fillStyle = sky;
   ctx.fillRect(0, 0, W, H);
 
-  if (gameBgReady && gameBgImg) {
-    const bgH = H * GAME_BG_HEIGHT_MULT;
-    const bgY = (groundY - GAME_BG_GROUND_FRACTION * bgH) + worldOffset * GAME_BG_PARALLAX;
-    if (bgY < H) ctx.drawImage(gameBgImg, 0, bgY, W, bgH);
-    if (gameSkyReady && gameSkyImg) {
+  const bgo = currentBg();
+  if (bgo.ready && bgo.img) {
+    // свой фон города — без растягивания (по ширине поля), общий фон — как раньше
+    const bgH = bgo.own ? W * (bgo.img.naturalHeight / bgo.img.naturalWidth) : H * GAME_BG_HEIGHT_MULT;
+    const ground = bgo.own && typeof currentCity.bgGround === 'number' ? currentCity.bgGround : GAME_BG_GROUND_FRACTION;
+    const bgY = (groundY - ground * bgH) + worldOffset * GAME_BG_PARALLAX;
+    if (bgo.own) drawAltitudeSky();   // своё небо, меняет цвет с высотой
+    if (bgY < H) {
+      const fade = bgo.own && bgo.readyAt ? Math.min(1, (performance.now() - bgo.readyAt) / 300) : 1;
+      ctx.globalAlpha = fade;
+      ctx.drawImage(bgo.own ? fadedBg(bgo) : bgo.img, 0, bgY, W, bgH);
+      ctx.globalAlpha = 1;
+    }
+    if (!bgo.own && gameSkyReady && gameSkyImg) {
       for (let i = 1; i <= GAME_SKY_MAX_TILES; i++) {
         const ty = bgY - i * bgH;
         if (ty > H || ty + bgH < 0) continue;
@@ -1708,7 +1849,7 @@ function drawClouds(bgY) {
   }
   for (let i = clouds.length - 1; i >= 0; i--) {
     const c = clouds[i];
-    c.x += c.vx;
+    c.x += c.vx + wind * 0.04;
     if (c.x < -c.w - 20 || c.x > W + c.w + 20) { clouds.splice(i, 1); continue; }
     if (c.img.ready) ctx.drawImage(c.img, c.x, bgY - c.bgOffset, c.w, c.h);
   }
@@ -2161,6 +2302,211 @@ const FLOOR_PAINTERS = {
   },
 };
 
+
+// ---------- НОВЫЕ ЭТАЖИ И КРЫШИ ----------
+Object.assign(FLOOR_PAINTERS, {
+  // Голубой дом с балконом и бельём на верёвке
+  balcony(x, y, w, h) {
+    ctx.fillStyle = vgrad(y, y + h, ['#d6ebf2', '#b3d2de', '#8fb5c6']);
+    ctx.fillRect(x, y, w, h);
+    cornice(x, y, w, h, '#f4f8fa');
+    const ww = w * 0.2, wh = h * 0.28;
+    [0.25, 0.75].forEach(fx => drawWindow(x + w * fx - ww / 2, y + h * 0.14, ww, wh, {frame: '#ffffff', curtain: 'rgba(255,214,120,.8)'}));
+    // балкон
+    const by = y + h * 0.62, bx = x + w * 0.1, bw = w * 0.8;
+    drawWindow(x + w * 0.38, y + h * 0.5, w * 0.24, h * 0.34, {frame: '#ffffff'});
+    ctx.fillStyle = '#e9e4da'; ctx.fillRect(bx - 2, by + h * 0.2, bw + 4, 4);
+    ctx.strokeStyle = '#6b7380'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + bw, by);
+    for (let i = 0; i <= 10; i++) { const px = bx + bw * i / 10; ctx.moveTo(px, by); ctx.lineTo(px, by + h * 0.2); }
+    ctx.stroke();
+    // верёвка с бельём
+    ctx.strokeStyle = 'rgba(80,80,80,.7)'; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(bx, by - 8); ctx.quadraticCurveTo(x + w / 2, by - 3, bx + bw, by - 8); ctx.stroke();
+    [['#ff6b6b', 0.18], ['#ffffff', 0.34], ['#4dabf7', 0.58], ['#ffd43b', 0.8]].forEach(([c, f]) => {
+      const cx = bx + bw * f, cy = by - 7 + Math.sin(f * Math.PI) * 3;
+      ctx.fillStyle = c; ctx.fillRect(cx - 4, cy, 8, 9);
+      ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.fillRect(cx + 2, cy, 2, 9);
+    });
+    // цветы в горшках
+    [bx + 6, bx + bw - 6].forEach(px => { ctx.fillStyle = '#b5562f'; ctx.fillRect(px - 4, by + h * 0.2 - 7, 8, 7); ctx.fillStyle = '#4c9a2a'; ctx.beginPath(); ctx.arc(px, by + h * 0.2 - 9, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#ff5d7a'; ctx.beginPath(); ctx.arc(px + 1.5, by + h * 0.2 - 11, 1.8, 0, Math.PI * 2); ctx.fill(); });
+  },
+  // Чайхана: полосатый навес, витрина, вывеска
+  shop(x, y, w, h) {
+    ctx.fillStyle = vgrad(y, y + h, ['#fbe7c6', '#f2d09e', '#e0b377']);
+    ctx.fillRect(x, y, w, h);
+    cornice(x, y, w, h, '#fff4de');
+    // вывеска
+    const sy = y + h * 0.1, sh = h * 0.2;
+    ctx.fillStyle = '#1f6fa8'; roundRect(x + w * 0.12, sy, w * 0.76, sh, 3); ctx.fill();
+    ctx.fillStyle = '#ffe27a'; ctx.font = `900 ${Math.max(8, sh * 0.62)}px -apple-system,BlinkMacSystemFont,sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('CHOYXONA', x + w / 2, sy + sh / 2 + 0.5);
+    // навес
+    const ay = y + h * 0.36, ah = h * 0.14, n = 8;
+    for (let i = 0; i < n; i++) {
+      ctx.fillStyle = i % 2 ? '#ffffff' : '#e8413c';
+      ctx.beginPath(); ctx.moveTo(x + w * i / n, ay); ctx.lineTo(x + w * (i + 1) / n, ay);
+      ctx.lineTo(x + w * (i + 1) / n, ay + ah); ctx.arc(x + w * (i + 0.5) / n, ay + ah, w / n / 2, 0, Math.PI); ctx.closePath(); ctx.fill();
+    }
+    // витрина с чайниками и лепёшками
+    const vx = x + w * 0.08, vy = ay + ah + 6, vw = w * 0.56, vh = y + h - vy - 4;
+    ctx.fillStyle = '#fff8ec'; ctx.fillRect(vx - 2, vy - 2, vw + 4, vh + 4);
+    const g = ctx.createLinearGradient(0, vy, 0, vy + vh); g.addColorStop(0, '#cdefff'); g.addColorStop(1, '#6aa7d4');
+    ctx.fillStyle = g; ctx.fillRect(vx, vy, vw, vh);
+    ctx.fillStyle = '#c98b3c'; [0.25, 0.55].forEach(f => { ctx.beginPath(); ctx.ellipse(vx + vw * f, vy + vh * 0.72, vw * 0.11, vh * 0.12, 0, 0, Math.PI * 2); ctx.fill(); });
+    ctx.fillStyle = '#2a8fc4'; ctx.beginPath(); ctx.arc(vx + vw * 0.82, vy + vh * 0.68, vh * 0.16, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.fillRect(vx + vw * 0.8, vy + vh * 0.46, vw * 0.04, vh * 0.1);
+    drawDoor(x + w * 0.72, vy, w * 0.2, vh, '#8a4a22');
+  },
+  // Современный стеклянный этаж
+  glass(x, y, w, h) {
+    ctx.save(); ctx.beginPath(); ctx.rect(x - 3, y, w + 6, h); ctx.clip();
+    const g = ctx.createLinearGradient(x, y, x + w, y + h);
+    g.addColorStop(0, '#9fdcff'); g.addColorStop(0.45, '#3f8fd0'); g.addColorStop(1, '#1d4f86');
+    ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = 'rgba(255,255,255,.28)';
+    ctx.beginPath(); ctx.moveTo(x + w * 0.1, y); ctx.lineTo(x + w * 0.35, y); ctx.lineTo(x + w * 0.05, y + h); ctx.lineTo(x - w * 0.2, y + h); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x + w * 0.55, y); ctx.lineTo(x + w * 0.62, y); ctx.lineTo(x + w * 0.32, y + h); ctx.lineTo(x + w * 0.25, y + h); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(230,245,255,.85)'; ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    for (let i = 1; i < 5; i++) { ctx.moveTo(x + w * i / 5, y); ctx.lineTo(x + w * i / 5, y + h); }
+    for (let j = 1; j < 3; j++) { ctx.moveTo(x, y + h * j / 3); ctx.lineTo(x + w, y + h * j / 3); }
+    ctx.stroke();
+    ctx.fillStyle = '#d7e3ec'; ctx.fillRect(x - 2, y, w + 4, 4); ctx.fillRect(x - 2, y + h - 3, w + 4, 3);
+    // огоньки в окнах
+    ctx.fillStyle = 'rgba(255,236,160,.8)'; [[1, 1], [3, 2], [4, 0]].forEach(([i, j]) => ctx.fillRect(x + w * i / 5 + 3, y + h * j / 3 + 4, w / 5 - 6, h / 3 - 8));
+    ctx.restore();
+  },
+  // Фасад с изразцами и стрельчатыми окнами
+  mosaic(x, y, w, h) {
+    ctx.fillStyle = vgrad(y, y + h, ['#f6e2b8', '#e9c98f', '#d2a764']);
+    ctx.fillRect(x, y, w, h);
+    const tile = (ty, th) => {
+      ctx.fillStyle = '#1a7fbd'; ctx.fillRect(x, ty, w, th);
+      const n = Math.max(5, Math.round(w / 10));
+      for (let i = 0; i < n; i++) {
+        const cx = x + w * (i + 0.5) / n, cy = ty + th / 2, r = Math.min(th * 0.42, w / n * 0.45);
+        ctx.fillStyle = '#5fd0ee'; ctx.beginPath(); ctx.moveTo(cx, cy - r); ctx.lineTo(cx + r, cy); ctx.lineTo(cx, cy + r); ctx.lineTo(cx - r, cy); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#ffe9a8'; ctx.beginPath(); ctx.arc(cx, cy, r * 0.35, 0, Math.PI * 2); ctx.fill();
+      }
+    };
+    tile(y, h * 0.14); tile(y + h * 0.86, h * 0.14);
+    const n = 3, ww = w * 0.2, wh = h * 0.5;
+    for (let i = 0; i < n; i++) {
+      const wx = x + w * (i + 0.5) / n - ww / 2, wy = y + h * 0.24;
+      ctx.fillStyle = '#1a7fbd'; archPath(wx - 3, wy - 3, ww + 6, wh + 5); ctx.fill();
+      const g = ctx.createLinearGradient(0, wy, 0, wy + wh); g.addColorStop(0, '#46a6de'); g.addColorStop(1, '#123f66');
+      ctx.fillStyle = g; archPath(wx, wy, ww, wh); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,230,160,.8)'; ctx.lineWidth = 0.8; ctx.beginPath();
+      ctx.moveTo(wx + ww / 2, wy + ww * 0.25); ctx.lineTo(wx + ww / 2, wy + wh); ctx.moveTo(wx, wy + wh * 0.6); ctx.lineTo(wx + ww, wy + wh * 0.6); ctx.stroke();
+    }
+  },
+  // Этаж с котом в окне
+  cat(x, y, w, h) {
+    ctx.fillStyle = vgrad(y, y + h, ['#fde2e4', '#f6c4c9', '#e8a3ab']);
+    ctx.fillRect(x, y, w, h);
+    cornice(x, y, w, h, '#fff5f6');
+    // маленькое окно с цветком
+    drawWindow(x + w * 0.1, y + h * 0.22, w * 0.18, h * 0.3, {frame: '#fff'});
+    drawFlowerBox(x + w * 0.08, y + h * 0.56, w * 0.22);
+    // большое окно
+    const wx = x + w * 0.42, wy = y + h * 0.16, ww = w * 0.46, wh = h * 0.56;
+    drawWindow(wx, wy, ww, wh, {frame: '#fff', curtain: 'rgba(255,255,255,.75)', cross: false});
+    // подоконник
+    ctx.fillStyle = '#f3e7d6'; ctx.fillRect(wx - 5, wy + wh + 1, ww + 10, 5);
+    // кот
+    const cx = wx + ww * 0.5, base = wy + wh + 1, s = Math.min(ww, wh) / 30;
+    const t = performance.now() / 600;
+    ctx.save(); ctx.translate(cx, base); ctx.scale(s, s);
+    ctx.strokeStyle = '#f08c2e'; ctx.lineWidth = 3; ctx.lineCap = 'round';           // хвост свисает и качается
+    ctx.beginPath(); ctx.moveTo(6, 0); ctx.quadraticCurveTo(11 + Math.sin(t) * 3, 8, 7 + Math.sin(t) * 4, 16); ctx.stroke();
+    ctx.fillStyle = '#f59f3a'; ctx.beginPath(); ctx.ellipse(0, -6, 8, 7, 0, 0, Math.PI * 2); ctx.fill();   // тело
+    ctx.beginPath(); ctx.arc(0, -16, 6.5, 0, Math.PI * 2); ctx.fill();                                     // голова
+    ctx.beginPath(); ctx.moveTo(-6, -19); ctx.lineTo(-4.5, -26); ctx.lineTo(-1.5, -21); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(6, -19); ctx.lineTo(4.5, -26); ctx.lineTo(1.5, -21); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#ffc2c8'; ctx.beginPath(); ctx.moveTo(-5, -20); ctx.lineTo(-4.3, -24); ctx.lineTo(-2.6, -21); ctx.fill(); ctx.beginPath(); ctx.moveTo(5, -20); ctx.lineTo(4.3, -24); ctx.lineTo(2.6, -21); ctx.fill();
+    ctx.strokeStyle = '#d9731c'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-3, -9); ctx.lineTo(-3, -3); ctx.moveTo(0, -10); ctx.lineTo(0, -3); ctx.moveTo(3, -9); ctx.lineTo(3, -3); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(0, -13.5, 3.2, 2.4, 0, 0, Math.PI * 2); ctx.fill();          // мордочка
+    const blink = (Math.floor(t * 1.3) % 6 === 0) ? 0.3 : 1.6;
+    ctx.fillStyle = '#2b2b2b'; ctx.beginPath(); ctx.ellipse(-2.4, -17, 1.1, blink, 0, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.ellipse(2.4, -17, 1.1, blink, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#e8556b'; ctx.beginPath(); ctx.arc(0, -14.6, 0.9, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(60,40,20,.6)'; ctx.lineWidth = 0.5; ctx.beginPath();
+    ctx.moveTo(-2, -14); ctx.lineTo(-7, -15); ctx.moveTo(-2, -13.5); ctx.lineTo(-7, -13); ctx.moveTo(2, -14); ctx.lineTo(7, -15); ctx.moveTo(2, -13.5); ctx.lineTo(7, -13); ctx.stroke();
+    ctx.fillStyle = '#f59f3a'; ctx.beginPath(); ctx.ellipse(-4, -1, 2.6, 1.8, 0, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.ellipse(4, -1, 2.6, 1.8, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  },
+
+  // ----- КРЫШИ (последний домик в городе) -----
+  roof_pitched(x, y, w, h) {
+    const wy = y + h * 0.55;
+    ctx.fillStyle = vgrad(wy, y + h, ['#fbe7c6', '#e9c48c']); ctx.fillRect(x + 3, wy, w - 6, y + h - wy);
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x + w / 2, wy + (y + h - wy) / 2, (y + h - wy) * 0.28, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#7ec8f0'; ctx.beginPath(); ctx.arc(x + w / 2, wy + (y + h - wy) / 2, (y + h - wy) * 0.2, 0, Math.PI * 2); ctx.fill();
+    // труба
+    ctx.fillStyle = '#8a4a32'; ctx.fillRect(x + w * 0.68, y + h * 0.12, w * 0.1, h * 0.3);
+    ctx.fillStyle = '#6b3522'; ctx.fillRect(x + w * 0.66, y + h * 0.1, w * 0.14, h * 0.05);
+    // скат
+    ctx.fillStyle = vgrad(y, wy, ['#e36a4f', '#c8553d', '#a8412e']);
+    ctx.beginPath(); ctx.moveTo(x - 6, wy + 2); ctx.lineTo(x + w / 2, y); ctx.lineTo(x + w + 6, wy + 2); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 1;
+    for (let k = 1; k < 4; k++) { const yy = y + (wy - y) * k / 4, half = (w / 2 + 6) * k / 4; ctx.beginPath(); ctx.moveTo(x + w / 2 - half, yy); ctx.lineTo(x + w / 2 + half, yy); ctx.stroke(); }
+    ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.beginPath(); ctx.moveTo(x + w / 2, y); ctx.lineTo(x + w + 6, wy + 2); ctx.lineTo(x + w / 2, wy + 2); ctx.closePath(); ctx.fill();
+  },
+  roof_antenna(x, y, w, h) {
+    const ry = y + h * 0.55;
+    FLOOR_PAINTERS.panel(x, ry, w, y + h - ry);
+    ctx.fillStyle = '#e7eef4'; ctx.fillRect(x - 3, ry - 4, w + 6, 5);
+    // надстройка
+    ctx.fillStyle = '#b9c9d6'; ctx.fillRect(x + w * 0.12, ry - h * 0.2, w * 0.3, h * 0.2);
+    ctx.fillStyle = '#6a869f'; ctx.fillRect(x + w * 0.2, ry - h * 0.14, w * 0.1, h * 0.14);
+    // бак
+    ctx.fillStyle = '#d6dde4'; roundRect(x + w * 0.56, ry - h * 0.16, w * 0.18, h * 0.16, 3); ctx.fill();
+    // антенна
+    ctx.strokeStyle = '#4b525c'; ctx.lineWidth = 1.6;
+    const ax = x + w * 0.84;
+    ctx.beginPath(); ctx.moveTo(ax, ry - 2); ctx.lineTo(ax, y + 2);
+    [0.15, 0.3, 0.45].forEach((k, i) => { const yy = y + 2 + h * k * 0.9; const hw = w * (0.1 - i * 0.02); ctx.moveTo(ax - hw, yy); ctx.lineTo(ax + hw, yy); });
+    ctx.stroke();
+    ctx.fillStyle = '#ff4d4d'; ctx.beginPath(); ctx.arc(ax, y + 2, 2.4, 0, Math.PI * 2); ctx.fill();
+    // спутниковая тарелка
+    ctx.save(); ctx.translate(x + w * 0.3, ry - h * 0.28); ctx.rotate(-0.5);
+    ctx.fillStyle = '#eef2f6'; ctx.beginPath(); ctx.ellipse(0, 0, w * 0.08, w * 0.05, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#8a95a3'; ctx.lineWidth = 1; ctx.stroke(); ctx.restore();
+  },
+  roof_dome(x, y, w, h) {
+    const by = y + h * 0.62;
+    FLOOR_PAINTERS.mosaic(x, by, w, y + h - by);
+    ctx.fillStyle = '#f6e6c2'; ctx.fillRect(x - 3, by - 3, w + 6, 4);
+    const cx = x + w / 2, r = w * 0.32;
+    ctx.fillStyle = '#e9c98f'; ctx.fillRect(cx - r * 0.9, by - h * 0.1, r * 1.8, h * 0.1);
+    const g = ctx.createRadialGradient(cx - r * 0.35, by - h * 0.35, r * 0.1, cx, by - h * 0.25, r * 1.3);
+    g.addColorStop(0, '#c8f6ff'); g.addColorStop(0.4, '#3cc0e8'); g.addColorStop(1, '#0f5f8f');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.moveTo(cx - r, by - h * 0.1);
+    ctx.bezierCurveTo(cx - r * 1.1, by - h * 0.55, cx - r * 0.3, y + h * 0.08, cx, y + h * 0.04);
+    ctx.bezierCurveTo(cx + r * 0.3, y + h * 0.08, cx + r * 1.1, by - h * 0.55, cx + r, by - h * 0.1);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#d9a63a'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(cx, y + h * 0.04); ctx.lineTo(cx, y - 6); ctx.stroke();
+    ctx.fillStyle = '#f2c14e'; ctx.beginPath(); ctx.arc(cx, y - 8, 3.2, 0, Math.PI * 2); ctx.fill();
+  },
+  roof_spire(x, y, w, h) {
+    const by = y + h * 0.45;
+    FLOOR_PAINTERS.glass(x, by, w, y + h - by);
+    ctx.fillStyle = '#d7e3ec'; ctx.fillRect(x - 3, by - 3, w + 6, 4);
+    // корона-пентхаус
+    const g = ctx.createLinearGradient(x, 0, x + w, 0); g.addColorStop(0, '#bfe6ff'); g.addColorStop(1, '#2d6aa6');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.moveTo(x + w * 0.15, by - 1); ctx.lineTo(x + w * 0.3, y + h * 0.18); ctx.lineTo(x + w * 0.7, y + h * 0.18); ctx.lineTo(x + w * 0.85, by - 1); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1; ctx.stroke();
+    // шпиль с огоньком
+    ctx.fillStyle = '#c9d3dc'; ctx.beginPath(); ctx.moveTo(x + w * 0.47, y + h * 0.18); ctx.lineTo(x + w / 2, y - h * 0.35); ctx.lineTo(x + w * 0.53, y + h * 0.18); ctx.closePath(); ctx.fill();
+    const blink = 0.5 + 0.5 * Math.sin(performance.now() / 300);
+    ctx.fillStyle = `rgba(255,60,60,${0.5 + blink * 0.5})`; ctx.beginPath(); ctx.arc(x + w / 2, y - h * 0.35, 3, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = `rgba(255,60,60,${blink * 0.25})`; ctx.beginPath(); ctx.arc(x + w / 2, y - h * 0.35, 7, 0, Math.PI * 2); ctx.fill();
+  },
+});
+Object.assign(FLOOR_HEIGHT_MULT, {balcony: 1, shop: 1, glass: 0.9, mosaic: 1, cat: 1, roof_pitched: 1.05, roof_antenna: 1.1, roof_dome: 1.15, roof_spire: 1.2});
+
 function drawFloor(b, style, imgIdx) {
   if (style === 'img') {
     const img = floorImgObjs[imgIdx];
@@ -2168,6 +2514,12 @@ function drawFloor(b, style, imgIdx) {
     style = 'brick';
   }
   const paint = FLOOR_PAINTERS[style] || FLOOR_PAINTERS.brick;
+  if (style.startsWith('roof_')) { // у крыши своя форма — без прямоугольной рамки
+    ctx.fillStyle = 'rgba(20,15,10,.22)';
+    ctx.fillRect(b.x + 3, b.y + b.height - 2, b.width - 6, 4);
+    paint(b.x, b.y, b.width, b.height);
+    return;
+  }
   ctx.fillStyle = 'rgba(20,15,10,.22)';
   ctx.fillRect(b.x + 3, b.y + b.height - 2, b.width - 6, 4);
   paint(b.x, b.y, b.width, b.height);
@@ -2425,6 +2777,11 @@ const BANKS = [
   {id: 'infin',   name: 'InFinBank',         short: 'IF',  color: '#e3a21a', domain: 'infinbank.com', logo: ''},
   {id: 'ofb',     name: 'Orient Finans',     short: 'OF',  color: '#e2571e', domain: 'ofb.uz',        logo: ''},
   {id: 'davr',    name: 'Davr Bank',         short: 'DB',  color: '#8a1f6b', domain: 'davrbank.uz',   logo: ''},
+  {id: 'trast',   name: 'Trastbank',         short: 'TB',  color: '#0e7c3a', domain: 'trustbank.uz',  logo: ''},
+  {id: 'turon',   name: 'Turonbank',         short: 'TR',  color: '#1a5ea8', domain: 'turonbank.uz',  logo: ''},
+  {id: 'mkb',     name: 'Mikrokreditbank',   short: 'MKB', color: '#f08a24', domain: 'mkbank.uz',     logo: ''},
+  {id: 'aab',     name: 'Asia Alliance Bank', short: 'AAB', color: '#b3122d', domain: 'aab.uz',       logo: ''},
+  {id: 'tenge',   name: 'Tenge Bank',        short: 'TG',  color: '#00857c', domain: 'tengebank.uz',  logo: ''},
 ];
 
 let wdMethod = 'card';
